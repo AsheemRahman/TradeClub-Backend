@@ -20,7 +20,7 @@ interface IExpert extends Document {
     proof_of_experience?: string;
     Introduction_video?: string;
     Government_Id?: string;
-    selfie_with_Id?: string;
+    selfie_Id?: string;
 }
 
 
@@ -89,7 +89,7 @@ const expertSchema = new Schema<IExpert>({
     Government_Id: {
         type: String,
     },
-    selfie_with_Id: {
+    selfie_Id: {
         type: String,
     },
 }, { timestamps: true });

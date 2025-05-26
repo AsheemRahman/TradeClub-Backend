@@ -4,8 +4,8 @@ import { IUserType } from "../../types/IUser";
 
 interface IExpertRepository {
 
-    findUser(email: string): Promise<IExpert | null>
-    registerUser(userData: IUserType): Promise<IExpert | null>;
+    findExpertByEmail(email: string): Promise<IExpert | null>
+    registerExpert(userData: IUserType): Promise<IExpert | null>;
     resetPassword(email: string, hashedPassword: string): Promise<IExpert | null>
 
     storeOtp(email: string, otp: number): Promise<OTPType | null>

@@ -12,14 +12,14 @@ import MailUtility from "../../../utils/mailUtility";
 import PasswordUtils from "../../../utils/passwordUtils";
 
 
-class UserController implements IExpertController {
-    private _userService: IExpertService;
-
+class ExpertController implements IExpertController {
+    private expertService: IExpertService;
 
     constructor(userService: IExpertService) {
-        this._userService = userService;
+        this.expertService = userService;
     }
 
+    //----------------------------- Expert Register -----------------------------
 
     async registerPost(req: Request, res: Response): Promise<void> {
         try {
@@ -28,23 +28,16 @@ class UserController implements IExpertController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT });
                 return;
             }
-
-            // Check if email already exists
-            const isEmailUsed = await this._userService.findUser(email);
+            const isEmailUsed = await this.expertService.findExpertByEmail(email);
             if (isEmailUsed) {
                 res.status(STATUS_CODES.CONFLICT).json({ message: ERROR_MESSAGES.EMAIL_ALREADY_EXIST });
                 return;
             }
-
-            // Proceed with registration
-            await this._userService.registerUser({ fullName, phoneNumber, email, password, } as IUserType);
-
-            // Proceed with OTP
+            await this.expertService.registerExpert({ fullName, phoneNumber, email, password, } as IUserType);
             const otp = await OtpUtility.otpGenerator();
-
             try {
                 await MailUtility.sendMail(email, otp, "Verification OTP");
-                await this._userService.storeOtp(email, otp);
+                await this.expertService.storeOtp(email, otp);
                 res.status(STATUS_CODES.OK).json({ message: "An otp has sent to your email", email, otp, });
             } catch (error) {
                 console.error("Failed to send OTP:", error);
@@ -59,6 +52,7 @@ class UserController implements IExpertController {
         }
     }
 
+    //---------------------------- Expert verify OTP ----------------------------
 
     async verifyOtp(req: Request, res: Response): Promise<void> {
         const { otp, email } = req.body;
@@ -66,25 +60,22 @@ class UserController implements IExpertController {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INVALID_INPUT });
             return;
         }
-
-        const response = await this._userService.findOtp(email);
+        const response = await this.expertService.findOtp(email);
         const storedOTP = response?.otp;
-
         if (storedOTP !== otp) {
             console.log("incorrect otp")
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Incorrect OTP" });
             return;
         }
-
-        const currentUser = await this._userService.findUser(email);
+        const currentUser = await this.expertService.findExpertByEmail(email);
         if (!currentUser) {
             res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND });
             return;
         }
-
         res.status(STATUS_CODES.OK).json({ status: true, message: "OTP verified successfully" });
     }
 
+    //---------------------------- Expert Resend OTP ----------------------------
 
     async resendOtp(req: Request, res: Response): Promise<void> {
         const { email } = req.body;
@@ -92,18 +83,18 @@ class UserController implements IExpertController {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Email is required" });
             return;
         }
-
         const otp = await OtpUtility.otpGenerator();
         try {
             await MailUtility.sendMail(email, otp, "Verification otp");
             res.status(STATUS_CODES.OK).json({ message: "Otp sent to the given mail id", email, otp, });
-            await this._userService.storeResendOtp(email, otp);
+            await this.expertService.storeResendOtp(email, otp);
         } catch (error) {
             console.error("Failed to send otp", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Failed to send the verification mail" });
         }
     }
 
+    //------------------------------- Expert Login -------------------------------
 
     async loginPost(req: Request, res: Response): Promise<void> {
         const { email, password } = req.body;
@@ -111,40 +102,29 @@ class UserController implements IExpertController {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INVALID_INPUT });
             return;
         }
-
         try {
-            const currentUser = await this._userService.findUser(email);
-            if (!currentUser || !currentUser.password) {
+            const currentExpert = await this.expertService.findExpertByEmail(email);
+            if (!currentExpert || !currentExpert.password) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
                 return;
             }
-
-            if (!currentUser.isActive) {
+            if (!currentExpert.isActive) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "User is Blocked by Admin." });
                 return;
             }
-
-            const isPasswordValid = await PasswordUtils.comparePassword(password, currentUser.password);
+            const isPasswordValid = await PasswordUtils.comparePassword(password, currentExpert.password);
             if (!isPasswordValid) {
                 res.status(STATUS_CODES.UNAUTHORIZED).json({ success: false, message: "Invalid email or password", data: null });
                 return;
             }
-
             const payload = {
-                userId: (currentUser._id as string).toString(),
+                userId: (currentExpert._id as string).toString(),
                 role: "user"
             };
             const accessToken = JwtUtility.generateAccessToken(payload);
             const refreshToken = JwtUtility.generateRefreshToken(payload);
-
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
-
-            res.cookie("refreshToken", refreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
-                maxAge: 7 * 24 * 60 * 60 * 1000,
-            });
+            res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000, });
 
             res.status(STATUS_CODES.OK).json({
                 success: true,
@@ -152,9 +132,9 @@ class UserController implements IExpertController {
                 data: {
                     accessToken,
                     user: {
-                        id: currentUser._id,
-                        email: currentUser.email,
-                        name: currentUser.fullName,
+                        id: currentExpert._id,
+                        email: currentExpert.email,
+                        name: currentExpert.fullName,
                         role: "user"
                     }
                 }
@@ -165,6 +145,7 @@ class UserController implements IExpertController {
         }
     }
 
+    //------------------------- Expert Forgot Password -------------------------
 
     async forgotPassword(req: Request, res: Response): Promise<void> {
         const { email } = req.body;
@@ -173,29 +154,29 @@ class UserController implements IExpertController {
             return;
         }
         try {
-            const currentUser = await this._userService.findUser(email);
-            if (!currentUser) {
+            const currentExpert = await this.expertService.findExpertByEmail(email);
+            if (!currentExpert) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
                 return;
             }
-
-            const response = await this._userService.findOtp(email);
+            const response = await this.expertService.findOtp(email);
             const storedOTP = response?.otp;
             if (!storedOTP) {
                 const otp = await OtpUtility.otpGenerator();
                 await MailUtility.sendMail(email, otp, "Verification otp");
                 res.status(STATUS_CODES.OK).json({ status: true, message: "Otp sent to the given mail id", email, otp });
-                await this._userService.storeOtp(email, otp);
+                await this.expertService.storeOtp(email, otp);
             } else {
                 await MailUtility.sendMail(email, Number(storedOTP), "Verification otp");
                 res.status(STATUS_CODES.OK).json({ status: true, message: "Otp sent to the given mail id", email, storedOTP, });
-                await this._userService.storeResendOtp(email, Number(storedOTP));
+                await this.expertService.storeResendOtp(email, Number(storedOTP));
             }
         } catch (error) {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, });
         }
     }
 
+    //--------------------------- Expert reset Password ---------------------------
 
     async resetPassword(req: Request, res: Response): Promise<void> {
         const { email, password } = req.body;
@@ -204,13 +185,13 @@ class UserController implements IExpertController {
             return;
         }
         try {
-            const currentUser = await this._userService.findUser(email);
+            const currentUser = await this.expertService.findExpertByEmail(email);
             if (!currentUser) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
                 return;
             }
-            const updateuser = await this._userService.resetPassword(email, password);
-            if (updateuser) {
+            const updateExpert = await this.expertService.resetPassword(email, password);
+            if (updateExpert) {
                 res.status(STATUS_CODES.OK).json({ status: true, message: "Password Change successfuly" });
             } else {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Password change failed" });
@@ -225,4 +206,4 @@ class UserController implements IExpertController {
 
 
 
-export default UserController;
+export default ExpertController;

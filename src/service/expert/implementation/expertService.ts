@@ -17,15 +17,15 @@ class ExpertService implements IExpertService {
         this._userRepository = userRepository;
     }
 
-    async findUser(email: string): Promise<IExpert | null> {
-        const user = await this._userRepository.findUser(email);
+    async findExpertByEmail(email: string): Promise<IExpert | null> {
+        const user = await this._userRepository.findExpertByEmail(email);
         return user;
     }
 
-    async registerUser(userData: IUserType): Promise<any> {
+    async registerExpert(userData: IUserType): Promise<any> {
         const hashedPassword = await PasswordUtils.passwordHash(userData.password);
         const newUser = { ...userData, password: hashedPassword, };
-        return await this._userRepository.registerUser(newUser);
+        return await this._userRepository.registerExpert(newUser);
     }
 
     async resetPassword(email: string, password: string): Promise<any> {

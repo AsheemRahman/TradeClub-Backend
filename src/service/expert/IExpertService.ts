@@ -3,8 +3,8 @@ import { IUser } from "../../model/user/userSchema";
 import { IUserType } from "../../types/IUser";
 
 interface IExpertService {
-        findUser(email: string): Promise<IUser | null>;
-    registerUser(userData: IUserType): Promise<IUser | null>;
+    findExpertByEmail(email: string): Promise<IUser | null>;
+    registerExpert(userData: IUserType): Promise<IUser | null>;
     resetPassword(email: string, password: string): Promise<IUser | null>
 
     storeOtp(email: string, otp: number): Promise<OTPType | null>

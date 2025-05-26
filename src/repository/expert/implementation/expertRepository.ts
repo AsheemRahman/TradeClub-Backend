@@ -9,12 +9,12 @@ class expertRepository extends BaseRepository<IExpert> implements IexpertReposit
         super(Expert)
     }
 
-    async findUser(email: string): Promise<IExpert | null> {
+    async findExpertByEmail(email: string): Promise<IExpert | null> {
         const getUser = await Expert.findOne({ email: email });
         return getUser;
     }
 
-    async registerUser(userData: IUserType): Promise<IExpert | null> {
+    async registerExpert(userData: IUserType): Promise<IExpert | null> {
         const newUser = await Expert.create(userData);
         return newUser;
     }

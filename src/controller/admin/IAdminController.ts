@@ -10,6 +10,7 @@ interface IAdminController {
 
     getExperts(req: Request, res: Response): Promise<void>
     expertStatus(req: Request, res: Response): Promise<void>
+    expertDetail(req: Request, res: Response): Promise<void>
 }
 
 export default IAdminController

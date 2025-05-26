@@ -176,7 +176,7 @@ class AdminController implements IAdminController {
                 return;
             }
 
-            const checkExpert= await this.adminService.getExpertById(id)
+            const checkExpert = await this.adminService.getExpertById(id)
             if (!checkExpert) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({
                     status: false,
@@ -199,6 +199,33 @@ class AdminController implements IAdminController {
         }
     }
 
+
+    async expertDetail(req: Request, res: Response): Promise<void> {
+        try {
+            const { id } = req.params;
+            if (!id) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
+                return;
+            }
+
+            const Expert = await this.adminService.getExpertById(id)
+            if (!Expert) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({
+                    status: false,
+                    message: ERROR_MESSAGES.USER_NOT_FOUND
+                })
+                return
+            }
+
+            res.status(STATUS_CODES.OK).json({ status: true, Expert, message: "Expert details fetched successfully",});
+        } catch (error) {
+            console.error("Get expert Details error:", error);
+            res.status(STATUS_CODES.BAD_REQUEST).json({
+                status: false,
+                error: "Get expert Details error",
+            });
+        }
+    }
 }
 
 export default AdminController
