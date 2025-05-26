@@ -29,14 +29,19 @@ class AdminRepository implements IAdminRepository {
         return experts;
     }
 
+    async getExpertById(id: string): Promise<IExpert | null> {
+        const user = await Expert.findOne({ _id: id });
+        return user;
+    }
+
     async getExpertCount(): Promise<number> {
         return await Expert.find().countDocuments();
     }
 
-    // async expertUpdateStatus(id: string, status: string): Promise<IExpert | null> {
-    //     const expert = await Expert.findOneAndUpdate({ id, isActive: status });
-    //     return expert;
-    // }
+    async expertUpdateStatus(id: string, status: string): Promise<IExpert | null> {
+        const expert = await Expert.findOneAndUpdate({ id, isActive: status });
+        return expert;
+    }
 }
 
 export default AdminRepository

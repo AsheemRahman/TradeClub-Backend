@@ -21,7 +21,7 @@ router.get('/get-users', validate("admin"), adminController.getUsers.bind(adminC
 router.patch('/user-status/:id', validate("admin"), adminController.userStatus.bind(adminController))
 
 router.get('/get-experts', validate("admin"), adminController.getExperts.bind(adminController))
-// router.patch('/expert-Status/:id', validate("admin"), adminController.expertStatus.bind(adminController))
+router.patch('/expert-status/:id', validate("admin"), adminController.expertStatus.bind(adminController))
 
 
 export default router;

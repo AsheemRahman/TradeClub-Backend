@@ -27,12 +27,12 @@ class AdminService implements IAdminService {
         const user = await this.adminRepository.getUserById(id);
         return user;
     }
-
+    
     async userUpdateStatus(id: string, status: string): Promise<IUser | null> {
         const user = await this.adminRepository.userUpdateStatus(id, status);
         return user;
     }
-
+    
     async getExperts(): Promise<{ experts: IExpert[] | null; total: number }> {
         const [experts, totalExperts] = await Promise.all([
             this.adminRepository.getExperts(),
@@ -43,11 +43,16 @@ class AdminService implements IAdminService {
             total: totalExperts,
         };
     }
+    
+    async expertUpdateStatus(id: string, status: string): Promise<IExpert | null> {
+        const user = await this.adminRepository.expertUpdateStatus(id, status);
+        return user;
+    }
 
-    // async expertUpdateStatus(id: string, status: string): Promise<IUser | null> {
-    //     const user = await this.adminRepository.userUpdateStatus(id, status);
-    //     return user;
-    // }
+    async getExpertById(id: string): Promise<IUser | null> {
+        const user = await this.adminRepository.getExpertById(id);
+        return user;
+    }
 }
 
 export default AdminService;

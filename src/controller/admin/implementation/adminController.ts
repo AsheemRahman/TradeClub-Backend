@@ -137,24 +137,24 @@ class AdminController implements IAdminController {
     async getExperts(req: Request, res: Response): Promise<void> {
         try {
             const response = await this.adminService.getExperts();
-            console.log(response)
             const expert = response?.experts || [];
 
-            const formattedUsers = expert.map((expert: any) => ({
+            const formattedExperts = expert.map((expert: any) => ({
                 id: expert._id,
                 email: expert.email,
                 fullName: expert.fullName,
                 phoneNumber: expert.phoneNumber,
                 isActive: expert.isActive,
+                isVerified: expert.isVerified,
                 createdAt: expert.createdAt
             }));
 
             res.status(STATUS_CODES.OK).json({
-                success: true,
+                status: true,
                 message: "Experts fetched successfully",
                 data: {
-                    users: formattedUsers,
-                    userCount: response.total
+                    experts: formattedExperts,
+                    expertCount: response.total
                 },
             });
         } catch (error) {
@@ -162,6 +162,39 @@ class AdminController implements IAdminController {
             res.status(STATUS_CODES.BAD_REQUEST).json({
                 success: false,
                 error: "Failed to fetch experts",
+            });
+        }
+    }
+
+
+    async expertStatus(req: Request, res: Response): Promise<void> {
+        try {
+            const { id } = req.params;
+            const { status } = req.body;
+            if (!id || status === undefined) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
+                return;
+            }
+
+            const checkExpert= await this.adminService.getExpertById(id)
+            if (!checkExpert) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({
+                    status: false,
+                    message: ERROR_MESSAGES.USER_NOT_FOUND
+                })
+                return
+            }
+
+            await this.adminService.expertUpdateStatus(id, status)
+            res.status(STATUS_CODES.OK).json({
+                success: true,
+                message: "Expert status change successfully",
+            });
+        } catch (error) {
+            console.error("Get users error:", error);
+            res.status(STATUS_CODES.BAD_REQUEST).json({
+                success: false,
+                error: "Failed to Change Status",
             });
         }
     }

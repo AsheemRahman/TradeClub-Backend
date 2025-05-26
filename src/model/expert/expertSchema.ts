@@ -1,12 +1,14 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+
 interface IExpert extends Document {
     fullName: string;
     email: string;
     password: string;
     phone_number?: string;
     googleID?: string;
-    isVerified?: boolean;
+    isVerified?: "Approved" | "Pending" | "Declined";
+    isActive?: boolean;
     profilePicture?: string;
     date_of_birth?: Date;
     state?: string;
@@ -20,6 +22,7 @@ interface IExpert extends Document {
     Government_Id?: string;
     selfie_with_Id?: string;
 }
+
 
 const expertSchema = new Schema<IExpert>({
     fullName: {
@@ -42,8 +45,13 @@ const expertSchema = new Schema<IExpert>({
         type: String,
     },
     isVerified: {
+        type: String,
+        enum: ["Approved", "Pending", "Declined"],
+        default: "Pending",
+    },
+    isActive: {
         type: Boolean,
-        default: false,
+        default: true,
     },
     profilePicture: {
         type: String,
