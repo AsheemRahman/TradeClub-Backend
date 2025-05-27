@@ -31,7 +31,6 @@ export const validate = (requiredRole?: string) => {
 
             jwt.verify(Token, JWT_KEY, async (err: unknown, data: any) => {
                 if (err) {
-                    console.log("acc", Token, err)
                     return res.status(403).json({ message: "Invalid or expired token, please log in again." });
                 }
 
@@ -52,7 +51,6 @@ export const validate = (requiredRole?: string) => {
             });
 
         } catch (error) {
-            console.log(error)
             res.status(500).json({ message: "Internal server error" });
             return;
         }

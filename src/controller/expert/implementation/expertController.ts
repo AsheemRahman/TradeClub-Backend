@@ -64,7 +64,6 @@ class ExpertController implements IExpertController {
         const response = await this.expertService.findOtp(email);
         const storedOTP = response?.otp;
         if (storedOTP !== otp) {
-            console.log("incorrect otp")
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Incorrect OTP" });
             return;
         }

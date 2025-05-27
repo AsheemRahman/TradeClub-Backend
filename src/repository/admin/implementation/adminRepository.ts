@@ -44,9 +44,7 @@ class AdminRepository implements IAdminRepository {
     }
 
     async approveExpert(id: string): Promise<IExpert | null> {
-        console.log(id)
         const expert = await Expert.findByIdAndUpdate(id, { isVerified: "Approved" }, { new: true });
-        console.log(expert)
         return expert;
     }
 

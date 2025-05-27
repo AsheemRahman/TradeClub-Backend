@@ -229,13 +229,11 @@ class AdminController implements IAdminController {
     async approveExpert(req: Request, res: Response): Promise<void> {
         try {
             const { id } = req.body;
-            console.log(id)
             if (!id) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
                 return;
             }
             const Expert = await this.adminService.approveExpert(id)
-            console.log("result", Expert)
             if (!Expert) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
                 return
