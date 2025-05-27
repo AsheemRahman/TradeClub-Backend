@@ -10,7 +10,7 @@ interface IExpert extends Document {
     isVerified?: "Approved" | "Pending" | "Declined";
     isActive?: boolean;
     profilePicture?: string;
-    date_of_birth?: Date;
+    DOB?: Date;
     state?: string;
     country?: string;
     experience_level?: 'Beginner' | 'Intermediate' | 'Expert';
@@ -56,7 +56,7 @@ const expertSchema = new Schema<IExpert>({
     profilePicture: {
         type: String,
     },
-    date_of_birth: {
+    DOB: {
         type: Date,
     },
     state: {

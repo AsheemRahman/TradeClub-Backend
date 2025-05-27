@@ -9,6 +9,8 @@ interface IExpertController {
 
     forgotPassword(req: Request, res: Response): Promise<void>
     resetPassword(req: Request, res: Response): Promise<void>
+
+    expertVerification(req: Request, res: Response): Promise<void>
 }
 
 export default IExpertController;

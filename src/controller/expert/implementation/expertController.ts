@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { STATUS_CODES } from "../../../constants/statusCode";
 import { ERROR_MESSAGES } from "../../../constants/message"
 import { IUserType } from "../../../types/IUser";
+import { ExpertFormData } from "../../../types/IExpert";
 
 import IExpertController from "../IExpertController";
 import IExpertService from "../../../service/expert/IExpertService";
@@ -109,7 +110,11 @@ class ExpertController implements IExpertController {
                 return;
             }
             if (!currentExpert.isActive) {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "User is Blocked by Admin." });
+                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Expert is Blocked by Admin." });
+                return;
+            }
+            if (currentExpert.isVerified !== "Approved") {
+                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Account is not approved." });
                 return;
             }
             const isPasswordValid = await PasswordUtils.comparePassword(password, currentExpert.password);
@@ -119,7 +124,7 @@ class ExpertController implements IExpertController {
             }
             const payload = {
                 userId: (currentExpert._id as string).toString(),
-                role: "user"
+                role: "expert"
             };
             const accessToken = JwtUtility.generateAccessToken(payload);
             const refreshToken = JwtUtility.generateRefreshToken(payload);
@@ -131,11 +136,11 @@ class ExpertController implements IExpertController {
                 message: "Login successful",
                 data: {
                     accessToken,
-                    user: {
+                    expert: {
                         id: currentExpert._id,
                         email: currentExpert.email,
                         name: currentExpert.fullName,
-                        role: "user"
+                        role: "expert"
                     }
                 }
             });
@@ -201,6 +206,29 @@ class ExpertController implements IExpertController {
         }
     }
 
+    //---------------------------- Expert verification ----------------------------
+
+    async expertVerification(req: Request, res: Response): Promise<void> {
+        try {
+            const { email, phoneNumber, profilePicture, DOB, state, country, experience_level, markets_Traded, trading_style, proof_of_experience, year_of_experience, Introduction_video, Government_Id, selfie_Id } = req.body;
+            if (!email || !phoneNumber || !profilePicture || !DOB || !state || !country || !experience_level || !markets_Traded || !trading_style || !proof_of_experience || !year_of_experience || !Introduction_video || !Government_Id || !selfie_Id) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT });
+                return;
+            }
+
+            const isExpert = await this.expertService.findExpertByEmail(email);
+            if (!isExpert) {
+                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
+                return;
+            }
+
+            await this.expertService.updateDetails({ email, phoneNumber, profilePicture, DOB, state, country, experience_level, markets_Traded, trading_style, proof_of_experience, year_of_experience, Introduction_video, Government_Id, selfie_Id } as ExpertFormData);
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Expert details added successfully", });
+        } catch (error) {
+            console.error("Get expert verification error:", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, error: "Error verifying expert details", });
+        }
+    }
 }
 
 

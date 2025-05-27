@@ -12,6 +12,8 @@ interface IAdminRepository {
     getExpertById(id: string): Promise<IExpert | null>
     getExpertCount(): Promise<number>
     expertUpdateStatus(id: string, status: string): Promise<IExpert | null>
+    approveExpert(id: string): Promise<IExpert | null>
+    declineExpert(id: string): Promise<IExpert | null>
 }
 
 export default IAdminRepository

@@ -2,7 +2,8 @@ import IexpertRepository from "../IExpertRepository";
 import { BaseRepository } from "../../base/implementation/BaseRepository";
 import { IUserType } from "../../../types/IUser";
 import { OTP, OTPType } from "../../../model/user/otp";
-import { Expert,IExpert } from "../../../model/expert/expertSchema";
+import { Expert, IExpert } from "../../../model/expert/expertSchema";
+import { ExpertFormData } from "../../../types/IExpert";
 
 class expertRepository extends BaseRepository<IExpert> implements IexpertRepository {
     constructor() {
@@ -41,6 +42,14 @@ class expertRepository extends BaseRepository<IExpert> implements IexpertReposit
         await OTP.findOneAndDelete({ email });
         const newOTP = await OTP.create({ email, otp });
         return newOTP;
+    }
+
+    async updateDetails(expertDetails: ExpertFormData): Promise<IExpert | null> {
+        const { email, ...updateData } = expertDetails;
+        console.log(email)
+        console.log(updateData)
+        const updatedExpert = await Expert.findOneAndUpdate({ email }, { $set: updateData }, { new: true });
+        return updatedExpert;
     }
 }
 

@@ -1,5 +1,6 @@
 import { IExpert } from "../../model/expert/expertSchema";
 import { OTPType } from "../../model/user/otp";
+import { ExpertFormData } from "../../types/IExpert";
 import { IUserType } from "../../types/IUser";
 
 interface IExpertRepository {
@@ -11,6 +12,8 @@ interface IExpertRepository {
     storeOtp(email: string, otp: number): Promise<OTPType | null>
     findOtp(email: string): Promise<OTPType | null>
     storeResendOtp(email: string, otp: number): Promise<OTPType | null>
+
+    updateDetails(expertDetails: ExpertFormData): Promise<IExpert | null>;
 }
 
 

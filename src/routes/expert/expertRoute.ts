@@ -29,6 +29,10 @@ router.post('/forgot-password', (req, res) => expertControllerInstance.forgotPas
 router.patch('/reset-password', (req, res) => expertControllerInstance.resetPassword(req, res))
 
 
+router.post('/verification', (req, res) => expertControllerInstance.expertVerification(req, res))
+
+
+
 
 
 

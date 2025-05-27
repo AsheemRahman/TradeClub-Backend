@@ -20,7 +20,7 @@ class AdminRepository implements IAdminRepository {
     }
 
     async userUpdateStatus(id: string, status: string): Promise<IUser | null> {
-        const user = await User.findOneAndUpdate({ id, isActive: status });
+        const user = await User.findByIdAndUpdate(id,{ isActive: status },{ new: true });
         return user;
     }
 
@@ -39,7 +39,19 @@ class AdminRepository implements IAdminRepository {
     }
 
     async expertUpdateStatus(id: string, status: string): Promise<IExpert | null> {
-        const expert = await Expert.findOneAndUpdate({ id, isActive: status });
+        const expert = await Expert.findByIdAndUpdate(id, { isActive: status }, { new: true });
+        return expert;
+    }
+
+    async approveExpert(id: string): Promise<IExpert | null> {
+        console.log(id)
+        const expert = await Expert.findByIdAndUpdate(id, { isVerified: "Approved" }, { new: true });
+        console.log(expert)
+        return expert;
+    }
+
+    async declineExpert(id: string): Promise<IExpert | null> {
+        const expert = await Expert.findByIdAndUpdate(id, { isVerified: "Declined" }, { new: true });
         return expert;
     }
 }

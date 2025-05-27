@@ -31,6 +31,8 @@ router.patch('/user-status/:id', validate("admin"), adminController.userStatus.b
 router.get('/get-experts', validate("admin"), adminController.getExperts.bind(adminController))
 router.patch('/expert-status/:id', validate("admin"), adminController.expertStatus.bind(adminController))
 router.get('/getExpert/:id', validate("admin"), adminController.expertDetail.bind(adminController))
+router.patch('/approve-expert', validate("admin"), adminController.approveExpert.bind(adminController))
+router.patch('/decline-expert', validate("admin"), adminController.declineExpert.bind(adminController))
 
 
 export default router;

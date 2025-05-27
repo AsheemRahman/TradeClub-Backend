@@ -55,7 +55,6 @@ class AdminController implements IAdminController {
 
 
     async logout(req: Request, res: Response): Promise<void> {
-        console.log("inside logiut")
         try {
             res.clearCookie("admin-accessToken", { httpOnly: true, secure: true, sameSite: "none", });
             res.clearCookie("admin-refreshToken", { httpOnly: true, secure: true, sameSite: "none", });
@@ -217,12 +216,58 @@ class AdminController implements IAdminController {
                 return
             }
 
-            res.status(STATUS_CODES.OK).json({ status: true, Expert, message: "Expert details fetched successfully",});
+            res.status(STATUS_CODES.OK).json({ status: true, Expert, message: "Expert details fetched successfully", });
         } catch (error) {
             console.error("Get expert Details error:", error);
             res.status(STATUS_CODES.BAD_REQUEST).json({
                 status: false,
                 error: "Get expert Details error",
+            });
+        }
+    }
+
+    async approveExpert(req: Request, res: Response): Promise<void> {
+        try {
+            const { id } = req.body;
+            console.log(id)
+            if (!id) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+                return;
+            }
+            const Expert = await this.adminService.approveExpert(id)
+            console.log("result", Expert)
+            if (!Expert) {
+                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+                return
+            }
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Expert approved successfully" })
+        } catch (error) {
+            console.error("Expert approve is failed", error);
+            res.status(STATUS_CODES.BAD_REQUEST).json({
+                status: false,
+                error: "Expert Approve is failed",
+            });
+        }
+    }
+
+    async declineExpert(req: Request, res: Response): Promise<void> {
+        try {
+            const { id } = req.body;
+            if (!id) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+                return;
+            }
+            const Expert = await this.adminService.declineExpert(id)
+            if (!Expert) {
+                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+                return
+            }
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Expert Declined successfully" })
+        } catch (error) {
+            console.error("Expert decline is failed", error);
+            res.status(STATUS_CODES.BAD_REQUEST).json({
+                status: false,
+                error: "Expert decline is failed",
             });
         }
     }

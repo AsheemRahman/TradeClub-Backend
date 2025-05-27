@@ -9,8 +9,10 @@ interface IAdminService {
     userUpdateStatus(id: string, status: string): Promise<IUser | null>
 
     getExperts(): Promise<{ experts: IExpert[] | null; total: number }>
-    getExpertById(id: string): Promise<IUser | null>
+    getExpertById(id: string): Promise<IExpert | null>
     expertUpdateStatus(id: string, status: string): Promise<IExpert | null>
+    approveExpert(id: string): Promise<IExpert | null>
+    declineExpert(id: string): Promise<IExpert | null>
 }
 
 export default IAdminService
