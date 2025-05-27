@@ -5,7 +5,7 @@ interface IExpert extends Document {
     fullName: string;
     email: string;
     password: string;
-    phone_number?: string;
+    phoneNumber?: string;
     googleID?: string;
     isVerified?: "Approved" | "Pending" | "Declined";
     isActive?: boolean;
@@ -38,7 +38,7 @@ const expertSchema = new Schema<IExpert>({
         type: String,
         required: [true, 'Password is required'],
     },
-    phone_number: {
+    phoneNumber: {
         type: String,
     },
     googleID: {

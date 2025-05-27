@@ -28,7 +28,6 @@ class AdminController implements IAdminController {
             }
 
             const isAdmin = process.env.ADMIN_USERNAME === email && process.env.ADMIN_PASSWORD === password;
-
             if (!isAdmin) {
                 res.status(STATUS_CODES.UNAUTHORIZED).json({ success: false, message: ERROR_MESSAGES.UNAUTHORIZED, data: null });
                 return
@@ -56,10 +55,11 @@ class AdminController implements IAdminController {
 
 
     async logout(req: Request, res: Response): Promise<void> {
+        console.log("inside logiut")
         try {
             res.clearCookie("admin-accessToken", { httpOnly: true, secure: true, sameSite: "none", });
             res.clearCookie("admin-refreshToken", { httpOnly: true, secure: true, sameSite: "none", });
-            res.status(STATUS_CODES.OK).json({ success: true, message: "Logout successful", });
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Logout successful", });
             return
         } catch (error) {
             console.error("Logout error:", error);

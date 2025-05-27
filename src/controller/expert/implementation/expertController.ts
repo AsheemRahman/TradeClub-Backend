@@ -2,14 +2,14 @@ import { Request, Response } from "express";
 import { STATUS_CODES } from "../../../constants/statusCode";
 import { ERROR_MESSAGES } from "../../../constants/message"
 import { IUserType } from "../../../types/IUser";
-import JwtUtility from "../../../utils/JwtUtility";
-
 
 import IExpertController from "../IExpertController";
 import IExpertService from "../../../service/expert/IExpertService";
+
 import OtpUtility from "../../../utils/otpUtility";
 import MailUtility from "../../../utils/mailUtility";
 import PasswordUtils from "../../../utils/passwordUtils";
+import JwtUtility from "../../../utils/JwtUtility";
 
 
 class ExpertController implements IExpertController {
