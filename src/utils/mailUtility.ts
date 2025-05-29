@@ -1,8 +1,8 @@
 import nodemailer from "nodemailer";
 import dotenv from 'dotenv'
-import { getOtpHtmlTemplate } from './otpTemplate';
-import { getRejectionEmailTemplate } from './rejectionTemplate';
-import { getApprovalEmailTemplate } from './approvalTemplate';
+import { getOtpHtmlTemplate } from './templates/otpTemplate';
+import { getRejectionEmailTemplate } from './templates/rejectionTemplate';
+import { getApprovalEmailTemplate } from './templates/approvalTemplate';
 
 
 dotenv.config()

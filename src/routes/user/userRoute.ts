@@ -28,14 +28,10 @@ router.patch('/reset-password', (req, res) => userControllerInstance.resetPasswo
 //--------------------------------- login routes --------------------------------
 
 router.post('/login', (req, res) => userControllerInstance.loginPost(req, res));
-router.post('/logout',  (req, res) =>  userControllerInstance.logout(req, res));
+router.post('/logout', (req, res) => userControllerInstance.logout(req, res));
 
 
-
-
-
-
-
+// router.post('/auth/refresh', (req, res) => userControllerInstance.refreshToken(req, res));
 
 
 
