@@ -15,4 +15,4 @@ interface IAdminController {
     declineExpert(req: Request, res: Response): Promise<void>;
 }
 
-export default IAdminController
+export default IAdminController;

@@ -16,8 +16,8 @@ import JwtUtility from "../../../utils/JwtUtility";
 class ExpertController implements IExpertController {
     private expertService: IExpertService;
 
-    constructor(userService: IExpertService) {
-        this.expertService = userService;
+    constructor(expertService: IExpertService) {
+        this.expertService = expertService;
     }
 
     //----------------------------- Expert Register -----------------------------
@@ -57,22 +57,30 @@ class ExpertController implements IExpertController {
 
     async verifyOtp(req: Request, res: Response): Promise<void> {
         const { otp, email } = req.body;
-        if (!otp || !email) {
-            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INVALID_INPUT });
-            return;
+        try {
+            if (!otp || !email) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INVALID_INPUT });
+                return;
+            }
+            const response = await this.expertService.findOtp(email);
+            const storedOTP = response?.otp;
+            if (storedOTP !== otp) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Incorrect OTP" });
+                return;
+            }
+            const currentExpert = await this.expertService.findExpertByEmail(email);
+            if (!currentExpert) {
+                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.Expert_NOT_FOUND });
+                return;
+            }
+            res.status(STATUS_CODES.OK).json({ status: true, message: "OTP verified successfully" });
+        } catch (error) {
+            console.error("Error during OTP verify:", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+                message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+                error: error instanceof Error ? error.message : error
+            });
         }
-        const response = await this.expertService.findOtp(email);
-        const storedOTP = response?.otp;
-        if (storedOTP !== otp) {
-            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Incorrect OTP" });
-            return;
-        }
-        const currentUser = await this.expertService.findExpertByEmail(email);
-        if (!currentUser) {
-            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND });
-            return;
-        }
-        res.status(STATUS_CODES.OK).json({ status: true, message: "OTP verified successfully" });
     }
 
     //---------------------------- Expert Resend OTP ----------------------------
@@ -86,7 +94,7 @@ class ExpertController implements IExpertController {
         const otp = await OtpUtility.otpGenerator();
         try {
             await MailUtility.sendMail(email, otp, "Verification otp");
-            res.status(STATUS_CODES.OK).json({ message: "Otp sent to the given mail id", email, otp, });
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Otp sent to the given mail id", email, otp, });
             await this.expertService.storeResendOtp(email, otp);
         } catch (error) {
             console.error("Failed to send otp", error);
@@ -105,7 +113,7 @@ class ExpertController implements IExpertController {
         try {
             const currentExpert = await this.expertService.findExpertByEmail(email);
             if (!currentExpert || !currentExpert.password) {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
+                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.EMAIL_NOT_FOUND });
                 return;
             }
             if (!currentExpert.isActive) {
@@ -139,6 +147,7 @@ class ExpertController implements IExpertController {
                         id: currentExpert._id,
                         email: currentExpert.email,
                         name: currentExpert.fullName,
+                        isVerified: currentExpert.isVerified,
                         role: "expert"
                     }
                 }

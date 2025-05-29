@@ -2,6 +2,9 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
+import { ERROR_MESSAGES } from "../constants/message";
+import { STATUS_CODES } from "../constants/statusCode";
+
 dotenv.config();
 
 
@@ -25,17 +28,17 @@ export const validate = (requiredRole?: string) => {
                 Token = req.cookies["admin-accessToken"];
             }
             if (!Token) {
-                res.status(401).json({ message: "Access token not found, please log in" });
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "Access token not found, please log in" });
                 return;
             }
 
             jwt.verify(Token, JWT_KEY, async (err: unknown, data: any) => {
                 if (err) {
-                    return res.status(403).json({ message: "Invalid or expired token, please log in again." });
+                    return res.status(STATUS_CODES.FORBIDDEN).json({ message: "Invalid or expired token, please log in again." });
                 }
 
                 if (!data) {
-                    return res.status(403).json({ message: "Invalid token structure." });
+                    return res.status(STATUS_CODES.FORBIDDEN).json({ message: "Invalid token structure." });
                 }
 
                 const userId = data.userId;
@@ -43,7 +46,7 @@ export const validate = (requiredRole?: string) => {
 
                 // Check role
                 if (requiredRole && role !== requiredRole) {
-                    return res.status(403).json({ message: "Access denied: Insufficient permissions." });
+                    return res.status(STATUS_CODES.FORBIDDEN).json({ message: "Access denied: Insufficient permissions." });
                 }
                 req.userId = userId;
                 req.role = role;
@@ -51,7 +54,7 @@ export const validate = (requiredRole?: string) => {
             });
 
         } catch (error) {
-            res.status(500).json({ message: "Internal server error" });
+            res.status(500).json({ message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
             return;
         }
     };

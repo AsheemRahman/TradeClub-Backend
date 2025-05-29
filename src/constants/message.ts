@@ -9,7 +9,9 @@ export enum ERROR_MESSAGES {
     INVALID_INPUT = "The request contains invalid data.",
 
     EMAIL_ALREADY_EXIST = "Email is already in use.",
+    EMAIL_NOT_FOUND = "Email is not registered.",
     ERROR_SENDING_OTP = "Failed to send the verification mail",
 
     USER_NOT_FOUND  = "User is not found.",
+    Expert_NOT_FOUND  = "Expert is not found.",
 }

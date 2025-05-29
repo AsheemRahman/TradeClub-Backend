@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import jwt from 'jsonwebtoken'
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
 
 import JwtUtility, { TokenPayload } from "../../../utils/JwtUtility"
 import { ERROR_MESSAGES } from "../../../constants/message";
@@ -8,7 +7,7 @@ import { STATUS_CODES } from "../../../constants/statusCode";
 
 import IAdminController from "../IAdminController";
 import IAdminService from "../../../service/admin/IAdminService";
-// import IAdminService from "../../../service/admin/IAdminService"
+
 
 dotenv.config();
 
@@ -51,7 +50,7 @@ class AdminController implements IAdminController {
             console.error("Error during signup:", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
         }
-    }
+    };
 
 
     async logout(req: Request, res: Response): Promise<void> {
@@ -65,14 +64,13 @@ class AdminController implements IAdminController {
             res.status(STATUS_CODES.BAD_REQUEST).json({ error: "logout failed" });
             return
         }
-    }
+    };
 
 
     async getUsers(req: Request, res: Response): Promise<void> {
         try {
             const response = await this.adminService.getUsers();
             const users = response?.users || [];
-
             const formattedUsers = users.map((user: any) => ({
                 id: user._id,
                 email: user.email,
@@ -130,14 +128,13 @@ class AdminController implements IAdminController {
                 error: "Failed to Change Status",
             });
         }
-    }
+    };
 
 
     async getExperts(req: Request, res: Response): Promise<void> {
         try {
             const response = await this.adminService.getExperts();
             const expert = response?.experts || [];
-
             const formattedExperts = expert.map((expert: any) => ({
                 id: expert._id,
                 email: expert.email,
@@ -163,7 +160,7 @@ class AdminController implements IAdminController {
                 error: "Failed to fetch experts",
             });
         }
-    }
+    };
 
 
     async expertStatus(req: Request, res: Response): Promise<void> {
@@ -196,7 +193,7 @@ class AdminController implements IAdminController {
                 error: "Failed to Change Status",
             });
         }
-    }
+    };
 
 
     async expertDetail(req: Request, res: Response): Promise<void> {
@@ -224,7 +221,7 @@ class AdminController implements IAdminController {
                 error: "Get expert Details error",
             });
         }
-    }
+    };
 
     async approveExpert(req: Request, res: Response): Promise<void> {
         try {
@@ -246,7 +243,7 @@ class AdminController implements IAdminController {
                 error: "Expert Approve is failed",
             });
         }
-    }
+    };
 
     async declineExpert(req: Request, res: Response): Promise<void> {
         try {
@@ -268,7 +265,7 @@ class AdminController implements IAdminController {
                 error: "Expert decline is failed",
             });
         }
-    }
+    };
 }
 
 export default AdminController

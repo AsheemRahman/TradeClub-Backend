@@ -14,11 +14,11 @@ import PasswordUtils from "../../../utils/passwordUtils";
 
 
 class UserController implements IUserController {
-    private _userService: IUserService;
+    private userService: IUserService;
 
 
     constructor(userService: IUserService) {
-        this._userService = userService;
+        this.userService = userService;
     }
 
 
@@ -31,21 +31,21 @@ class UserController implements IUserController {
             }
 
             // Check if email already exists
-            const isEmailUsed = await this._userService.findUser(email);
+            const isEmailUsed = await this.userService.findUser(email);
             if (isEmailUsed) {
                 res.status(STATUS_CODES.CONFLICT).json({ message: ERROR_MESSAGES.EMAIL_ALREADY_EXIST });
                 return;
             }
 
             // Proceed with registration
-            await this._userService.registerUser({ fullName, phoneNumber, email, password, } as IUserType);
+            await this.userService.registerUser({ fullName, phoneNumber, email, password, } as IUserType);
 
             // Proceed with OTP
             const otp = await OtpUtility.otpGenerator();
 
             try {
                 await MailUtility.sendMail(email, otp, "Verification OTP");
-                await this._userService.storeOtp(email, otp);
+                await this.userService.storeOtp(email, otp);
                 res.status(STATUS_CODES.OK).json({ message: "An otp has sent to your email", email, otp, });
             } catch (error) {
                 console.error("Failed to send OTP:", error);
@@ -68,7 +68,7 @@ class UserController implements IUserController {
             return;
         }
 
-        const response = await this._userService.findOtp(email);
+        const response = await this.userService.findOtp(email);
         const storedOTP = response?.otp;
 
         if (storedOTP !== otp) {
@@ -76,7 +76,7 @@ class UserController implements IUserController {
             return;
         }
 
-        const currentUser = await this._userService.findUser(email);
+        const currentUser = await this.userService.findUser(email);
         if (!currentUser) {
             res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND });
             return;
@@ -97,7 +97,7 @@ class UserController implements IUserController {
         try {
             await MailUtility.sendMail(email, otp, "Verification otp");
             res.status(STATUS_CODES.OK).json({ message: "Otp sent to the given mail id", email, otp, });
-            await this._userService.storeResendOtp(email, otp);
+            await this.userService.storeResendOtp(email, otp);
         } catch (error) {
             console.error("Failed to send otp", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Failed to send the verification mail" });
@@ -113,7 +113,7 @@ class UserController implements IUserController {
         }
 
         try {
-            const currentUser = await this._userService.findUser(email);
+            const currentUser = await this.userService.findUser(email);
             if (!currentUser || !currentUser.password) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
                 return;
@@ -166,6 +166,20 @@ class UserController implements IUserController {
     }
 
 
+    async logout(req: Request, res: Response): Promise<void> {
+        try {
+            res.clearCookie("accessToken", { httpOnly: true, secure: true, sameSite: "none", });
+            res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: "none", });
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Logout successful", });
+            return
+        } catch (error) {
+            console.error("Logout error:", error);
+            res.status(STATUS_CODES.BAD_REQUEST).json({ error: "logout failed" });
+            return
+        }
+    }
+
+
     async forgotPassword(req: Request, res: Response): Promise<void> {
         const { email } = req.body;
         if (!email) {
@@ -173,23 +187,23 @@ class UserController implements IUserController {
             return;
         }
         try {
-            const currentUser = await this._userService.findUser(email);
+            const currentUser = await this.userService.findUser(email);
             if (!currentUser) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
                 return;
             }
 
-            const response = await this._userService.findOtp(email);
+            const response = await this.userService.findOtp(email);
             const storedOTP = response?.otp;
             if (!storedOTP) {
                 const otp = await OtpUtility.otpGenerator();
                 await MailUtility.sendMail(email, otp, "Verification otp");
                 res.status(STATUS_CODES.OK).json({ status: true, message: "Otp sent to the given mail id", email, otp });
-                await this._userService.storeOtp(email, otp);
+                await this.userService.storeOtp(email, otp);
             } else {
                 await MailUtility.sendMail(email, Number(storedOTP), "Verification otp");
                 res.status(STATUS_CODES.OK).json({ status: true, message: "Otp sent to the given mail id", email, storedOTP, });
-                await this._userService.storeResendOtp(email, Number(storedOTP));
+                await this.userService.storeResendOtp(email, Number(storedOTP));
             }
         } catch (error) {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, });
@@ -204,12 +218,12 @@ class UserController implements IUserController {
             return;
         }
         try {
-            const currentUser = await this._userService.findUser(email);
+            const currentUser = await this.userService.findUser(email);
             if (!currentUser) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
                 return;
             }
-            const updateuser = await this._userService.resetPassword(email, password);
+            const updateuser = await this.userService.resetPassword(email, password);
             if (updateuser) {
                 res.status(STATUS_CODES.OK).json({ status: true, message: "Password Change successfuly" });
             } else {
