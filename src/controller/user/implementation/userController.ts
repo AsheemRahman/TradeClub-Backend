@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { STATUS_CODES } from "../../../constants/statusCode";
 import { ERROR_MESSAGES } from "../../../constants/message"
 import { IUserType } from "../../../types/IUser";
-import JwtUtility from "../../../utils/JwtUtility";
+import JwtUtility, { TokenPayload } from "../../../utils/JwtUtility";
 
 
 import IUserController from "../IUserController";
@@ -10,6 +10,7 @@ import IUserService from "../../../service/user/IUserService";
 import OtpUtility from "../../../utils/otpUtility";
 import MailUtility from "../../../utils/mailUtility";
 import PasswordUtils from "../../../utils/passwordUtils";
+import { JwtPayload } from "jsonwebtoken";
 
 
 
@@ -126,7 +127,7 @@ class UserController implements IUserController {
 
             const isPasswordValid = await PasswordUtils.comparePassword(password, currentUser.password);
             if (!isPasswordValid) {
-                res.status(STATUS_CODES.UNAUTHORIZED).json({ success: false, message: "Invalid email or password", data: null });
+                res.status(STATUS_CODES.FORBIDDEN).json({ success: false, message: "Invalid email or password", data: null });
                 return;
             }
 
@@ -164,6 +165,40 @@ class UserController implements IUserController {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, });
         }
     }
+
+
+    async refreshToken(req: Request, res: Response): Promise<void> {
+        try {
+            const refreshToken = req.cookies['admin-refreshToken'];
+            if (!refreshToken) {
+                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'Refresh token missing' });
+                return;
+            }
+
+            // Verify the refresh token using JwtUtility
+            let decoded: string | JwtPayload;
+            try {
+                decoded = JwtUtility.verifyToken(refreshToken, true);
+            } catch (err) {
+                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'Invalid refresh token' });
+                return
+            }
+
+            const { role, userId } = decoded as TokenPayload;
+            if (!userId || !role) {
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: 'Invalid token payload' });
+                return
+            }
+
+            const newAccessToken = JwtUtility.generateAccessToken({ userId, role });
+
+            res.cookie("accessToken", newAccessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 60 * 1000 });
+            res.status(STATUS_CODES.OK).json({ status: true, accessToken: newAccessToken, message: "Access token refreshed successfully" });
+        } catch (error) {
+            console.error('Error refreshing token:', error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Internal server error' });
+        }
+    };
 
 
     async logout(req: Request, res: Response): Promise<void> {

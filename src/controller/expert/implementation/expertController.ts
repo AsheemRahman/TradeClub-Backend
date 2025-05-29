@@ -126,7 +126,7 @@ class ExpertController implements IExpertController {
             }
             const isPasswordValid = await PasswordUtils.comparePassword(password, currentExpert.password);
             if (!isPasswordValid) {
-                res.status(STATUS_CODES.UNAUTHORIZED).json({ success: false, message: "Invalid email or password", data: null });
+                res.status(STATUS_CODES.FORBIDDEN).json({ success: false, message: "Invalid email or password", data: null });
                 return;
             }
             const payload = {

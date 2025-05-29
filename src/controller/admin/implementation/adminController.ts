@@ -30,7 +30,7 @@ class AdminController implements IAdminController {
 
             const isAdmin = process.env.ADMIN_USERNAME === email && process.env.ADMIN_PASSWORD === password;
             if (!isAdmin) {
-                res.status(STATUS_CODES.UNAUTHORIZED).json({ success: false, message: ERROR_MESSAGES.UNAUTHORIZED, data: null });
+                res.status(STATUS_CODES.FORBIDDEN).json({ success: false, message: "Login failed. Please check your credentials." });
                 return
             }
 
@@ -59,7 +59,7 @@ class AdminController implements IAdminController {
         try {
             const refreshToken = req.cookies['admin-refreshToken'];
             if (!refreshToken) {
-                res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: 'Refresh token missing' });
+                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'Refresh token missing' });
                 return;
             }
 
@@ -81,7 +81,7 @@ class AdminController implements IAdminController {
             const newAccessToken = JwtUtility.generateAccessToken({ userId, role });
 
             res.cookie("admin-accessToken", newAccessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 60 * 1000 });
-            res.status(STATUS_CODES.OK).json({ status: true, accessToken: newAccessToken, message: "" });
+            res.status(STATUS_CODES.OK).json({ status: true, accessToken: newAccessToken, message: "Access token refreshed successfully" });
         } catch (error) {
             console.error('Error refreshing token:', error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Internal server error' });
