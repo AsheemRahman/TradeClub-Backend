@@ -20,6 +20,8 @@ router.post('/login', adminController.adminLogin.bind(adminController))
 router.get('/logout', adminController.logout.bind(adminController));
 
 
+router.post('/refresh-token', adminController.refreshToken.bind(adminController));
+
 // ------------------------------- User -------------------------------
 
 router.get('/get-users', validate("admin"), adminController.getUsers.bind(adminController))
