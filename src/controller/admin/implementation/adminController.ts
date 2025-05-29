@@ -7,6 +7,7 @@ import { STATUS_CODES } from "../../../constants/statusCode";
 
 import IAdminController from "../IAdminController";
 import IAdminService from "../../../service/admin/IAdminService";
+import MailUtility from "../../../utils/mailUtility";
 
 
 dotenv.config();
@@ -235,20 +236,21 @@ class AdminController implements IAdminController {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
                 return
             }
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Expert approved successfully" })
+            await MailUtility.sendApprovalMail(Expert.email, Expert.fullName || 'Expert', "Congratulations! Your Expert Application has been Approved - TradeClub");
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Expert approved successfully and welcome email sent" })
         } catch (error) {
-            console.error("Expert approve is failed", error);
+            console.error("Expert approval is failed", error);
             res.status(STATUS_CODES.BAD_REQUEST).json({
                 status: false,
-                error: "Expert Approve is failed",
+                error: "Expert Approval is failed",
             });
         }
     };
 
     async declineExpert(req: Request, res: Response): Promise<void> {
         try {
-            const { id } = req.body;
-            if (!id) {
+            const { id, rejectionReason } = req.body;
+            if (!id || !rejectionReason) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
                 return;
             }
@@ -257,7 +259,8 @@ class AdminController implements IAdminController {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
                 return
             }
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Expert Declined successfully" })
+            await MailUtility.sendRejectionMail(Expert.email, Expert.fullName || 'Expert', rejectionReason, "Application Declined - TradeClub");
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Expert declined successfully and notification email sent" })
         } catch (error) {
             console.error("Expert decline is failed", error);
             res.status(STATUS_CODES.BAD_REQUEST).json({
