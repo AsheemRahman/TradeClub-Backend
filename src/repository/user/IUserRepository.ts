@@ -11,6 +11,8 @@ interface IUserRepository {
     storeOtp(email: string, otp: number): Promise<OTPType | null>
     findOtp(email: string): Promise<OTPType | null>
     storeResendOtp(email: string, otp: number): Promise<OTPType | null>
+
+    getUserById(id: string): Promise<IUser | null>
 }
 
 

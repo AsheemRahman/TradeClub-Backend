@@ -13,6 +13,7 @@ interface IUserController {
 
     forgotPassword(req: Request, res: Response): Promise<void>;
     resetPassword(req: Request, res: Response): Promise<void>;
+
 }
 
 export default IUserController;

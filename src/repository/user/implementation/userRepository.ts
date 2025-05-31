@@ -42,6 +42,11 @@ class userRepository extends BaseRepository<IUser> implements IUserRepository {
         const newOTP = await OTP.create({ email, otp });
         return newOTP;
     }
+
+    async getUserById(id: string): Promise<IUser | null> {
+        const user = await User.findOne({ _id: id });
+        return user;
+    }
 }
 
 export default userRepository;
