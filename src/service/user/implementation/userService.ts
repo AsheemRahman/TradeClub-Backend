@@ -23,9 +23,11 @@ class UserService implements IUserService {
     };
 
     async registerUser(userData: IUserType): Promise<any> {
-        const hashedPassword = await PasswordUtils.passwordHash(userData.password);
-        const newUser = { ...userData, password: hashedPassword, };
-        return await this.userRepository.registerUser(newUser);
+        if (userData.password) {
+            const hashedPassword = await PasswordUtils.passwordHash(userData.password);
+            userData.password = hashedPassword;
+        }
+        return await this.userRepository.registerUser(userData);
     };
 
     async resetPassword(email: string, password: string): Promise<any> {
