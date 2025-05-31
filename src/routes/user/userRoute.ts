@@ -42,6 +42,7 @@ router.post('/refresh-token', (req, res) => userControllerInstance.refreshToken(
 //------------------------------------ profile ----------------------------------
 
 router.get('/get-profile', validate("user"), (req, res) => userProfileController.getProfile(req, res));
+router.post('/update-profile', validate("user"), (req, res) => userProfileController.updateProfile(req, res));
 
 
 

@@ -15,43 +15,53 @@ class UserService implements IUserService {
 
     constructor(userRepository: IUserRepository) {
         this.userRepository = userRepository;
-    }
+    };
 
     async findUser(email: string): Promise<IUser | null> {
         const user = await this.userRepository.findUser(email);
         return user;
-    }
+    };
 
     async registerUser(userData: IUserType): Promise<any> {
         const hashedPassword = await PasswordUtils.passwordHash(userData.password);
         const newUser = { ...userData, password: hashedPassword, };
         return await this.userRepository.registerUser(newUser);
-    }
+    };
 
     async resetPassword(email: string, password: string): Promise<any> {
         const hashedPassword = await PasswordUtils.passwordHash(password);
         return await this.userRepository.resetPassword(email, hashedPassword);
-    }
+    };
 
     async storeOtp(email: string, otp: number): Promise<OTPType | null> {
         const storedOtp = await this.userRepository.storeOtp(email, otp);
         return storedOtp
-    }
+    };
 
     async findOtp(email: string): Promise<OTPType | null> {
         const otp = await this.userRepository.findOtp(email);
         return otp;
-    }
+    };
 
     async storeResendOtp(email: string, otp: number): Promise<OTPType | null> {
         const resendOTP = await this.userRepository.storeResendOtp(email, otp);
         return resendOTP;
-    }
+    };
 
     async getUserById(id: string): Promise<IUser | null> {
         const user = await this.userRepository.getUserById(id);
         return user;
-    }
+    };
+
+    async updateUserById(id: string, updateData: Partial<IUser>): Promise<IUser | null> {
+        if (updateData.password) {
+            const hashedPassword = await PasswordUtils.passwordHash(updateData.password);
+            updateData.password = hashedPassword;
+        }
+        const updatedUser = await this.userRepository.updateUserById(id, updateData);
+        return updatedUser;
+    };
+
 }
 
 

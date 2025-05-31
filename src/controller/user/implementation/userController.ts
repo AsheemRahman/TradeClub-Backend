@@ -169,7 +169,7 @@ class UserController implements IUserController {
 
     async refreshToken(req: Request, res: Response): Promise<void> {
         try {
-            const refreshToken = req.cookies['admin-refreshToken'];
+            const refreshToken = req.cookies['refreshToken'];
             if (!refreshToken) {
                 res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'Refresh token missing' });
                 return;
