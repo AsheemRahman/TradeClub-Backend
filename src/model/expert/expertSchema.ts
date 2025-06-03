@@ -36,7 +36,6 @@ const expertSchema = new Schema<IExpert>({
     },
     password: {
         type: String,
-        required: [true, 'Password is required'],
     },
     phoneNumber: {
         type: String,

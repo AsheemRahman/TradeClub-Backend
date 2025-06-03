@@ -30,11 +30,12 @@ router.post('/forgot-password', (req, res) => userControllerInstance.forgotPassw
 router.patch('/reset-password', (req, res) => userControllerInstance.resetPassword(req, res))
 
 
-//--------------------------------- login routes --------------------------------
+//--------------------------- Authentification routes ---------------------------
 
 router.post('/login', (req, res) => userControllerInstance.loginPost(req, res));
 router.post('/logout', (req, res) => userControllerInstance.logout(req, res));
 
+router.post('/google-login', (req, res) => userControllerInstance.googleLogin(req, res))
 
 router.post('/refresh-token', (req, res) => userControllerInstance.refreshToken(req, res));
 
