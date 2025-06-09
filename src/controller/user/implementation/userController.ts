@@ -127,7 +127,7 @@ class UserController implements IUserController {
 
             const isPasswordValid = await PasswordUtils.comparePassword(password, currentUser.password);
             if (!isPasswordValid) {
-                res.status(STATUS_CODES.FORBIDDEN).json({ success: false, message: "Invalid email or password", data: null });
+                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "Invalid email or password", data: null });
                 return;
             }
 
@@ -148,7 +148,7 @@ class UserController implements IUserController {
             });
 
             res.status(STATUS_CODES.OK).json({
-                success: true,
+                status: true,
                 message: "Login successful",
                 data: {
                     accessToken,
@@ -162,7 +162,7 @@ class UserController implements IUserController {
             });
         } catch (error) {
             console.error("Login Error:", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, });
         }
     }
 
