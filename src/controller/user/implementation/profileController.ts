@@ -3,9 +3,7 @@ import { STATUS_CODES } from "../../../constants/statusCode";
 import { ERROR_MESSAGES } from "../../../constants/message"
 
 import IUserService from "../../../service/user/IUserService";
-import PasswordUtils from "../../../utils/passwordUtils";
 import IProfileController from "../IProfileController";
-
 
 
 class ProfileController implements IProfileController {
@@ -62,15 +60,11 @@ class ProfileController implements IProfileController {
             if (fullName) updateData.fullName = fullName;
             if (phoneNumber) updateData.phoneNumber = phoneNumber;
             if (newPassword) updateData.password = newPassword;
-
             const updatedUser = await this.userService.updateUserById(id, updateData);
             res.status(STATUS_CODES.OK).json({ status: true, message: 'Profile updated successfully', userDetails: updatedUser, });
         } catch (error) {
             console.error('Update Profile Error:', error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-                status: false,
-                message: 'Failed to update profile',
-            });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Failed to update profile', });
         }
     }
 }

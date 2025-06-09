@@ -203,18 +203,16 @@ class UserController implements IUserController {
 
     async googleLogin(req: Request, res: Response): Promise<void> {
         try {
-            const { fullName, email, profilePicture } = req.body.userData;
-            console.log("Received request body:", req.body);
+            const { fullName, email, profilePicture } = req.body;
             if (!fullName || !email || !profilePicture) {
                 console.warn("Missing Google credentials");
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Username, email, and image are required.", });
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "name, email, and image are required.", });
                 return
             }
             let currentUser = await this.userService.findUser(email);
             if (!currentUser) {
                 currentUser = await this.userService.registerUser({ fullName, email, profilePicture } as IUserType);
                 if (!currentUser) {
-                    console.error("User creation failed");
                     res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create user.", });
                     return
                 }
@@ -228,7 +226,7 @@ class UserController implements IUserController {
             const refreshToken = JwtUtility.generateRefreshToken(payload);
 
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
-            res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000, });
+            res.cookie("refreshToken", refreshToken, {  httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000,});
 
             res.status(STATUS_CODES.OK).json({
                 status: true, message: "Login successful", data: { accessToken, user: { id: currentUser._id, email: currentUser.email, name: currentUser.fullName, role: "user" } }
