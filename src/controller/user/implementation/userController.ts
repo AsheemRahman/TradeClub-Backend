@@ -119,7 +119,6 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
                 return;
             }
-
             if (!currentUser.isActive) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "User is Blocked by Admin." });
                 return;
@@ -137,19 +136,10 @@ class UserController implements IUserController {
             };
             const accessToken = JwtUtility.generateAccessToken(payload);
             const refreshToken = JwtUtility.generateRefreshToken(payload);
-
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
+            res.cookie("refreshToken", refreshToken, {  httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict",  maxAge: 7 * 24 * 60 * 60 * 1000,});
 
-            res.cookie("refreshToken", refreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
-                maxAge: 7 * 24 * 60 * 60 * 1000,
-            });
-
-            res.status(STATUS_CODES.OK).json({
-                status: true,
-                message: "Login successful",
+            res.status(STATUS_CODES.OK).json({ status: true,  message: "Login successful",
                 data: {
                     accessToken,
                     user: {
@@ -251,7 +241,6 @@ class UserController implements IUserController {
             return
         }
     }
-
 
 
     async forgotPassword(req: Request, res: Response): Promise<void> {
