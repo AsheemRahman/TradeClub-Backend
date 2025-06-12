@@ -8,6 +8,11 @@ class CourseRepository implements ICourseRepository {
         const newCategory = await Category.create({categoryName});
         return newCategory;
     }
+
+    async deleteCategory(id: string): Promise<ICategory | null> {
+        const newCategory = await Category.findByIdAndDelete(id);
+        return newCategory;
+    }
 }
 
 export default CourseRepository;

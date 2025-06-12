@@ -14,6 +14,11 @@ class CourseService implements ICourseService {
         const Category = await this.courseRepository.addCategory(categoryName);
         return Category;
     }
+
+    async deleteCategory(id: string): Promise<ICategory | null> {
+        const Category = await this.courseRepository.deleteCategory(id);
+        return Category;
+    }
 }
 
 export default CourseService;

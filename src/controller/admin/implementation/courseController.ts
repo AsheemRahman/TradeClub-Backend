@@ -28,6 +28,21 @@ class CourseController implements ICourseController {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Category Creation failed", error: error instanceof Error ? error.message : String(error), });
         }
     };
+
+    async deleteCategory(req: Request, res: Response): Promise<void> {
+        const { id } = req.params;
+        if (!id) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+            return;
+        }
+        try {
+            const newCategory = await this.courseService.deleteCategory(id);
+            res.status(STATUS_CODES.CREATED).json({ status: true, message: "Category Deleted Successfully", newCategory })
+        } catch (error) {
+            console.error("Failed to delete category", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to delete category", error: error instanceof Error ? error.message : String(error), });
+        }
+    };
 }
 
 export default CourseController;
