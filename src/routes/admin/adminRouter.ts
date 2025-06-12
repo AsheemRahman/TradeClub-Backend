@@ -48,11 +48,11 @@ router.patch('/decline-expert', validate("admin"), adminController.declineExpert
 
 //-------------------------- Category -----------------------------
 
-// router.get('/category', validate("admin"),);
+router.get('/category', validate("admin"), courseController.getCategory.bind(courseController));
 router.post('/add-category', validate("admin"), courseController.addCategory.bind(courseController));
 router.delete('/delete-category/:id', validate("admin"), courseController.deleteCategory.bind(courseController));
+router.patch('/edit-category/:id', validate("admin"), courseController.editCategory.bind(courseController));
 // router.patch('/category-status', validate("admin"),);
-// router.patch('/edit-category', validate("admin"),);
 
 
 

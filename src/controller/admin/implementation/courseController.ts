@@ -9,10 +9,20 @@ import ICourseService from "../../../service/admin/ICourseService";
 class CourseController implements ICourseController {
 
     private courseService: ICourseService;
-
+    
     constructor(courseService: ICourseService) {
         this.courseService = courseService;
     }
+
+    async getCategory(req: Request, res: Response): Promise<void> {
+        try {
+            const categories = await this.courseService.getCategory();
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Category Fetched Successfully", categories })
+        } catch (error) {
+            console.error("Failed to fetch category", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch category", error: error instanceof Error ? error.message : String(error), });
+        }
+    };
 
     async addCategory(req: Request, res: Response): Promise<void> {
         const { categoryName } = req.body;
@@ -41,6 +51,22 @@ class CourseController implements ICourseController {
         } catch (error) {
             console.error("Failed to delete category", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to delete category", error: error instanceof Error ? error.message : String(error), });
+        }
+    };
+
+    async editCategory(req: Request, res: Response): Promise<void> {
+        const { id } = req.params;
+        const { categoryName } = req.body;
+        if (!id || !categoryName) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+            return;
+        }
+        try {
+            const newCategory = await this.courseService.editCategory(id, categoryName);
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Category Edited Successfully", newCategory })
+        } catch (error) {
+            console.error("Failed to Edited category", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to Edited category", error: error instanceof Error ? error.message : String(error), });
         }
     };
 }
