@@ -4,6 +4,7 @@ import { IUser } from "../../../model/user/userSchema";
 import { IExpert } from "../../../model/expert/expertSchema";
 
 
+
 class AdminService implements IAdminService {
 
     private adminRepository: IAdminRepository;
@@ -50,12 +51,12 @@ class AdminService implements IAdminService {
         const expert = await this.adminRepository.getExpertById(id);
         return expert;
     }
-    
+
     async approveExpert(id: string): Promise<IExpert | null> {
         const expert = await this.adminRepository.approveExpert(id);
         return expert;
     }
-    
+
     async declineExpert(id: string): Promise<IExpert | null> {
         const expert = await this.adminRepository.declineExpert(id);
         return expert;

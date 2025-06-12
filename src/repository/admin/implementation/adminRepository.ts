@@ -1,3 +1,4 @@
+import Category, { ICategory } from "../../../model/admin/categorySchema";
 import { Expert, IExpert } from "../../../model/expert/expertSchema";
 import { IUser, User } from "../../../model/user/userSchema";
 import IAdminRepository from "../IAdminRepository";
@@ -20,7 +21,7 @@ class AdminRepository implements IAdminRepository {
     }
 
     async userUpdateStatus(id: string, status: string): Promise<IUser | null> {
-        const user = await User.findByIdAndUpdate(id,{ isActive: status },{ new: true });
+        const user = await User.findByIdAndUpdate(id, { isActive: status }, { new: true });
         return user;
     }
 
@@ -51,6 +52,11 @@ class AdminRepository implements IAdminRepository {
     async declineExpert(id: string): Promise<IExpert | null> {
         const expert = await Expert.findByIdAndUpdate(id, { isVerified: "Declined" }, { new: true });
         return expert;
+    }
+
+    async addCategory(categoryName: string): Promise<ICategory | null> {
+        const newCategory = await Category.create(categoryName);
+        return newCategory;
     }
 }
 

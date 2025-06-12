@@ -285,4 +285,4 @@ class AdminController implements IAdminController {
     };
 }
 
-export default AdminController
+export default AdminController;
