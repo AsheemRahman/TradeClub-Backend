@@ -1,8 +1,11 @@
 import Category, { ICategory } from "../../../model/admin/categorySchema";
+import Course, { ICourse } from "../../../model/admin/courseSchema";
 import ICourseRepository from "../ICourseRepository";
 
 
 class CourseRepository implements ICourseRepository {
+
+    //------------------------ Category ------------------------
 
     async getCategory(): Promise<ICategory[] | null> {
         const category = await Category.find();
@@ -22,6 +25,18 @@ class CourseRepository implements ICourseRepository {
     async deleteCategory(id: string): Promise<ICategory | null> {
         const newCategory = await Category.findByIdAndDelete(id);
         return newCategory;
+    }
+
+    //------------------------- Course -------------------------
+
+    async getCourse(): Promise<ICourse[] | null> {
+        const courses = await Course.find();
+        return courses;
+    }
+
+    async deleteCourse(id: string): Promise<ICourse | null> {
+        const course = await Course.findByIdAndDelete(id);
+        return course;
     }
 }
 

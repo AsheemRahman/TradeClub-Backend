@@ -9,10 +9,12 @@ import ICourseService from "../../../service/admin/ICourseService";
 class CourseController implements ICourseController {
 
     private courseService: ICourseService;
-    
+
     constructor(courseService: ICourseService) {
         this.courseService = courseService;
     }
+
+    //----------------------------- Category -----------------------------
 
     async getCategory(req: Request, res: Response): Promise<void> {
         try {
@@ -67,6 +69,33 @@ class CourseController implements ICourseController {
         } catch (error) {
             console.error("Failed to Edited category", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to Edited category", error: error instanceof Error ? error.message : String(error), });
+        }
+    };
+
+    //----------------------------- Course -----------------------------
+
+    async getCourse(req: Request, res: Response): Promise<void> {
+        try {
+            const categories = await this.courseService.getCourse();
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Courses Fetched Successfully", categories })
+        } catch (error) {
+            console.error("Failed to fetch Courses", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch Courses", error: error instanceof Error ? error.message : String(error), });
+        }
+    };
+
+    async deleteCourse(req: Request, res: Response): Promise<void> {
+        const { id } = req.params;
+        if (!id) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+            return;
+        }
+        try {
+            const course = await this.courseService.deleteCourse(id);
+            res.status(STATUS_CODES.CREATED).json({ status: true, message: "course Deleted Successfully", course })
+        } catch (error) {
+            console.error("Failed to delete course", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to delete course", error: error instanceof Error ? error.message : String(error), });
         }
     };
 }

@@ -55,5 +55,15 @@ router.patch('/edit-category/:id', validate("admin"), courseController.editCateg
 // router.patch('/category-status', validate("admin"),);
 
 
+//-------------------------- Course -----------------------------
+
+router.get('/courses', validate("admin"), );
+router.post('/add-course', validate("admin"), );
+router.put('/edit-course/:id', validate("admin"), );
+router.delete('/delete-course/:id', validate("admin"), );
+// router.get('/course', validate("admin"), );
+
+
+
 
 export default router;

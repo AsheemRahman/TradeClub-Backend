@@ -2,15 +2,18 @@ import ICourseService from "../ICourseService";
 import ICourseRepository from "../../../repository/admin/ICourseRepository";
 
 import { ICategory } from "../../../model/admin/categorySchema";
+import { ICourse } from "../../../model/admin/courseSchema";
 
 
 class CourseService implements ICourseService {
 
     private courseRepository: ICourseRepository;
-    
+
     constructor(courseRepository: ICourseRepository) {
         this.courseRepository = courseRepository;
     }
+
+    //------------------------ Category ------------------------
 
     async getCategory(): Promise<ICategory[] | null> {
         const Category = await this.courseRepository.getCategory();
@@ -30,6 +33,18 @@ class CourseService implements ICourseService {
     async deleteCategory(id: string): Promise<ICategory | null> {
         const Category = await this.courseRepository.deleteCategory(id);
         return Category;
+    }
+
+    //------------------------- Course -------------------------
+
+    async getCourse(): Promise<ICourse[] | null> {
+        const Courses = await this.courseRepository.getCourse();
+        return Courses;
+    }
+
+    async deleteCourse(id: string): Promise<ICourse | null> {
+        const course = await this.courseRepository.deleteCourse(id);
+        return course;
     }
 }
 
