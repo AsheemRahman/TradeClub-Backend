@@ -13,10 +13,12 @@ interface ICourseRepository {
 
     //------------------------ Course ------------------------
 
+    getCourseById(id: string): Promise<ICourse | null>;
     getCourse(): Promise<ICourse[] | null>;
-    // addCourse(courseData: ICourse): Promise<ICourse | null>;
+    addCourse(courseData: ICourse): Promise<ICourse | null>;
     // editCourse(id: string, courseData: ICourse): Promise<ICourse | null>;
     deleteCourse(id: string): Promise<ICourse | null>;
+    togglePublish(id: string, isPublished: boolean): Promise<ICourse | null>;
 }
 
 export default ICourseRepository;

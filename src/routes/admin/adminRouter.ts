@@ -57,11 +57,11 @@ router.patch('/edit-category/:id', validate("admin"), courseController.editCateg
 
 //-------------------------- Course -----------------------------
 
-router.get('/courses', validate("admin"), );
-router.post('/add-course', validate("admin"), );
-router.put('/edit-course/:id', validate("admin"), );
-router.delete('/delete-course/:id', validate("admin"), );
-// router.get('/course', validate("admin"), );
+router.get('/courses', validate("admin"), courseController.getCourse.bind(courseController));
+router.post('/add-course', validate("admin"), courseController.addCourse.bind(courseController));
+router.put('/edit-course/:id', validate("admin"),);
+router.delete('/delete-course/:id', validate("admin"), courseController.deleteCourse.bind(courseController));
+router.patch('/course/:id/toggle-publish', validate("admin"),courseController.togglePublish.bind(courseController) );
 
 
 

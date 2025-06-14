@@ -37,13 +37,28 @@ class CourseService implements ICourseService {
 
     //------------------------- Course -------------------------
 
+    async getCourseById(id: string): Promise<ICourse | null> {
+        const Course = await this.courseRepository.getCourseById(id);
+        return Course;
+    }
+
     async getCourse(): Promise<ICourse[] | null> {
         const Courses = await this.courseRepository.getCourse();
         return Courses;
     }
 
+    async addCourse(courseData: ICourse): Promise<ICourse | null> {
+        const Courses = await this.courseRepository.addCourse(courseData);
+        return Courses;
+    }
+
     async deleteCourse(id: string): Promise<ICourse | null> {
         const course = await this.courseRepository.deleteCourse(id);
+        return course;
+    }
+
+    async togglePublish(id: string, isPublished: boolean): Promise<ICourse | null> {
+        const course = await this.courseRepository.togglePublish(id, isPublished);
         return course;
     }
 }

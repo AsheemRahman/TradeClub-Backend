@@ -8,7 +8,7 @@ class CourseRepository implements ICourseRepository {
     //------------------------ Category ------------------------
 
     async getCategory(): Promise<ICategory[] | null> {
-        const category = await Category.find();
+        const category = await Category.find().sort({ createdAt: -1 });
         return category;
     }
 
@@ -29,13 +29,28 @@ class CourseRepository implements ICourseRepository {
 
     //------------------------- Course -------------------------
 
-    async getCourse(): Promise<ICourse[] | null> {
-        const courses = await Course.find();
+    async getCourseById(id: string): Promise<ICourse | null> {
+        const courses = await Course.findById(id);
         return courses;
+    }
+
+    async getCourse(): Promise<ICourse[] | null> {
+        const courses = await Course.find().sort({ createdAt: -1 });
+        return courses;
+    }
+
+    async addCourse(courseData: ICourse): Promise<ICourse | null> {
+        const newCourses = await Course.create(courseData);
+        return newCourses;
     }
 
     async deleteCourse(id: string): Promise<ICourse | null> {
         const course = await Course.findByIdAndDelete(id);
+        return course;
+    }
+
+    async togglePublish(id: string, isPublished: boolean): Promise<ICourse | null> {
+        const course = await Course.findByIdAndUpdate(id, { isPublished }, { new: true });
         return course;
     }
 }

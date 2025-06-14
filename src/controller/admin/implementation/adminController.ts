@@ -97,7 +97,7 @@ class AdminController implements IAdminController {
             return
         } catch (error) {
             console.error("Logout error:", error);
-            res.status(STATUS_CODES.BAD_REQUEST).json({ error: "logout failed" });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ error: "logout failed" });
             return
         }
     };
@@ -126,7 +126,7 @@ class AdminController implements IAdminController {
             });
         } catch (error) {
             console.error("Get users error:", error);
-            res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, error: "Failed to fetch users", });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, error: "Failed to fetch users", });
         }
     }
 
@@ -153,7 +153,7 @@ class AdminController implements IAdminController {
             res.status(STATUS_CODES.OK).json({ success: true, message: "Users status change successfully", });
         } catch (error) {
             console.error("Get users error:", error);
-            res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, error: "Failed to Change Status", });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, error: "Failed to Change Status", });
         }
     };
 
@@ -181,7 +181,7 @@ class AdminController implements IAdminController {
             });
         } catch (error) {
             console.error("Get experts error:", error);
-            res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, error: "Failed to fetch experts", });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, error: "Failed to fetch experts", });
         }
     };
 
@@ -197,7 +197,7 @@ class AdminController implements IAdminController {
 
             const checkExpert = await this.adminService.getExpertById(id)
             if (!checkExpert) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
+                res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return
             }
 
@@ -205,7 +205,7 @@ class AdminController implements IAdminController {
             res.status(STATUS_CODES.OK).json({ success: true, message: "Expert status change successfully", });
         } catch (error) {
             console.error("Get users error:", error);
-            res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, error: "Failed to Change Status", });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, error: "Failed to Change Status", });
         }
     };
 
@@ -227,7 +227,7 @@ class AdminController implements IAdminController {
             res.status(STATUS_CODES.OK).json({ status: true, Expert, message: "Expert details fetched successfully", });
         } catch (error) {
             console.error("Get expert Details error:", error);
-            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, error: "Get expert Details error", });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, error: "Get expert Details error", });
         }
     };
 
@@ -247,7 +247,7 @@ class AdminController implements IAdminController {
             res.status(STATUS_CODES.OK).json({ status: true, message: "Expert approved successfully and welcome email sent" })
         } catch (error) {
             console.error("Expert approval is failed", error);
-            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, error: "Expert Approval is failed", });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, error: "Expert Approval is failed", });
         }
     };
 
@@ -267,7 +267,7 @@ class AdminController implements IAdminController {
             res.status(STATUS_CODES.OK).json({ status: true, message: "Expert declined successfully and notification email sent" })
         } catch (error) {
             console.error("Expert decline is failed", error);
-            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, error: "Expert decline is failed", });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, error: "Expert decline is failed", });
         }
     };
 }
