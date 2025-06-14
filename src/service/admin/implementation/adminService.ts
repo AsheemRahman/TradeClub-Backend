@@ -17,10 +17,7 @@ class AdminService implements IAdminService {
             this.adminRepository.getUsers(),
             this.adminRepository.getUserCount(),
         ]);
-        return {
-            users: users ?? null,
-            total: totalUsers,
-        };
+        return { users: users ?? null, total: totalUsers, };
     }
 
     async getUserById(id: string): Promise<IUser | null> {
@@ -50,12 +47,12 @@ class AdminService implements IAdminService {
         const expert = await this.adminRepository.getExpertById(id);
         return expert;
     }
-    
+
     async approveExpert(id: string): Promise<IExpert | null> {
         const expert = await this.adminRepository.approveExpert(id);
         return expert;
     }
-    
+
     async declineExpert(id: string): Promise<IExpert | null> {
         const expert = await this.adminRepository.declineExpert(id);
         return expert;
