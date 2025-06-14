@@ -23,7 +23,7 @@ const courseController: ICourseController = new CourseController(courseService);
 
 const router = Router();
 
-// ------------------------- Authentification -------------------------
+// ------------------------- Authentification --------------------------
 
 router.post('/login', adminController.adminLogin.bind(adminController))
 router.get('/logout', adminController.logout.bind(adminController));
@@ -31,13 +31,13 @@ router.get('/logout', adminController.logout.bind(adminController));
 
 router.post('/refresh-token', adminController.refreshToken.bind(adminController));
 
-// ------------------------------- User -------------------------------
+// ------------------------------- User --------------------------------
 
 router.get('/get-users', validate("admin"), adminController.getUsers.bind(adminController))
 router.patch('/user-status/:id', validate("admin"), adminController.userStatus.bind(adminController))
 
 
-// ------------------------------- Expert -------------------------------
+// ------------------------------- Expert ------------------------------
 
 router.get('/get-experts', validate("admin"), adminController.getExperts.bind(adminController))
 router.patch('/expert-status/:id', validate("admin"), adminController.expertStatus.bind(adminController))
@@ -46,7 +46,7 @@ router.patch('/approve-expert', validate("admin"), adminController.approveExpert
 router.patch('/decline-expert', validate("admin"), adminController.declineExpert.bind(adminController))
 
 
-//-------------------------- Category -----------------------------
+//---------------------------- Category -------------------------------
 
 router.get('/category', validate("admin"), courseController.getCategory.bind(courseController));
 router.post('/add-category', validate("admin"), courseController.addCategory.bind(courseController));
@@ -55,13 +55,13 @@ router.patch('/edit-category/:id', validate("admin"), courseController.editCateg
 // router.patch('/category-status', validate("admin"),);
 
 
-//-------------------------- Course -----------------------------
+//----------------------------- Course --------------------------------
 
 router.get('/courses', validate("admin"), courseController.getCourse.bind(courseController));
 router.post('/add-course', validate("admin"), courseController.addCourse.bind(courseController));
-router.put('/edit-course/:id', validate("admin"),);
+router.put('/edit-course/:id', validate("admin"), courseController.editCourse.bind(courseController));
 router.delete('/delete-course/:id', validate("admin"), courseController.deleteCourse.bind(courseController));
-router.patch('/course/:id/toggle-publish', validate("admin"),courseController.togglePublish.bind(courseController) );
+router.patch('/course/:id/toggle-publish', validate("admin"), courseController.togglePublish.bind(courseController));
 
 
 

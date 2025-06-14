@@ -52,6 +52,11 @@ class CourseService implements ICourseService {
         return Courses;
     }
 
+    async editCourse(id: string, courseData: ICourse): Promise<ICourse | null> {
+        const Courses = await this.courseRepository.editCourse(id, courseData);
+        return Courses;
+    }
+
     async deleteCourse(id: string): Promise<ICourse | null> {
         const course = await this.courseRepository.deleteCourse(id);
         return course;

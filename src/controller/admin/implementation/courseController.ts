@@ -96,7 +96,33 @@ class CourseController implements ICourseController {
             res.status(STATUS_CODES.OK).json({ status: true, message: "course created successfully", course });
         } catch (error) {
             console.error("course created error:", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false,message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, error: "Course creation Failed", });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, error: "Course creation Failed", });
+        }
+    };
+
+
+    async editCourse(req: Request, res: Response): Promise<void> {
+        const { id } = req.params;
+        if (!id) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+            return;
+        }
+        const { title, description, price, imageUrl, category, content, isPublished } = req.body;
+        if (!title || !description || !price || !imageUrl || !category || !content) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INVALID_INPUT });
+            return;
+        }
+        try {
+            const checkCourse = await this.courseService.getCourseById(id)
+            if (!checkCourse) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+                return
+            }
+            const course = await this.courseService.editCourse(id, { title, description, price, imageUrl, category, content, isPublished } as ICourse);
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Course updated successfully", course });
+        } catch (error) {
+            console.error("Failed to Edited category", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to Edited category", error: error instanceof Error ? error.message : String(error), });
         }
     };
 
@@ -107,6 +133,11 @@ class CourseController implements ICourseController {
             return;
         }
         try {
+            const checkCourse = await this.courseService.getCourseById(id)
+            if (!checkCourse) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+                return
+            }
             const course = await this.courseService.deleteCourse(id);
             res.status(STATUS_CODES.CREATED).json({ status: true, message: "course Deleted Successfully", course })
         } catch (error) {

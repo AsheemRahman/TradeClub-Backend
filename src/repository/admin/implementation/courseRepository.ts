@@ -44,6 +44,11 @@ class CourseRepository implements ICourseRepository {
         return newCourses;
     }
 
+    async editCourse(id: string, courseData: ICourse): Promise<ICourse | null> {
+        const newCourses = await Course.findByIdAndUpdate(id, { ...courseData }, { new: true });
+        return newCourses;
+    }
+
     async deleteCourse(id: string): Promise<ICourse | null> {
         const course = await Course.findByIdAndDelete(id);
         return course;
