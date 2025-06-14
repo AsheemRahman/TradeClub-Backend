@@ -7,14 +7,16 @@ interface ICourseRepository {
     //----------------------- Category -----------------------
 
     getCategory(): Promise<ICategory[] | null>;
+    getCategoryById(id: string): Promise<ICategory | null>;
     addCategory(categoryName: string): Promise<ICategory | null>;
     editCategory(id: string, categoryName: string): Promise<ICategory | null>;
     deleteCategory(id: string): Promise<ICategory | null>;
+    categoryStatus(id: string, status: boolean): Promise<ICategory | null>;
 
     //------------------------ Course ------------------------
 
-    getCourseById(id: string): Promise<ICourse | null>;
     getCourse(): Promise<ICourse[] | null>;
+    getCourseById(id: string): Promise<ICourse | null>;
     addCourse(courseData: ICourse): Promise<ICourse | null>;
     editCourse(id: string, courseData: ICourse): Promise<ICourse | null>;
     deleteCourse(id: string): Promise<ICourse | null>;

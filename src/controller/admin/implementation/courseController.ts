@@ -73,6 +73,27 @@ class CourseController implements ICourseController {
         }
     };
 
+    async categoryStatus(req: Request, res: Response): Promise<void> {
+        try {
+            const { id } = req.params;
+            const { status } = req.body;
+            if (!id || status === undefined) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
+                return;
+            }
+            const checkCategory = await this.courseService.getCategoryById(id)
+            if (!checkCategory) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
+                return
+            }
+            await this.courseService.categoryStatus(id, status)
+            res.status(STATUS_CODES.OK).json({ success: true, message: "Category status change successfully", });
+        } catch (error) {
+            console.error("Category status change failed:", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, error: "Category status change failed", });
+        }
+    };
+
     //----------------------------- Course -----------------------------
 
     async getCourse(req: Request, res: Response): Promise<void> {

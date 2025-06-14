@@ -12,6 +12,11 @@ class CourseRepository implements ICourseRepository {
         return category;
     }
 
+    async getCategoryById(id: string): Promise<ICategory | null> {
+        const category = await Category.findById(id);
+        return category;
+    }
+
     async addCategory(categoryName: string): Promise<ICategory | null> {
         const newCategory = await Category.create({ categoryName });
         return newCategory;
@@ -25,6 +30,11 @@ class CourseRepository implements ICourseRepository {
     async deleteCategory(id: string): Promise<ICategory | null> {
         const newCategory = await Category.findByIdAndDelete(id);
         return newCategory;
+    }
+
+    async categoryStatus(id: string, status: boolean): Promise<ICategory | null> {
+        const category = await Category.findByIdAndUpdate(id, { isActive: status }, { new: true });
+        return category;
     }
 
     //------------------------- Course -------------------------

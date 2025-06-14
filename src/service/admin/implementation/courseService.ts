@@ -19,6 +19,10 @@ class CourseService implements ICourseService {
         const Category = await this.courseRepository.getCategory();
         return Category;
     }
+    async getCategoryById(id: string): Promise<ICategory | null> {
+        const Category = await this.courseRepository.getCategoryById(id);
+        return Category;
+    }
 
     async addCategory(categoryName: string): Promise<ICategory | null> {
         const Category = await this.courseRepository.addCategory(categoryName);
@@ -33,6 +37,11 @@ class CourseService implements ICourseService {
     async deleteCategory(id: string): Promise<ICategory | null> {
         const Category = await this.courseRepository.deleteCategory(id);
         return Category;
+    }
+
+    async categoryStatus(id: string, status: boolean): Promise<ICategory | null> {
+        const category = await this.courseRepository.categoryStatus(id, status);
+        return category;
     }
 
     //------------------------- Course -------------------------

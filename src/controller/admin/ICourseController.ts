@@ -8,6 +8,7 @@ interface ICourseController {
     addCategory(req: Request, res: Response): Promise<void>;
     deleteCategory(req: Request, res: Response): Promise<void>;
     editCategory(req: Request, res: Response): Promise<void>;
+    categoryStatus(req: Request, res: Response): Promise<void>;
 
     //------------------------ Course ------------------------
 
