@@ -87,7 +87,7 @@ class CourseController implements ICourseController {
 
     async addCourse(req: Request, res: Response): Promise<void> {
         try {
-            const { title, description, price, imageUrl, category, content, isPublished } = req.body.courseData;
+            const { title, description, price, imageUrl, category, content, isPublished } = req.body;
             if (!title || !description || !price || !imageUrl || !category || !content) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT });
                 return;
