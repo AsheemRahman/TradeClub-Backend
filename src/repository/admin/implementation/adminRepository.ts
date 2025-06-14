@@ -54,10 +54,6 @@ class AdminRepository implements IAdminRepository {
         return expert;
     }
 
-    async addCategory(categoryName: string): Promise<ICategory | null> {
-        const newCategory = await Category.create(categoryName);
-        return newCategory;
-    }
 }
 
 export default AdminRepository

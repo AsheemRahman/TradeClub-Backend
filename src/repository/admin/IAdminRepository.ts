@@ -16,9 +16,6 @@ interface IAdminRepository {
     expertUpdateStatus(id: string, status: string): Promise<IExpert | null>;
     approveExpert(id: string): Promise<IExpert | null>;
     declineExpert(id: string): Promise<IExpert | null>;
-
-
-    addCategory(categoryName: string): Promise<ICategory | null>;
 }
 
 export default IAdminRepository;
