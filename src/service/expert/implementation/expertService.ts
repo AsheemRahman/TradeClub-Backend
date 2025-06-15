@@ -24,9 +24,11 @@ class ExpertService implements IExpertService {
     }
 
     async registerExpert(userData: IUserType): Promise<any> {
-        const hashedPassword = await PasswordUtils.passwordHash(userData.password);
-        const newUser = { ...userData, password: hashedPassword, };
-        return await this.expertRepository.registerExpert(newUser);
+        if (userData.password) {
+            const hashedPassword = await PasswordUtils.passwordHash(userData.password);
+            userData.password = hashedPassword;
+        }
+        return await this.expertRepository.registerExpert(userData);
     }
 
     async resetPassword(email: string, password: string): Promise<any> {

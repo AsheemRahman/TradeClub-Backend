@@ -144,7 +144,7 @@ class UserController implements IUserController {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 sameSite: "strict",
-                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+                maxAge: 7 * 24 * 60 * 60 * 1000,
             });
 
             res.status(STATUS_CODES.OK).json({
@@ -169,7 +169,7 @@ class UserController implements IUserController {
 
     async refreshToken(req: Request, res: Response): Promise<void> {
         try {
-            const refreshToken = req.cookies['admin-refreshToken'];
+            const refreshToken = req.cookies['refreshToken'];
             if (!refreshToken) {
                 res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'Refresh token missing' });
                 return;
@@ -201,6 +201,46 @@ class UserController implements IUserController {
     };
 
 
+    async googleLogin(req: Request, res: Response): Promise<void> {
+        try {
+            const { fullName, email, profilePicture } = req.body.userData;
+            console.log("Received request body:", req.body);
+            if (!fullName || !email || !profilePicture) {
+                console.warn("Missing Google credentials");
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Username, email, and image are required.", });
+                return
+            }
+            let currentUser = await this.userService.findUser(email);
+            if (!currentUser) {
+                currentUser = await this.userService.registerUser({ fullName, email, profilePicture } as IUserType);
+                if (!currentUser) {
+                    console.error("User creation failed");
+                    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create user.", });
+                    return
+                }
+            } else if (!currentUser?.isActive) {
+                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'User is blocked by admin', });
+                return;
+            }
+
+            const payload = { userId: (currentUser._id as string).toString(), role: "user" };
+            const accessToken = JwtUtility.generateAccessToken(payload);
+            const refreshToken = JwtUtility.generateRefreshToken(payload);
+
+            res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
+            res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000, });
+
+            res.status(STATUS_CODES.OK).json({
+                status: true, message: "Login successful", data: { accessToken, user: { id: currentUser._id, email: currentUser.email, name: currentUser.fullName, role: "user" } }
+            });
+        } catch (error) {
+            console.error("Error during Google auth:", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
+            return
+        }
+    }
+
+
     async logout(req: Request, res: Response): Promise<void> {
         try {
             res.clearCookie("accessToken", { httpOnly: true, secure: true, sameSite: "none", });
@@ -213,6 +253,7 @@ class UserController implements IUserController {
             return
         }
     }
+
 
 
     async forgotPassword(req: Request, res: Response): Promise<void> {
