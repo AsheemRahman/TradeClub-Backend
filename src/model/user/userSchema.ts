@@ -6,7 +6,6 @@ interface IUser extends Document {
     password?: string;
     phoneNumber?: string;
     isActive?:boolean;
-    googleID?: String
     profilePicture?: string;
 }
 
@@ -24,7 +23,6 @@ const userSchema = new Schema<IUser>({
     },
     password: {
         type: String,
-        message: "Password is required",
     },
     phoneNumber: {
         type: Number,
@@ -32,9 +30,6 @@ const userSchema = new Schema<IUser>({
     isActive: {
         type: Boolean,
         default: true
-    },
-    googleID: {
-        type: String
     },
     profilePicture: {
         type: String,

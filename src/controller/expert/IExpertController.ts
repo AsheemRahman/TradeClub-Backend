@@ -7,6 +7,7 @@ interface IExpertController {
     resendOtp(req: Request, res: Response): Promise<void>;
 
     loginPost(req: Request, res: Response): Promise<void>;
+    logout(req: Request, res: Response): Promise<void>;
 
     forgotPassword(req: Request, res: Response): Promise<void>;
     resetPassword(req: Request, res: Response): Promise<void>;

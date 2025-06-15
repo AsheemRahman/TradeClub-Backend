@@ -33,7 +33,7 @@ router.patch('/reset-password', (req, res) => userControllerInstance.resetPasswo
 //--------------------------- Authentification routes ---------------------------
 
 router.post('/login', (req, res) => userControllerInstance.loginPost(req, res));
-router.post('/logout', (req, res) => userControllerInstance.logout(req, res));
+router.get('/logout', (req, res) => userControllerInstance.logout(req, res));
 
 router.post('/google-login', (req, res) => userControllerInstance.googleLogin(req, res))
 

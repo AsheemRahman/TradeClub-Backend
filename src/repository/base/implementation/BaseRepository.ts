@@ -3,10 +3,10 @@ import { IBaseRepository } from "../IBaseRepository";
 
 export abstract class BaseRepository<T extends Document>
     implements IBaseRepository<T> {
-    //   private model: Model<T>;
+    private model: Model<T>;
 
-    constructor(private model: Model<T>) {
-        // this.model = model;
+    constructor(private schema: Model<T>) {
+        this.model = schema;
     }
 
     async create(data: Partial<T>): Promise<T> {

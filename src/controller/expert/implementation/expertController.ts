@@ -126,7 +126,7 @@ class ExpertController implements IExpertController {
             }
             const isPasswordValid = await PasswordUtils.comparePassword(password, currentExpert.password);
             if (!isPasswordValid) {
-                res.status(STATUS_CODES.FORBIDDEN).json({ success: false, message: "Invalid email or password", data: null });
+                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "Invalid email or password", data: null });
                 return;
             }
             const payload = {
@@ -137,10 +137,7 @@ class ExpertController implements IExpertController {
             const refreshToken = JwtUtility.generateRefreshToken(payload);
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
             res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000, });
-
-            res.status(STATUS_CODES.OK).json({
-                success: true,
-                message: "Login successful",
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Login successful",
                 data: {
                     accessToken,
                     expert: {
@@ -154,7 +151,7 @@ class ExpertController implements IExpertController {
             });
         } catch (error) {
             console.error("Login Error:", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, });
         }
     }
 
@@ -223,18 +220,30 @@ class ExpertController implements IExpertController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT });
                 return;
             }
-
             const isExpert = await this.expertService.findExpertByEmail(email);
             if (!isExpert) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
                 return;
             }
-
             await this.expertService.updateDetails({ email, phoneNumber, profilePicture, DOB, state, country, experience_level, markets_Traded, trading_style, proof_of_experience, year_of_experience, Introduction_video, Government_Id, selfie_Id } as ExpertFormData);
             res.status(STATUS_CODES.OK).json({ status: true, message: "Expert details added successfully", });
         } catch (error) {
             console.error("Get expert verification error:", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, error: "Error verifying expert details", });
+        }
+    }
+
+
+    async logout(req: Request, res: Response): Promise<void> {
+        try {
+            res.clearCookie("accessToken", { httpOnly: true, secure: true, sameSite: "none", });
+            res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: "none", });
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Logout successful", });
+            return
+        } catch (error) {
+            console.error("Logout error:", error);
+            res.status(STATUS_CODES.BAD_REQUEST).json({ error: "logout failed" });
+            return
         }
     }
 }

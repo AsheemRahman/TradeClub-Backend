@@ -22,6 +22,7 @@ router.post('/resend-otp', (req, res) => expertControllerInstance.resendOtp(req,
 //--------------------------------- login routes --------------------------------
 
 router.post('/login', (req, res) => expertControllerInstance.loginPost(req, res));
+router.get('/logout', (req, res) => expertControllerInstance.logout(req, res));
 
 //------------------------------- forgot-password-------------------------------
 

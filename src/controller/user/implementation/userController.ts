@@ -119,7 +119,6 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
                 return;
             }
-
             if (!currentUser.isActive) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "User is Blocked by Admin." });
                 return;
@@ -127,7 +126,7 @@ class UserController implements IUserController {
 
             const isPasswordValid = await PasswordUtils.comparePassword(password, currentUser.password);
             if (!isPasswordValid) {
-                res.status(STATUS_CODES.FORBIDDEN).json({ success: false, message: "Invalid email or password", data: null });
+                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "Invalid email or password", data: null });
                 return;
             }
 
@@ -137,19 +136,10 @@ class UserController implements IUserController {
             };
             const accessToken = JwtUtility.generateAccessToken(payload);
             const refreshToken = JwtUtility.generateRefreshToken(payload);
-
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
+            res.cookie("refreshToken", refreshToken, {  httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict",  maxAge: 7 * 24 * 60 * 60 * 1000,});
 
-            res.cookie("refreshToken", refreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
-                maxAge: 7 * 24 * 60 * 60 * 1000,
-            });
-
-            res.status(STATUS_CODES.OK).json({
-                success: true,
-                message: "Login successful",
+            res.status(STATUS_CODES.OK).json({ status: true,  message: "Login successful",
                 data: {
                     accessToken,
                     user: {
@@ -162,7 +152,7 @@ class UserController implements IUserController {
             });
         } catch (error) {
             console.error("Login Error:", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, });
         }
     }
 
@@ -203,18 +193,16 @@ class UserController implements IUserController {
 
     async googleLogin(req: Request, res: Response): Promise<void> {
         try {
-            const { fullName, email, profilePicture } = req.body.userData;
-            console.log("Received request body:", req.body);
+            const { fullName, email, profilePicture } = req.body;
             if (!fullName || !email || !profilePicture) {
                 console.warn("Missing Google credentials");
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Username, email, and image are required.", });
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "name, email, and image are required.", });
                 return
             }
             let currentUser = await this.userService.findUser(email);
             if (!currentUser) {
                 currentUser = await this.userService.registerUser({ fullName, email, profilePicture } as IUserType);
                 if (!currentUser) {
-                    console.error("User creation failed");
                     res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create user.", });
                     return
                 }
@@ -228,7 +216,7 @@ class UserController implements IUserController {
             const refreshToken = JwtUtility.generateRefreshToken(payload);
 
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
-            res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000, });
+            res.cookie("refreshToken", refreshToken, {  httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000,});
 
             res.status(STATUS_CODES.OK).json({
                 status: true, message: "Login successful", data: { accessToken, user: { id: currentUser._id, email: currentUser.email, name: currentUser.fullName, role: "user" } }
@@ -253,7 +241,6 @@ class UserController implements IUserController {
             return
         }
     }
-
 
 
     async forgotPassword(req: Request, res: Response): Promise<void> {
