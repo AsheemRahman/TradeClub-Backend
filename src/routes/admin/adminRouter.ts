@@ -58,6 +58,7 @@ router.patch('/edit-category/:id', validate("admin"), courseController.editCateg
 //----------------------------- Course --------------------------------
 
 router.get('/courses', validate("admin"), courseController.getCourse.bind(courseController));
+router.get('/course/:id', validate("admin"), courseController.getCourseById.bind(courseController));
 router.post('/add-course', validate("admin"), courseController.addCourse.bind(courseController));
 router.put('/edit-course/:id', validate("admin"), courseController.editCourse.bind(courseController));
 router.delete('/delete-course/:id', validate("admin"), courseController.deleteCourse.bind(courseController));

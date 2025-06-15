@@ -106,6 +106,26 @@ class CourseController implements ICourseController {
         }
     };
 
+    async getCourseById(req: Request, res: Response): Promise<void> {
+        const { id } = req.params;
+        console.log(id)
+        if (!id) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+            return;
+        }
+        try {
+            const course = await this.courseService.getCourseById(id)
+            if (!course) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+                return
+            }
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Course Fetched Successfully", course })
+        } catch (error) {
+            console.error("Failed to fetch Course", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch Course", error: error instanceof Error ? error.message : String(error), });
+        }
+    };
+
     async addCourse(req: Request, res: Response): Promise<void> {
         try {
             const { title, description, price, imageUrl, category, content, isPublished } = req.body;
@@ -116,7 +136,7 @@ class CourseController implements ICourseController {
             const course = await this.courseService.addCourse({ title, description, price, imageUrl, category, content, isPublished } as ICourse);
             res.status(STATUS_CODES.OK).json({ status: true, message: "course created successfully", course });
         } catch (error) {
-            console.error("course created error:", error);
+            console.error("Course creation:", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, error: "Course creation Failed", });
         }
     };

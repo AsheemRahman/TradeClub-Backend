@@ -13,6 +13,7 @@ interface ICourseController {
     //------------------------ Course ------------------------
 
     getCourse(req: Request, res: Response): Promise<void>;
+    getCourseById(req: Request, res: Response): Promise<void>;
     addCourse(req: Request, res: Response): Promise<void>;
     editCourse(req: Request, res: Response): Promise<void>;
     deleteCourse(req: Request, res: Response): Promise<void>;
