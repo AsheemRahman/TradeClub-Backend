@@ -39,7 +39,7 @@ class ProfileController implements IProfileController {
 
     async updateProfile(req: Request, res: Response): Promise<void> {
         try {
-            const { id, fullName, phoneNumber, newPassword } = req.body;
+            const { id, fullName, phoneNumber, newPassword, profilePicture } = req.body;
             if (!id) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND || 'User ID is required', });
                 return;
@@ -60,6 +60,7 @@ class ProfileController implements IProfileController {
             if (fullName) updateData.fullName = fullName;
             if (phoneNumber) updateData.phoneNumber = phoneNumber;
             if (newPassword) updateData.password = newPassword;
+            if (profilePicture) updateData.profilePicture = profilePicture;
             const updatedUser = await this.userService.updateUserById(id, updateData);
             res.status(STATUS_CODES.OK).json({ status: true, message: 'Profile updated successfully', userDetails: updatedUser, });
         } catch (error) {
