@@ -18,10 +18,7 @@ class AdminService implements IAdminService {
             this.adminRepository.getUsers(),
             this.adminRepository.getUserCount(),
         ]);
-        return {
-            users: users ?? null,
-            total: totalUsers,
-        };
+        return { users: users ?? null, total: totalUsers, };
     }
 
     async getUserById(id: string): Promise<IUser | null> {
