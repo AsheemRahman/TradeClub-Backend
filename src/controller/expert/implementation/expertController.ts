@@ -120,10 +120,6 @@ class ExpertController implements IExpertController {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Expert is Blocked by Admin." });
                 return;
             }
-            if (currentExpert.isVerified !== "Approved") {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Account is not approved." });
-                return;
-            }
             const isPasswordValid = await PasswordUtils.comparePassword(password, currentExpert.password);
             if (!isPasswordValid) {
                 res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "Invalid email or password", data: null });

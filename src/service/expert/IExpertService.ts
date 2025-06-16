@@ -1,6 +1,5 @@
 import { IExpert } from "../../model/expert/expertSchema";
 import { OTPType } from "../../model/user/otp";
-import { IUser } from "../../model/user/userSchema";
 import { ExpertFormData } from "../../types/IExpert";
 import { IUserType } from "../../types/IUser";
 
