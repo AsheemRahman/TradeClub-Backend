@@ -1,5 +1,5 @@
 import ISubscriptionService from "../ISubscriptionService";
-import ISubscriptionRepository from "../../../repository/admin/IAdminRepository";
+import ISubscriptionRepository from "../../../repository/admin/ISubscriptionRepository";
 
 
 

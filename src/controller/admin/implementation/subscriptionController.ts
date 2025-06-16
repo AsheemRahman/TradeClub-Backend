@@ -3,7 +3,7 @@ import { ERROR_MESSAGES } from "../../../constants/message";
 import { STATUS_CODES } from "../../../constants/statusCode";
 
 import ISubscriptionController from "../ISubscriptionController";
-import ISubscriptionService from "../../../service/admin/IAdminService";
+import ISubscriptionService from "../../../service/admin/ISubscriptionService";
 
 
 class SubscriptionController implements ISubscriptionController {
