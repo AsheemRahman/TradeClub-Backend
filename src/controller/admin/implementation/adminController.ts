@@ -38,7 +38,7 @@ class AdminController implements IAdminController {
             const accessToken = JwtUtility.generateAccessToken(payload);
             const refreshToken = JwtUtility.generateRefreshToken(payload);
             res.cookie("admin-accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
-            res.cookie("admin-refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "none", maxAge: 2 * 24 * 60 * 60 * 1000, });
+            res.cookie("admin-refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "none", maxAge: 24 * 60 * 60 * 1000, });
 
             res.status(STATUS_CODES.OK).json({
                 success: true, message: "login successful",
