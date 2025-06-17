@@ -75,5 +75,11 @@ router.patch('/course/:id/toggle-publish', validate("admin"), courseController.t
 
 //--------------------------- Subscription ----------------------------
 
+router.get('/fetch-plans', validate("admin"), subscriptionController.fetchPlans.bind(subscriptionController) );
+router.post('/create-plan', validate("admin"), );
+router.put('/update-plan/:id', validate("admin"), );
+router.delete('/delete-plan/:id', validate("admin"), );
+router.patch('/plan-status', validate("admin"), );
+
 
 export default router;

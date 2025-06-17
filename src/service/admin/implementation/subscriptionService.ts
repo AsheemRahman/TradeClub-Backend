@@ -1,5 +1,6 @@
 import ISubscriptionService from "../ISubscriptionService";
 import ISubscriptionRepository from "../../../repository/admin/ISubscriptionRepository";
+import { ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
 
 
 
@@ -11,6 +12,10 @@ class SubscriptionService implements ISubscriptionService {
         this.subscriptionRepository = subscriptionRepository;
     }
 
+    async fetchPlans(): Promise<ISubscriptionPlan[] | null> {
+        const planData = await this.subscriptionRepository.fetchPlans();
+        return planData;
+    }
 }
 
 export default SubscriptionService;

@@ -13,13 +13,11 @@ const userSchema = new Schema<IUser>({
     fullName: {
         type: String,
         required: true,
-        message: 'First name required',
     },
     email: {
         type: String,
         required: true,
         unique: true,
-        message: "Email is required",
     },
     password: {
         type: String,
