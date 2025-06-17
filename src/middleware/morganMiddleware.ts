@@ -17,7 +17,7 @@ const colorizeStatus = (status: number): string => {
 const morganMiddleware = morgan(morganFormat, {
     stream: {
         write: (message: string) => {
-            // logger.info(message.trim());
+            logger.info(message.trim());
 
             // Match components in the log message
             const match = message.match(/(\S+)\s+(\S+)\s+(\S+)\s+(\d{3})\s+-\s+([\d.]+)\s+ms/);

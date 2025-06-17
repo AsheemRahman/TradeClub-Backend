@@ -287,9 +287,9 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
                 return;
             }
-            const updateuser = await this.userService.resetPassword(email, password);
-            if (updateuser) {
-                res.status(STATUS_CODES.OK).json({ status: true, message: "Password Change successfuly" });
+            const updateUser = await this.userService.resetPassword(email, password);
+            if (updateUser) {
+                res.status(STATUS_CODES.OK).json({ status: true, message: "Password Change successfully" });
             } else {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Password change failed" });
             }
@@ -297,6 +297,8 @@ class UserController implements IUserController {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, });
         }
     }
+
+
     async getProfile(req: Request, res: Response): Promise<void> {
         try {
             const id = req.userId
@@ -321,6 +323,7 @@ class UserController implements IUserController {
         }
     }
 
+    
     async updateProfile(req: Request, res: Response): Promise<void> {
         try {
             const { id, fullName, phoneNumber, newPassword, profilePicture } = req.body;
@@ -328,18 +331,15 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND || 'User ID is required', });
                 return;
             }
-
             const user = await this.userService.getUserById(id);
             if (!user) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND || 'User not found', });
                 return;
             }
-
             if (!user.isActive) {
                 res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'User is blocked by admin', });
                 return;
             }
-
             const updateData: any = {};
             if (fullName) updateData.fullName = fullName;
             if (phoneNumber) updateData.phoneNumber = phoneNumber;

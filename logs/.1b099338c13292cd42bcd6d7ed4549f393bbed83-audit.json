@@ -6,19 +6,9 @@
     "auditLog": "C:\\Users\\mhdas\\OneDrive\\Documents\\Brototype\\TradeClub\\Backend\\logs\\.1b099338c13292cd42bcd6d7ed4549f393bbed83-audit.json",
     "files": [
         {
-            "date": 1747237744750,
-            "name": "C:\\Users\\mhdas\\OneDrive\\Documents\\Brototype\\TradeClub\\Backend\\logs\\app-2025-05-14.log",
-            "hash": "f18b7526df27f1f9b3bf2b8fa5a1348c1add7d15c7354a02633a7841248a4445"
-        },
-        {
-            "date": 1747248259030,
-            "name": "C:\\Users\\mhdas\\OneDrive\\Documents\\Brototype\\TradeClub\\Backend\\logs\\app-2025-05-15.log",
-            "hash": "d22cbcbf659721a7ae953f1f7c12e2a6780582a0ab9bf94eecfab656024c3874"
-        },
-        {
-            "date": 1747422373900,
-            "name": "C:\\Users\\mhdas\\OneDrive\\Documents\\Brototype\\TradeClub\\Backend\\logs\\app-2025-05-17.log",
-            "hash": "e18d922d77ed4da635e6730ba8a2c85f64e39825ae3ea7d3633433cadc078bc6"
+            "date": 1750190737311,
+            "name": "C:\\Users\\mhdas\\OneDrive\\Documents\\Brototype\\TradeClub\\Backend\\logs\\app-2025-06-18.log",
+            "hash": "2654e512bd75c688a2fabf71c10d9ff0740c3ff09279614e19ef38585aefd2bb"
         }
     ],
     "hashType": "sha256"

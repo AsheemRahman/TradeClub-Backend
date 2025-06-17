@@ -20,7 +20,7 @@ const userControllerInstance: IUserController = new UserController(userServiceIn
 
 const courseRepositoryInstance = new CourseRepository();
 const courseServiceInstance = new CourseService(courseRepositoryInstance);
-const courseController: ICourseController = new CourseController(courseServiceInstance);
+const userCourseController: ICourseController = new CourseController(courseServiceInstance);
 
 //------------------------------- register routes -------------------------------
 
@@ -39,9 +39,7 @@ router.patch('/reset-password', (req, res) => userControllerInstance.resetPasswo
 
 router.post('/login', (req, res) => userControllerInstance.loginPost(req, res));
 router.get('/logout', (req, res) => userControllerInstance.logout(req, res));
-
 router.post('/google-login', (req, res) => userControllerInstance.googleLogin(req, res))
-
 router.post('/refresh-token', (req, res) => userControllerInstance.refreshToken(req, res));
 
 
@@ -51,9 +49,10 @@ router.get('/get-profile', validate("user"), (req, res) => userControllerInstanc
 router.post('/update-profile', validate("user"), (req, res) => userControllerInstance.updateProfile(req, res));
 
 
+//------------------------------------ Course -----------------------------------
 
-
-
+router.get('/courses', validate("user"), userCourseController.getCourse.bind(userCourseController));
+router.get('/category', validate("user"), userCourseController.getCategory.bind(userCourseController));
 
 
 export default router;
