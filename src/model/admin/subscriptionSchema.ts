@@ -49,9 +49,7 @@ const subscriptionPlanSchema = new Schema<ISubscriptionPlan>({
         type: Boolean,
         default: true,
     },
-},
-    { timestamps: true }
-);
+}, { timestamps: true });
 
 const SubscriptionPlan = model<ISubscriptionPlan>("SubscriptionPlan", subscriptionPlanSchema);
 

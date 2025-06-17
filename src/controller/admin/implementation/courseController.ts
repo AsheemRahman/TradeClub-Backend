@@ -108,7 +108,6 @@ class CourseController implements ICourseController {
 
     async getCourseById(req: Request, res: Response): Promise<void> {
         const { id } = req.params;
-        console.log(id)
         if (!id) {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
             return;
