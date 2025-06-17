@@ -15,6 +15,8 @@ interface IUserController {
     forgotPassword(req: Request, res: Response): Promise<void>;
     resetPassword(req: Request, res: Response): Promise<void>;
 
+    getProfile(req: Request, res: Response): Promise<void>;
+    updateProfile(req: Request, res: Response): Promise<void>;
 }
 
 export default IUserController;

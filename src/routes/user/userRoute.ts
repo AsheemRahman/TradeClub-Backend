@@ -1,21 +1,26 @@
 import { Router } from 'express';
 
-import IUserController from '../../controller/user/IUserController';
-import IProfileController from '../../controller/user/IProfileController';
-
-import UserRepository from '../../repository/user/implementation/userRepository';
 import UserController from '../../controller/user/implementation/userController';
-import ProfileController from '../../controller/user/implementation/profileController';
+import IUserController from '../../controller/user/IUserController';
 import UserService from '../../service/user/implementation/userService';
-import { validate } from '../../middleware/Verify';
+import UserRepository from '../../repository/user/implementation/userRepository';
 
+import ICourseController from '../../controller/user/ICourseController';
+import CourseController from '../../controller/user/implementation/courseController';
+import CourseService from '../../service/user/implementation/courseService';
+import CourseRepository from '../../repository/user/implementation/courseRepository';
+
+import { validate } from '../../middleware/Verify';
 const router = Router();
 
 const userRepositoryInstance = new UserRepository();
 const userServiceInstance = new UserService(userRepositoryInstance);
 const userControllerInstance: IUserController = new UserController(userServiceInstance);
 
-const userProfileController: IProfileController = new ProfileController(userServiceInstance);
+
+const courseRepositoryInstance = new CourseRepository();
+const courseServiceInstance = new CourseService(courseRepositoryInstance);
+const courseController: ICourseController = new CourseController(courseServiceInstance);
 
 //------------------------------- register routes -------------------------------
 
@@ -42,8 +47,8 @@ router.post('/refresh-token', (req, res) => userControllerInstance.refreshToken(
 
 //------------------------------------ profile ----------------------------------
 
-router.get('/get-profile', validate("user"), (req, res) => userProfileController.getProfile(req, res));
-router.post('/update-profile', validate("user"), (req, res) => userProfileController.updateProfile(req, res));
+router.get('/get-profile', validate("user"), (req, res) => userControllerInstance.getProfile(req, res));
+router.post('/update-profile', validate("user"), (req, res) => userControllerInstance.updateProfile(req, res));
 
 
 
