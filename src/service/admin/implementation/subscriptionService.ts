@@ -16,6 +16,11 @@ class SubscriptionService implements ISubscriptionService {
         const planData = await this.subscriptionRepository.fetchPlans();
         return planData;
     }
+
+    async createPlan(planData: ISubscriptionPlan): Promise<ISubscriptionPlan | null> {
+        const Data = await this.subscriptionRepository.createPlan(planData);
+        return Data;
+    }
 }
 
 export default SubscriptionService;

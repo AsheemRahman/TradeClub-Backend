@@ -9,6 +9,10 @@ class SubscriptionRepository implements ISubscriptionRepository {
         return plans;
     }
 
+    async createPlan(planData :ISubscriptionPlan): Promise<ISubscriptionPlan | null> {
+        const newPlan = await SubscriptionPlan.create(planData);
+        return newPlan;
+    }
 }
 
 export default SubscriptionRepository;
