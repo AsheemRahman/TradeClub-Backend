@@ -23,6 +23,16 @@ class SubscriptionRepository implements ISubscriptionRepository {
         const updatePlan = await SubscriptionPlan.findByIdAndUpdate(id, { ...planData }, { new: true });
         return updatePlan;
     }
+
+    async deletePlan(id: string): Promise<ISubscriptionPlan | null> {
+        const course = await SubscriptionPlan.findByIdAndDelete(id);
+        return course;
+    }
+
+    async planStatus(id: string, status: boolean): Promise<ISubscriptionPlan | null> {
+        const course = await SubscriptionPlan.findByIdAndUpdate(id, { isActive: status }, { new: true });
+        return course;
+    }
 }
 
 export default SubscriptionRepository;

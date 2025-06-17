@@ -78,8 +78,8 @@ router.patch('/course/:id/toggle-publish', validate("admin"), courseController.t
 router.get('/fetch-plans', validate("admin"), subscriptionController.fetchPlans.bind(subscriptionController) );
 router.post('/create-plan', validate("admin"), subscriptionController.createPlan.bind(subscriptionController));
 router.put('/update-plan/:id', validate("admin"),subscriptionController.updatePlan.bind(subscriptionController) );
-router.delete('/delete-plan/:id', validate("admin"), );
-router.patch('/plan-status', validate("admin"), );
+router.delete('/delete-plan/:id', validate("admin"),subscriptionController.deletePlan.bind(subscriptionController) );
+router.patch('/plan-status/:id', validate("admin"),subscriptionController.planStatus.bind(subscriptionController) );
 
 
 export default router;

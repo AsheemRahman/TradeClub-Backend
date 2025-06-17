@@ -31,6 +31,16 @@ class SubscriptionService implements ISubscriptionService {
         const Data = await this.subscriptionRepository.updatePlan(id, planData);
         return Data;
     }
+
+    async deletePlan(id: string): Promise<ISubscriptionPlan | null> {
+        const course = await this.subscriptionRepository.deletePlan(id);
+        return course;
+    }
+
+    async planStatus(id: string, status: boolean): Promise<ISubscriptionPlan | null> {
+        const course = await this.subscriptionRepository.planStatus(id, status);
+        return course;
+    }
 }
 
 export default SubscriptionService;
