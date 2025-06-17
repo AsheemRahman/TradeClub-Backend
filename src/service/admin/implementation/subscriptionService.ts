@@ -17,8 +17,18 @@ class SubscriptionService implements ISubscriptionService {
         return planData;
     }
 
+    async getPlanById(id: string): Promise<ISubscriptionPlan | null> {
+        const plan = await this.subscriptionRepository.getPlanById(id);
+        return plan;
+    }
+
     async createPlan(planData: ISubscriptionPlan): Promise<ISubscriptionPlan | null> {
         const Data = await this.subscriptionRepository.createPlan(planData);
+        return Data;
+    }
+
+    async updatePlan(id: string, planData: ISubscriptionPlan): Promise<ISubscriptionPlan | null> {
+        const Data = await this.subscriptionRepository.updatePlan(id, planData);
         return Data;
     }
 }

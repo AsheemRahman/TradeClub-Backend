@@ -9,9 +9,19 @@ class SubscriptionRepository implements ISubscriptionRepository {
         return plans;
     }
 
-    async createPlan(planData :ISubscriptionPlan): Promise<ISubscriptionPlan | null> {
+    async getPlanById(id: string): Promise<ISubscriptionPlan | null> {
+        const plan = await SubscriptionPlan.findById(id);
+        return plan;
+    }
+
+    async createPlan(planData: ISubscriptionPlan): Promise<ISubscriptionPlan | null> {
         const newPlan = await SubscriptionPlan.create(planData);
         return newPlan;
+    }
+
+    async updatePlan(id: string, planData: ISubscriptionPlan): Promise<ISubscriptionPlan | null> {
+        const updatePlan = await SubscriptionPlan.findByIdAndUpdate(id, { ...planData }, { new: true });
+        return updatePlan;
     }
 }
 

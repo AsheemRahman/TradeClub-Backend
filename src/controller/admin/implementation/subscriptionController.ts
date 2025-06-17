@@ -40,6 +40,33 @@ class SubscriptionController implements ISubscriptionController {
         }
     };
 
+    async updatePlan(req: Request, res: Response): Promise<void> {
+        const { id } = req.params
+        if (!id) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+            return;
+        }
+        try {
+            const { name, price, duration, features, accessLevel, isActive } = req.body;
+            if (!name || !price || !duration || !features || !accessLevel) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+                return;
+            }
+
+            const checkPlan = await this.SubscriptionService.getPlanById(id)
+            if (!checkPlan) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+                return
+            }
+
+            const planData = await this.SubscriptionService.updatePlan(id, { name, price, duration, features, accessLevel, isActive } as ISubscriptionPlan);
+            res.status(STATUS_CODES.CREATED).json({ status: true, message: "Subscription plan updated Successfully", planData })
+        } catch (error) {
+            console.error("Failed to update Subscription plan", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to update Subscription plan", error: error instanceof Error ? error.message : String(error), });
+        }
+    };
+
 }
 
 export default SubscriptionController;
