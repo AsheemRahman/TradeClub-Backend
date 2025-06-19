@@ -31,12 +31,12 @@ const logger = createLogger({
     format: logFormat,
     transports: [
         dailyRotateTransport,
-        new transports.Console({
-            format: format.combine(
-                format.colorize(),
-                logFormat
-            ),
-        }),
+        // new transports.Console({
+        //     format: format.combine(
+        //         format.colorize(),
+        //         logFormat
+        //     ),
+        // }),
     ],
 });
 
