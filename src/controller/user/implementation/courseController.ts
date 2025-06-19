@@ -14,7 +14,6 @@ class CourseController implements ICourseController {
     }
 
     async getCourse(req: Request, res: Response): Promise<void> {
-        console.log("inside")
         try {
             const courses = await this.courseService.getCourse();
             res.status(STATUS_CODES.OK).json({ status: true, message: "Courses Fetched Successfully", courses })
