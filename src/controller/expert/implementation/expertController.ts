@@ -177,14 +177,14 @@ class ExpertController implements IExpertController {
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
             res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000, });
             res.status(STATUS_CODES.OK).json({
-                status: true, message: "Login successful", accessToken,
+                status: true, message: "Login successful",
                 data: {
                     accessToken,
-                    user: {
+                    expert: {
                         id: currentExpert._id,
                         email: currentExpert.email,
                         name: currentExpert.fullName,
-                        role: "user"
+                        role: "expert"
                     }
                 }
             });
