@@ -60,10 +60,6 @@ class ExpertService implements IExpertService {
     };
 
     async updateExpertById(id: string, updateData: Partial<IExpert>): Promise<IExpert | null> {
-        if (updateData.password) {
-            const hashedPassword = await PasswordUtils.passwordHash(updateData.password);
-            updateData.password = hashedPassword;
-        }
         const updatedExpert = await this.expertRepository.updateExpertById(id, updateData);
         return updatedExpert;
     };

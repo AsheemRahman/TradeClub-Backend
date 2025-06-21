@@ -334,10 +334,10 @@ class ExpertController implements IExpertController {
                     res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "Current Password is Wrong" });
                     return;
                 }
-                password = newPassword
+                password = password = await PasswordUtils.passwordHash(newPassword);
             }
-            const updatedUser = await this.expertService.updateExpertById(id, { id, fullName, phoneNumber, password, profilePicture, markets_Traded, trading_style });
-            res.status(STATUS_CODES.OK).json({ status: true, message: 'Profile updated successfully', userDetails: updatedUser, });
+            const expertDetails = await this.expertService.updateExpertById(id, { id, fullName, phoneNumber, password, profilePicture, markets_Traded, trading_style });
+            res.status(STATUS_CODES.OK).json({ status: true, message: 'Profile updated successfully',expertDetails});
         } catch (error) {
             console.error('Update Profile Error:', error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Failed to update profile', });
