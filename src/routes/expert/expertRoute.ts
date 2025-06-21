@@ -1,5 +1,4 @@
 import { Router } from 'express';
-
 import { validate } from '../../middleware/Verify';
 
 import IExpertController from '../../controller/expert/IExpertController';
@@ -7,10 +6,10 @@ import ExpertRepository from '../../repository/expert/implementation/expertRepos
 import ExpertController from '../../controller/expert/implementation/expertController';
 import ExpertService from '../../service/expert/implementation/expertService';
 
-import ProfileRepository from '../../repository/expert/implementation/profileRepository';
-import ProfileService from '../../service/expert/implementation/profileService';
-import ProfileController from '../../controller/expert/implementation/profilecontroller';
-import IProfileController from '../../controller/expert/IProfilecontroller';
+import SessionRepository from '../../repository/expert/implementation/sessionRepository';
+import SessionService from '../../service/expert/implementation/sessionService';
+import SessionController from '../../controller/expert/implementation/sessionController';
+import ISessionController from '../../controller/expert/ISessionController';
 
 const router = Router();
 
@@ -18,9 +17,9 @@ const expertRepositoryInstance = new ExpertRepository();
 const expertServiceInstance = new ExpertService(expertRepositoryInstance);
 const expertControllerInstance: IExpertController = new ExpertController(expertServiceInstance);
 
-const profileRepositoryInstance = new ProfileRepository();
-const profileServiceInstance = new ProfileService(profileRepositoryInstance);
-const profileControllerInstance: IProfileController = new ProfileController(profileServiceInstance);
+const sessionRepository = new SessionRepository();
+const sessionService = new SessionService(sessionRepository);
+const sessionInstance: ISessionController = new SessionController(sessionService);
 
 //------------------------------- register routes -------------------------------
 
@@ -42,12 +41,7 @@ router.patch('/reset-password', (req, res) => expertControllerInstance.resetPass
 
 
 router.post('/verification', validate("expert"), (req, res) => expertControllerInstance.expertVerification(req, res))
-router.get('/get-expert', validate("expert"), (req, res) => profileControllerInstance.getExpertData(req, res));
-
-
-
-
-
+router.get('/get-expert', validate("expert"), (req, res) => expertControllerInstance.getExpertData(req, res));
 
 
 

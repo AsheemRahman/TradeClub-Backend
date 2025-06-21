@@ -49,6 +49,11 @@ class expertRepository extends BaseRepository<IExpert> implements IexpertReposit
         const updatedExpert = await Expert.findOneAndUpdate({ email }, { $set: { ...updateData, isVerified: "Pending" } }, { new: true });
         return updatedExpert;
     }
+
+    async getExpertById(id: string): Promise<IExpert | null> {
+        const user = await Expert.findOne({ _id: id });
+        return user;
+    }
 }
 
 export default expertRepository;

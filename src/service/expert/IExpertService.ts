@@ -13,6 +13,8 @@ interface IExpertService {
     storeResendOtp(email: string, otp: number): Promise<OTPType | null>
 
     updateDetails(expertDetails: ExpertFormData): Promise<IExpert | null>;
+
+    getExpertById(id: string): Promise<IExpert | null>;
 }
 
 export default IExpertService;
