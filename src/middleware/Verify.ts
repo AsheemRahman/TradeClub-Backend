@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { ERROR_MESSAGES } from "../constants/message";
 import { STATUS_CODES } from "../constants/statusCode";
 
+
 dotenv.config();
 
 
@@ -23,10 +24,8 @@ export const validate = (requiredRole?: string) => {
             let Token: string | undefined;
             if (req.headers.authorization?.startsWith("Bearer ")) {
                 Token = req.headers.authorization.split(" ")[1];
-                // console.log("Token in others",Token)
             } else if (req.cookies?.["admin-accessToken"]) {
                 Token = req.cookies["admin-accessToken"];
-                console.log("Token in admin",Token)
             }
             if (!Token) {
                 res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "Access token not found, please log in" });

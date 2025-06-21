@@ -30,20 +30,16 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT });
                 return;
             }
-
             // Check if email already exists
             const isEmailUsed = await this.userService.findUser(email);
             if (isEmailUsed) {
                 res.status(STATUS_CODES.CONFLICT).json({ message: ERROR_MESSAGES.EMAIL_ALREADY_EXIST });
                 return;
             }
-
             // Proceed with registration
             await this.userService.registerUser({ fullName, phoneNumber, email, password, } as IUserType);
-
             // Proceed with OTP
             const otp = await OtpUtility.otpGenerator();
-
             try {
                 await MailUtility.sendMail(email, otp, "Verification OTP");
                 await this.userService.storeOtp(email, otp);
@@ -68,22 +64,23 @@ class UserController implements IUserController {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INVALID_INPUT });
             return;
         }
-
-        const response = await this.userService.findOtp(email);
-        const storedOTP = response?.otp;
-
-        if (storedOTP !== otp) {
-            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Incorrect OTP" });
-            return;
+        try {
+            const response = await this.userService.findOtp(email);
+            const storedOTP = response?.otp;
+            if (storedOTP !== otp) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Incorrect OTP" });
+                return;
+            }
+            const currentUser = await this.userService.findUser(email);
+            if (!currentUser) {
+                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND });
+                return;
+            }
+            res.status(STATUS_CODES.OK).json({ status: true, message: "OTP verified successfully" });
+        } catch (error) {
+            console.error("Failed to send otp", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Failed to send the verification mail" });
         }
-
-        const currentUser = await this.userService.findUser(email);
-        if (!currentUser) {
-            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND });
-            return;
-        }
-
-        res.status(STATUS_CODES.OK).json({ status: true, message: "OTP verified successfully" });
     }
 
 
@@ -93,7 +90,6 @@ class UserController implements IUserController {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Email is required" });
             return;
         }
-
         const otp = await OtpUtility.otpGenerator();
         try {
             await MailUtility.sendMail(email, otp, "Verification otp");
@@ -112,7 +108,6 @@ class UserController implements IUserController {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INVALID_INPUT });
             return;
         }
-
         try {
             const currentUser = await this.userService.findUser(email);
             if (!currentUser || !currentUser.password) {
@@ -123,22 +118,16 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "User is Blocked by Admin." });
                 return;
             }
-
             const isPasswordValid = await PasswordUtils.comparePassword(password, currentUser.password);
             if (!isPasswordValid) {
                 res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "Invalid email or password", data: null });
                 return;
             }
-
-            const payload = {
-                userId: (currentUser._id as string).toString(),
-                role: "user"
-            };
+            const payload = { userId: (currentUser._id as string).toString(), role: "user" };
             const accessToken = JwtUtility.generateAccessToken(payload);
             const refreshToken = JwtUtility.generateRefreshToken(payload);
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
             res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000, });
-
             res.status(STATUS_CODES.OK).json({
                 status: true, message: "Login successful",
                 data: {
@@ -165,7 +154,6 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'Refresh token missing' });
                 return;
             }
-
             // Verify the refresh token using JwtUtility
             let decoded: string | JwtPayload;
             try {
@@ -174,15 +162,12 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'Invalid refresh token' });
                 return
             }
-
             const { role, userId } = decoded as TokenPayload;
             if (!userId || !role) {
                 res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: 'Invalid token payload' });
                 return
             }
-
             const newAccessToken = JwtUtility.generateAccessToken({ userId, role });
-
             res.cookie("accessToken", newAccessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 60 * 1000 });
             res.status(STATUS_CODES.OK).json({ status: true, accessToken: newAccessToken, message: "Access token refreshed successfully" });
         } catch (error) {
@@ -211,17 +196,12 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'User is blocked by admin', });
                 return;
             }
-
             const payload = { userId: (currentUser._id as string).toString(), role: "user" };
             const accessToken = JwtUtility.generateAccessToken(payload);
             const refreshToken = JwtUtility.generateRefreshToken(payload);
-
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
             res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000, });
-
-            res.status(STATUS_CODES.OK).json({
-                status: true, message: "Login successful", data: { accessToken, user: { id: currentUser._id, email: currentUser.email, name: currentUser.fullName, role: "user" } }
-            });
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Login successful", accessToken, user: { id: currentUser._id, email: currentUser.email, name: currentUser.fullName, role: "user" } });
         } catch (error) {
             console.error("Error during Google auth:", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
@@ -256,7 +236,6 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
                 return;
             }
-
             const response = await this.userService.findOtp(email);
             const storedOTP = response?.otp;
             if (!storedOTP) {
@@ -323,7 +302,7 @@ class UserController implements IUserController {
         }
     }
 
-    
+
     async updateProfile(req: Request, res: Response): Promise<void> {
         try {
             const { id, fullName, phoneNumber, newPassword, profilePicture } = req.body;
@@ -354,8 +333,6 @@ class UserController implements IUserController {
     }
 
 }
-
-
 
 
 export default UserController;
