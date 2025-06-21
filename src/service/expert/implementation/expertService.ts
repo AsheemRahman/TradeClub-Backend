@@ -10,10 +10,8 @@ import { IExpert } from "../../../model/expert/expertSchema";
 import { ExpertFormData } from "../../../types/IExpert";
 
 
-
 class ExpertService implements IExpertService {
     private expertRepository: IExpertRepository;
-
     constructor(userRepository: IExpertRepository) {
         this.expertRepository = userRepository;
     }
@@ -59,6 +57,15 @@ class ExpertService implements IExpertService {
     async getExpertById(id: string): Promise<IExpert | null> {
         const user = await this.expertRepository.getExpertById(id);
         return user;
+    };
+
+    async updateExpertById(id: string, updateData: Partial<IExpert>): Promise<IExpert | null> {
+        if (updateData.password) {
+            const hashedPassword = await PasswordUtils.passwordHash(updateData.password);
+            updateData.password = hashedPassword;
+        }
+        const updatedExpert = await this.expertRepository.updateExpertById(id, updateData);
+        return updatedExpert;
     };
 }
 
