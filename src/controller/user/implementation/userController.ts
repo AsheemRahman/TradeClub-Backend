@@ -201,7 +201,18 @@ class UserController implements IUserController {
             const refreshToken = JwtUtility.generateRefreshToken(payload);
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
             res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000, });
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Login successful", accessToken, user: { id: currentUser._id, email: currentUser.email, name: currentUser.fullName, role: "user" } });
+            res.status(STATUS_CODES.OK).json({
+                status: true, message: "Login successful", accessToken,
+                data: {
+                    accessToken,
+                    user: {
+                        id: currentUser._id,
+                        email: currentUser.email,
+                        name: currentUser.fullName,
+                        role: "user"
+                    }
+                }
+            });
         } catch (error) {
             console.error("Error during Google auth:", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
