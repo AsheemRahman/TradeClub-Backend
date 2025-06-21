@@ -55,6 +55,11 @@ class ExpertService implements IExpertService {
         const expertDetail = await this.expertRepository.updateDetails(expertDetails)
         return expertDetail
     }
+
+    async getExpertById(id: string): Promise<IExpert | null> {
+        const user = await this.expertRepository.getExpertById(id);
+        return user;
+    };
 }
 
 

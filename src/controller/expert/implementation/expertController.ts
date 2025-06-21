@@ -176,7 +176,8 @@ class ExpertController implements IExpertController {
             const refreshToken = JwtUtility.generateRefreshToken(payload);
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
             res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000, });
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Login successful", accessToken,
+            res.status(STATUS_CODES.OK).json({
+                status: true, message: "Login successful", accessToken,
                 data: {
                     accessToken,
                     user: {
@@ -282,6 +283,30 @@ class ExpertController implements IExpertController {
         } catch (error) {
             console.error("Logout error:", error);
             res.status(STATUS_CODES.BAD_REQUEST).json({ error: "logout failed" });
+            return
+        }
+    }
+
+    async getExpertData(req: Request, res: Response): Promise<void> {
+        try {
+            const id = req.userId
+            if (!id) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
+                return
+            }
+            const expertDetails = await this.expertService.getExpertById(id)
+            if (!expertDetails) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
+                return
+            }
+            if (expertDetails.isActive) {
+                res.status(STATUS_CODES.OK).json({ status: true, message: "Data retrieved successfully", expertDetails });
+            } else {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "User Is blocked by admin" });
+            }
+        } catch (error) {
+            console.error("Profile error:", error);
+            res.status(STATUS_CODES.BAD_REQUEST).json({ error: "get Profile failed" });
             return
         }
     }
