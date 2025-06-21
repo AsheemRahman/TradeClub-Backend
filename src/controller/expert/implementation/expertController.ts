@@ -133,7 +133,8 @@ class ExpertController implements IExpertController {
             const refreshToken = JwtUtility.generateRefreshToken(payload);
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
             res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000, });
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Login successful",
+            res.status(STATUS_CODES.OK).json({
+                status: true, message: "Login successful",
                 data: {
                     accessToken,
                     expert: {
@@ -148,6 +149,48 @@ class ExpertController implements IExpertController {
         } catch (error) {
             console.error("Login Error:", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, });
+        }
+    }
+
+    async googleLogin(req: Request, res: Response): Promise<void> {
+        try {
+            const { fullName, email, profilePicture } = req.body;
+            if (!fullName || !email || !profilePicture) {
+                console.warn("Missing Google credentials");
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "name, email, and image are required.", });
+                return
+            }
+            let currentExpert = await this.expertService.findExpertByEmail(email);
+            if (!currentExpert) {
+                currentExpert = await this.expertService.registerExpert({ fullName, email, profilePicture, } as IUserType);
+                if (!currentExpert) {
+                    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create user.", });
+                    return
+                }
+            } else if (!currentExpert?.isActive) {
+                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'User is blocked by admin', });
+                return;
+            }
+            const payload = { userId: (currentExpert._id as string).toString(), role: "expert" };
+            const accessToken = JwtUtility.generateAccessToken(payload);
+            const refreshToken = JwtUtility.generateRefreshToken(payload);
+            res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
+            res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000, });
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Login successful", accessToken,
+                data: {
+                    accessToken,
+                    user: {
+                        id: currentExpert._id,
+                        email: currentExpert.email,
+                        name: currentExpert.fullName,
+                        role: "user"
+                    }
+                }
+            });
+        } catch (error) {
+            console.error("Error during Google auth:", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
+            return
         }
     }
 

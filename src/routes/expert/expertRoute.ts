@@ -33,6 +33,7 @@ router.post('/resend-otp', (req, res) => expertControllerInstance.resendOtp(req,
 
 router.post('/login', (req, res) => expertControllerInstance.loginPost(req, res));
 router.get('/logout', (req, res) => expertControllerInstance.logout(req, res));
+router.post('/google-login', (req, res) => expertControllerInstance.googleLogin(req, res))
 
 //------------------------------- forgot-password-------------------------------
 
