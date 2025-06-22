@@ -310,6 +310,39 @@ class ExpertController implements IExpertController {
             return
         }
     }
+
+    async updateProfile(req: Request, res: Response): Promise<void> {
+        try {
+            const { id, fullName, phoneNumber, currentPassword, newPassword, profilePicture, markets_Traded, trading_style } = req.body;
+            if (!id) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND || 'User ID is required', });
+                return;
+            }
+            const Expert = await this.expertService.getExpertById(id);
+            if (!Expert) {
+                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND || 'User not found', });
+                return;
+            }
+            if (!Expert.isActive) {
+                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'User is blocked by admin', });
+                return;
+            }
+            let password = Expert.password;
+            if (currentPassword) {
+                const isPasswordValid = await PasswordUtils.comparePassword(currentPassword, password);
+                if (!isPasswordValid) {
+                    res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "Current Password is Wrong" });
+                    return;
+                }
+                password = password = await PasswordUtils.passwordHash(newPassword);
+            }
+            const expertDetails = await this.expertService.updateExpertById(id, { id, fullName, phoneNumber, password, profilePicture, markets_Traded, trading_style });
+            res.status(STATUS_CODES.OK).json({ status: true, message: 'Profile updated successfully',expertDetails});
+        } catch (error) {
+            console.error('Update Profile Error:', error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Failed to update profile', });
+        }
+    }
 }
 
 

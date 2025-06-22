@@ -63,7 +63,6 @@ class UserService implements IUserService {
         const updatedUser = await this.userRepository.updateUserById(id, updateData);
         return updatedUser;
     };
-
 }
 
 

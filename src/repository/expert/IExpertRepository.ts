@@ -16,6 +16,7 @@ interface IExpertRepository {
     updateDetails(expertDetails: ExpertFormData): Promise<IExpert | null>;
 
     getExpertById(id: string): Promise<IExpert | null>;
+    updateExpertById(id: string, updateData: Partial<IExpert>): Promise<IExpert | null>;
 }
 
 

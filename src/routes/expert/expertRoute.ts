@@ -32,17 +32,17 @@ router.post('/resend-otp', (req, res) => expertControllerInstance.resendOtp(req,
 
 router.post('/login', (req, res) => expertControllerInstance.loginPost(req, res));
 router.get('/logout', (req, res) => expertControllerInstance.logout(req, res));
-router.post('/google-login', (req, res) => expertControllerInstance.googleLogin(req, res))
+router.post('/google-login', (req, res) => expertControllerInstance.googleLogin(req, res));
 
 //------------------------------- forgot-password-------------------------------
 
-router.post('/forgot-password', (req, res) => expertControllerInstance.forgotPassword(req, res))
-router.patch('/reset-password', (req, res) => expertControllerInstance.resetPassword(req, res))
+router.post('/forgot-password', (req, res) => expertControllerInstance.forgotPassword(req, res));
+router.patch('/reset-password', (req, res) => expertControllerInstance.resetPassword(req, res));
 
+router.post('/verification', validate("expert"), (req, res) => expertControllerInstance.expertVerification(req, res));
 
-router.post('/verification', validate("expert"), (req, res) => expertControllerInstance.expertVerification(req, res))
 router.get('/get-expert', validate("expert"), (req, res) => expertControllerInstance.getExpertData(req, res));
-
+router.post('/update-profile', validate("expert"), (req, res) => expertControllerInstance.updateProfile(req, res));
 
 
 export default router;

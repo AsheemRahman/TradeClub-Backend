@@ -54,6 +54,11 @@ class expertRepository extends BaseRepository<IExpert> implements IexpertReposit
         const user = await Expert.findOne({ _id: id });
         return user;
     }
+
+    async updateExpertById(id: string, updateData: Partial<IExpert>): Promise<IExpert | null> {
+        const user = await Expert.findByIdAndUpdate(id, updateData, { new: true });
+        return user;
+    }
 }
 
 export default expertRepository;

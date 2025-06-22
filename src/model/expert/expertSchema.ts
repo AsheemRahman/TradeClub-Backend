@@ -6,7 +6,6 @@ interface IExpert extends Document {
     email: string;
     password: string;
     phoneNumber?: string;
-    googleID?: string;
     isVerified?: "Approved" | "Pending" | "Declined";
     isActive?: boolean;
     profilePicture?: string;
@@ -38,9 +37,6 @@ const expertSchema = new Schema<IExpert>({
         type: String,
     },
     phoneNumber: {
-        type: String,
-    },
-    googleID: {
         type: String,
     },
     isVerified: {
