@@ -3,7 +3,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 interface IExpertAvailability extends Document {
     expertId: mongoose.Types.ObjectId;
-    date: Date;
+    date: string;
     startTime: string;
     endTime: string;
     isBooked: boolean;
@@ -17,7 +17,7 @@ const ExpertAvailabilitySchema: Schema<IExpertAvailability> = new Schema({
         required: true
     },
     date: {
-        type: Date,
+        type: String,
         required: true
     },
     startTime: {
