@@ -7,6 +7,7 @@ import { IUserType } from '../../../types/IUser'
 import PasswordUtils from "../../../utils/passwordUtils";
 import { OTPType } from "../../../model/user/otp";
 import { IUser } from "../../../model/user/userSchema";
+import { ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
 
 
 
@@ -63,6 +64,11 @@ class UserService implements IUserService {
         const updatedUser = await this.userRepository.updateUserById(id, updateData);
         return updatedUser;
     };
+
+    async fetchPlans(): Promise<ISubscriptionPlan[] | null> {
+        const planData = await this.userRepository.fetchPlans();
+        return planData;
+    }
 }
 
 

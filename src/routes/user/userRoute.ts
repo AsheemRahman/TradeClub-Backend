@@ -55,4 +55,9 @@ router.get('/courses', validate("user"), userCourseController.getCourse.bind(use
 router.get('/category', validate("user"), userCourseController.getCategory.bind(userCourseController));
 
 
+//------------------------------------ Course -----------------------------------
+
+router.get('/fetch-plans', validate("user"), (req, res) => userControllerInstance.fetchPlans(req, res));
+
+
 export default router;
