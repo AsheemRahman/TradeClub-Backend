@@ -6,26 +6,6 @@
     "auditLog": "C:\\Users\\mhdas\\OneDrive\\Documents\\Brototype\\TradeClub\\Backend\\logs\\.1b099338c13292cd42bcd6d7ed4549f393bbed83-audit.json",
     "files": [
         {
-            "date": 1750313149430,
-            "name": "C:\\Users\\mhdas\\OneDrive\\Documents\\Brototype\\TradeClub\\Backend\\logs\\app-2025-06-19.log",
-            "hash": "c8909a7dcbdc12528008da14676449acbc1f003151c62ade7ed99d4441636ef7"
-        },
-        {
-            "date": 1750357923139,
-            "name": "C:\\Users\\mhdas\\OneDrive\\Documents\\Brototype\\TradeClub\\Backend\\logs\\app-2025-06-20.log",
-            "hash": "cb895605c42ba6f19f0802a236851ba4fb2052ac98cd6f83aacb842583ed10fe"
-        },
-        {
-            "date": 1750444216259,
-            "name": "C:\\Users\\mhdas\\OneDrive\\Documents\\Brototype\\TradeClub\\Backend\\logs\\app-2025-06-21.log",
-            "hash": "bd194cc5881b488a73d24c3e2698ee6daa57f4dba600c0b296244a7e38e5beb0"
-        },
-        {
-            "date": 1750540006597,
-            "name": "C:\\Users\\mhdas\\OneDrive\\Documents\\Brototype\\TradeClub\\Backend\\logs\\app-2025-06-22.log",
-            "hash": "c988503a4c536ebb70b8acb3fec88a18f1afc1b8066ee762fe59c8bd763924ac"
-        },
-        {
             "date": 1750625573776,
             "name": "C:\\Users\\mhdas\\OneDrive\\Documents\\Brototype\\TradeClub\\Backend\\logs\\app-2025-06-23.log",
             "hash": "4bf961e1ef316ef44b4c41432a8328f310bd94191dcfa7aa72528c2790aa6544"
@@ -39,6 +19,21 @@
             "date": 1750876227533,
             "name": "C:\\Users\\mhdas\\OneDrive\\Documents\\Brototype\\TradeClub\\Backend\\logs\\app-2025-06-26.log",
             "hash": "49dcfab7e90a480314c8b6806682cee2242947e0f3b15e4e43abd208ad9676a6"
+        },
+        {
+            "date": 1751033690101,
+            "name": "C:\\Users\\mhdas\\OneDrive\\Documents\\Brototype\\TradeClub\\Backend\\logs\\app-2025-06-27.log",
+            "hash": "9ef1e47c8601d2eaed0a28a46c9632a59ff24df8896dcd6969d75d0c465e6e41"
+        },
+        {
+            "date": 1751095528560,
+            "name": "C:\\Users\\mhdas\\OneDrive\\Documents\\Brototype\\TradeClub\\Backend\\logs\\app-2025-06-28.log",
+            "hash": "f8bde20c7dd2125c6f62937722e2932a2dcaf65cda3eb863fb21e63ad2ed7638"
+        },
+        {
+            "date": 1751201554622,
+            "name": "C:\\Users\\mhdas\\OneDrive\\Documents\\Brototype\\TradeClub\\Backend\\logs\\app-2025-06-29.log",
+            "hash": "0c927749ffe9e61c9c3a04520631a7a205800d020dd5db18f48c64bf1b457345"
         }
     ],
     "hashType": "sha256"
