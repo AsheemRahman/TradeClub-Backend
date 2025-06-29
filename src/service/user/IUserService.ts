@@ -1,3 +1,4 @@
+import { ISubscriptionPlan } from '../../model/admin/subscriptionSchema';
 import { OTPType } from '../../model/user/otp';
 import { IUser } from '../../model/user/userSchema';
 import { IUserType } from '../../types/IUser';
@@ -15,6 +16,7 @@ interface IUserService {
     getUserById(id: string): Promise<IUser | null>;
     updateUserById(id: string, updateData: Partial<IUser>): Promise<IUser | null>;
 
+    fetchPlans(): Promise<ISubscriptionPlan[] | null>;
 }
 
 export default IUserService;

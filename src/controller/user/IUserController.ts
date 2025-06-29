@@ -17,6 +17,8 @@ interface IUserController {
 
     getProfile(req: Request, res: Response): Promise<void>;
     updateProfile(req: Request, res: Response): Promise<void>;
+
+    fetchPlans(req: Request, res: Response): Promise<void>;
 }
 
 export default IUserController;

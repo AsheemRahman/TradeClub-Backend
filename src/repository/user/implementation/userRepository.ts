@@ -3,6 +3,7 @@ import { User, IUser } from "../../../model/user/userSchema";
 import { BaseRepository } from "../../base/implementation/BaseRepository";
 import { IUserType } from "../../../types/IUser";
 import { OTP, OTPType } from "../../../model/user/otp";
+import SubscriptionPlan, { ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
 
 class userRepository extends BaseRepository<IUser> implements IUserRepository {
     constructor() {
@@ -51,6 +52,11 @@ class userRepository extends BaseRepository<IUser> implements IUserRepository {
     async updateUserById(id: string, updateData: Partial<IUser>): Promise<IUser | null> {
         const user = await User.findByIdAndUpdate(id, updateData, { new: true });
         return user;
+    }
+
+    async fetchPlans(): Promise<ISubscriptionPlan[] | null> {
+        const plans = await SubscriptionPlan.find().sort({ createdAt: -1 });
+        return plans;
     }
 }
 
