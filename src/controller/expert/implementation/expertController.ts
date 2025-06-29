@@ -112,8 +112,12 @@ class ExpertController implements IExpertController {
         }
         try {
             const currentExpert = await this.expertService.findExpertByEmail(email);
-            if (!currentExpert || !currentExpert.password) {
+            if (!currentExpert) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.EMAIL_NOT_FOUND });
+                return;
+            }
+            if (!currentExpert.password) {
+                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "User is login by google" });
                 return;
             }
             if (!currentExpert.isActive) {
@@ -184,7 +188,8 @@ class ExpertController implements IExpertController {
                         id: currentExpert._id,
                         email: currentExpert.email,
                         name: currentExpert.fullName,
-                        role: "expert"
+                        role: "expert",
+                        isVerified: currentExpert.isVerified,
                     }
                 }
             });
@@ -337,7 +342,7 @@ class ExpertController implements IExpertController {
                 password = password = await PasswordUtils.passwordHash(newPassword);
             }
             const expertDetails = await this.expertService.updateExpertById(id, { id, fullName, phoneNumber, password, profilePicture, markets_Traded, trading_style });
-            res.status(STATUS_CODES.OK).json({ status: true, message: 'Profile updated successfully',expertDetails});
+            res.status(STATUS_CODES.OK).json({ status: true, message: 'Profile updated successfully', expertDetails });
         } catch (error) {
             console.error('Update Profile Error:', error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Failed to update profile', });
