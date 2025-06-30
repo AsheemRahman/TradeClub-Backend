@@ -17,6 +17,8 @@ interface IExpertController {
 
     getExpertData(req: Request, res: Response): Promise<void>;
     updateProfile(req: Request, res: Response): Promise<void>;
+    
+    getWallet(req: Request, res: Response): Promise<void>;
 }
 
 export default IExpertController;

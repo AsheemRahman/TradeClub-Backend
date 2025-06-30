@@ -48,7 +48,7 @@ router.get('/get-expert', validate("expert"), (req, res) => expertControllerInst
 router.post('/update-profile', validate("expert"), (req, res) => expertControllerInstance.updateProfile(req, res));
 
 
-//------------------------------- Session -------------------------------
+//------------------------------------ Session ----------------------------------
 
 router.get('/sessions', validate("expert"), (req, res) => sessionInstance.getSessions(req, res));
 router.post('/add-session', validate("expert"), (req, res) => sessionInstance.addSession(req, res));
@@ -56,6 +56,8 @@ router.patch('/edit-session', validate("expert"), (req, res) => sessionInstance.
 router.delete('/delete-session/:id', validate("expert"), (req, res) => sessionInstance.deleteSession(req, res));
 
 
+//------------------------------------ wallet ----------------------------------
 
+router.get('/wallet', validate("expert"), (req, res) => expertControllerInstance.getWallet(req, res));
 
 export default router;

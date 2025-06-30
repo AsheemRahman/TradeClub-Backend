@@ -8,6 +8,7 @@ import PasswordUtils from "../../../utils/passwordUtils";
 import { OTPType } from "../../../model/user/otp";
 import { IExpert } from "../../../model/expert/expertSchema";
 import { ExpertFormData } from "../../../types/IExpert";
+import { IExpertWallet } from "../../../model/expert/walletSchema";
 
 
 class ExpertService implements IExpertService {
@@ -62,6 +63,11 @@ class ExpertService implements IExpertService {
     async updateExpertById(id: string, updateData: Partial<IExpert>): Promise<IExpert | null> {
         const updatedExpert = await this.expertRepository.updateExpertById(id, updateData);
         return updatedExpert;
+    };
+
+    async getWalletById(id: string): Promise<IExpertWallet | null> {
+        const wallet = await this.expertRepository.getWalletById(id);
+        return wallet;
     };
 }
 

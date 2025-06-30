@@ -1,4 +1,5 @@
 import { IExpert } from "../../model/expert/expertSchema";
+import { IExpertWallet } from "../../model/expert/walletSchema";
 import { OTPType } from "../../model/user/otp";
 import { ExpertFormData } from "../../types/IExpert";
 import { IUserType } from "../../types/IUser";
@@ -16,6 +17,8 @@ interface IExpertService {
 
     getExpertById(id: string): Promise<IExpert | null>;
     updateExpertById(id: string, updateData: Partial<IExpert>): Promise<IExpert | null>;
+
+    getWalletById(id: string): Promise<IExpertWallet | null>;
 }
 
 export default IExpertService;

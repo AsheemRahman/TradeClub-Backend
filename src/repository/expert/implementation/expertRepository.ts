@@ -4,6 +4,7 @@ import { IUserType } from "../../../types/IUser";
 import { OTP, OTPType } from "../../../model/user/otp";
 import { Expert, IExpert } from "../../../model/expert/expertSchema";
 import { ExpertFormData } from "../../../types/IExpert";
+import { ExpertWallet, IExpertWallet } from "../../../model/expert/walletSchema";
 
 class expertRepository extends BaseRepository<IExpert> implements IexpertRepository {
     constructor() {
@@ -57,6 +58,11 @@ class expertRepository extends BaseRepository<IExpert> implements IexpertReposit
 
     async updateExpertById(id: string, updateData: Partial<IExpert>): Promise<IExpert | null> {
         const user = await Expert.findByIdAndUpdate(id, updateData, { new: true });
+        return user;
+    }
+
+    async getWalletById(id: string): Promise<IExpertWallet | null> {
+        const user = await ExpertWallet.findOne({ expertId: id });
         return user;
     }
 }
