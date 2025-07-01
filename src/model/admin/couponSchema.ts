@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document, model } from 'mongoose';
 
 
-export interface ICoupon extends Document {
+interface ICoupon extends Document {
     code: string;
     description?: string;
     discountType: 'percentage' | 'fixed';
@@ -67,4 +67,4 @@ const CouponSchema = new Schema<ICoupon>({
 
 const Coupon = model<ICoupon>('Coupon', CouponSchema);
 
-export default Coupon;
+export { Coupon, ICoupon };

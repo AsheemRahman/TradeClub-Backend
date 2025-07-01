@@ -32,7 +32,8 @@ const subscriptionController: ISubscriptionController = new SubscriptionControll
 
 const router = Router();
 
-// ------------------------- Authentification --------------------------
+
+// ---------------------------- Authentification ------------------------------
 
 router.post('/login', adminController.adminLogin.bind(adminController))
 router.get('/logout', adminController.logout.bind(adminController));
@@ -40,13 +41,13 @@ router.get('/logout', adminController.logout.bind(adminController));
 
 router.post('/refresh-token', adminController.refreshToken.bind(adminController));
 
-// ------------------------------- User --------------------------------
+// ----------------------------------- User ------------------------------------
 
 router.get('/get-users', validate("admin"), adminController.getUsers.bind(adminController))
 router.patch('/user-status/:id', validate("admin"), adminController.userStatus.bind(adminController))
 
 
-// ------------------------------- Expert ------------------------------
+// ----------------------------------- Expert ----------------------------------
 
 router.get('/get-experts', validate("admin"), adminController.getExperts.bind(adminController))
 router.patch('/expert-status/:id', validate("admin"), adminController.expertStatus.bind(adminController))
@@ -55,7 +56,7 @@ router.patch('/approve-expert', validate("admin"), adminController.approveExpert
 router.patch('/decline-expert', validate("admin"), adminController.declineExpert.bind(adminController))
 
 
-//---------------------------- Category -------------------------------
+//-------------------------------- Category ------------------------------------
 
 router.get('/category', validate("admin"), courseController.getCategory.bind(courseController));
 router.post('/add-category', validate("admin"), courseController.addCategory.bind(courseController));
@@ -64,7 +65,7 @@ router.patch('/edit-category/:id', validate("admin"), courseController.editCateg
 // router.patch('/category-status', validate("admin"),);
 
 
-//----------------------------- Course --------------------------------
+//--------------------------------- Course -------------------------------------
 
 router.get('/courses', validate("admin"), courseController.getCourse.bind(courseController));
 router.get('/course/:id', validate("admin"), courseController.getCourseById.bind(courseController));
@@ -73,7 +74,7 @@ router.put('/edit-course/:id', validate("admin"), courseController.editCourse.bi
 router.delete('/delete-course/:id', validate("admin"), courseController.deleteCourse.bind(courseController));
 router.patch('/course/:id/toggle-publish', validate("admin"), courseController.togglePublish.bind(courseController));
 
-//--------------------------- Subscription ----------------------------
+//------------------------------- Subscription ---------------------------------
 
 router.get('/fetch-plans', validate("admin"), subscriptionController.fetchPlans.bind(subscriptionController) );
 router.post('/create-plan', validate("admin"), subscriptionController.createPlan.bind(subscriptionController));
@@ -81,5 +82,13 @@ router.put('/update-plan/:id', validate("admin"),subscriptionController.updatePl
 router.delete('/delete-plan/:id', validate("admin"),subscriptionController.deletePlan.bind(subscriptionController) );
 router.patch('/plan-status/:id', validate("admin"),subscriptionController.planStatus.bind(subscriptionController) );
 
+
+//---------------------------------- Coupon ------------------------------------
+
+router.get('/coupons', validate("admin"), subscriptionController.fetchCoupons.bind(subscriptionController) );
+router.post('/create-coupon', validate("admin"), subscriptionController.createCoupon.bind(subscriptionController));
+router.put('/update-coupon/:id', validate("admin"),subscriptionController.updateCoupon.bind(subscriptionController) );
+router.delete('/delete-coupon/:id', validate("admin"),subscriptionController.deleteCoupon.bind(subscriptionController) );
+router.patch('/coupon-status/:id', validate("admin"),subscriptionController.couponStatus.bind(subscriptionController) );
 
 export default router;
