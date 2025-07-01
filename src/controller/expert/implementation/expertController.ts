@@ -348,6 +348,32 @@ class ExpertController implements IExpertController {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Failed to update profile', });
         }
     }
+
+    async getWallet(req: Request, res: Response): Promise<void> {
+        try {
+            const id = req.userId
+            if (!id) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
+                return
+            }
+            const expertDetails = await this.expertService.getExpertById(id)
+            if (!expertDetails) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
+                return
+            }
+            if (!expertDetails.isActive) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "User Is blocked by admin" });
+            }
+
+            const walletDetails = await this.expertService.getWalletById(id);
+            console.log("wallet Data", walletDetails)
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Data retrieved successfully", walletDetails });
+        } catch (error) {
+            console.error("Profile error:", error);
+            res.status(STATUS_CODES.BAD_REQUEST).json({ error: "get Profile failed" });
+            return
+        }
+    }
 }
 
 

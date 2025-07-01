@@ -1,11 +1,12 @@
-import IexpertRepository from "../IExpertRepository";
+import IExpertRepository from "../IExpertRepository";
 import { BaseRepository } from "../../base/implementation/BaseRepository";
 import { IUserType } from "../../../types/IUser";
 import { OTP, OTPType } from "../../../model/user/otp";
 import { Expert, IExpert } from "../../../model/expert/expertSchema";
 import { ExpertFormData } from "../../../types/IExpert";
+import { ExpertWallet, IExpertWallet } from "../../../model/expert/walletSchema";
 
-class expertRepository extends BaseRepository<IExpert> implements IexpertRepository {
+class expertRepository extends BaseRepository<IExpert> implements IExpertRepository {
     constructor() {
         super(Expert)
     }
@@ -21,10 +22,7 @@ class expertRepository extends BaseRepository<IExpert> implements IexpertReposit
     }
 
     async resetPassword(email: string, hashedPassword: string): Promise<IExpert | null> {
-        const currentUser = await Expert.findOne({ email });
-        if (!currentUser) return null;
-        currentUser.password = hashedPassword;
-        await currentUser.save();
+        const currentUser = await Expert.findOneAndUpdate({ email }, { password: hashedPassword }, { new: true });
         return currentUser;
     }
 
@@ -57,6 +55,11 @@ class expertRepository extends BaseRepository<IExpert> implements IexpertReposit
 
     async updateExpertById(id: string, updateData: Partial<IExpert>): Promise<IExpert | null> {
         const user = await Expert.findByIdAndUpdate(id, updateData, { new: true });
+        return user;
+    }
+
+    async getWalletById(id: string): Promise<IExpertWallet | null> {
+        const user = await ExpertWallet.findOne({ expertId: id });
         return user;
     }
 }
