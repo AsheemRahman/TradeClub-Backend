@@ -51,11 +51,11 @@ router.post('/update-profile', validate("user"), (req, res) => userControllerIns
 
 //------------------------------------ Course -----------------------------------
 
-router.get('/courses', validate("user"), userCourseController.getCourse.bind(userCourseController));
-router.get('/category', validate("user"), userCourseController.getCategory.bind(userCourseController));
+router.get('/courses', userCourseController.getCourse.bind(userCourseController));
+router.get('/category', userCourseController.getCategory.bind(userCourseController));
 
 
-//------------------------------------ Course -----------------------------------
+//--------------------------------- Subscription --------------------------------
 
 router.get('/fetch-plans', (req, res) => userControllerInstance.fetchPlans(req, res));
 
