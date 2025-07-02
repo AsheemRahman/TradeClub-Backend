@@ -1,6 +1,7 @@
 import ISubscriptionService from "../ISubscriptionService";
 import ISubscriptionRepository from "../../../repository/admin/ISubscriptionRepository";
 import { ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
+import { ICoupon } from "../../../model/admin/couponSchema";
 
 
 
@@ -11,6 +12,8 @@ class SubscriptionService implements ISubscriptionService {
     constructor(subscriptionRepository: ISubscriptionRepository) {
         this.subscriptionRepository = subscriptionRepository;
     }
+
+    //--------------------------- Subscription ---------------------------
 
     async fetchPlans(): Promise<ISubscriptionPlan[] | null> {
         const planData = await this.subscriptionRepository.fetchPlans();
@@ -33,13 +36,45 @@ class SubscriptionService implements ISubscriptionService {
     }
 
     async deletePlan(id: string): Promise<ISubscriptionPlan | null> {
-        const course = await this.subscriptionRepository.deletePlan(id);
-        return course;
+        const plan = await this.subscriptionRepository.deletePlan(id);
+        return plan;
     }
 
     async planStatus(id: string, status: boolean): Promise<ISubscriptionPlan | null> {
-        const course = await this.subscriptionRepository.planStatus(id, status);
-        return course;
+        const plan = await this.subscriptionRepository.planStatus(id, status);
+        return plan;
+    }
+
+    //--------------------------- Subscription ---------------------------
+
+    async fetchCoupons(): Promise<ICoupon[] | null> {
+        const coupons = await this.subscriptionRepository.fetchCoupons();
+        return coupons;
+    }
+
+    async getCouponById(id: string): Promise<ICoupon | null> {
+        const couponData = await this.subscriptionRepository.getCouponById(id);
+        return couponData;
+    }
+
+    async createCoupon(couponData: Partial<ICoupon>): Promise<ICoupon | null> {
+        const newCoupon = await this.subscriptionRepository.createCoupon(couponData);
+        return newCoupon;
+    }
+
+    async updateCoupon(id: string, couponData: Partial<ICoupon>): Promise<ICoupon | null> {
+        const coupon = await this.subscriptionRepository.updateCoupon(id, couponData);
+        return coupon;
+    }
+
+    async deleteCoupon(id: string): Promise<ICoupon | null> {
+        const coupon = await this.subscriptionRepository.deleteCoupon(id);
+        return coupon;
+    }
+
+    async CouponStatus(id: string, status: boolean): Promise<ICoupon | null> {
+        const coupon = await this.subscriptionRepository.couponStatus(id, status);
+        return coupon;
     }
 }
 

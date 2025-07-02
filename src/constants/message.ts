@@ -7,6 +7,7 @@ export enum ERROR_MESSAGES {
     NOT_FOUND = "The requested resource could not be found.",
 
     INVALID_INPUT = "The request contains invalid data.",
+    MISSING_REQUIRED_FIELDS = "Required fields are missing.",
 
     EMAIL_ALREADY_EXIST = "Email is already in use.",
     EMAIL_NOT_FOUND = "Email is not registered.",
