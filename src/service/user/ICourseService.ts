@@ -5,6 +5,7 @@ import { ICourse } from "../../model/admin/courseSchema";
 interface ICourseService {
     getCategory(): Promise<ICategory[] | null>;
     getCourse(): Promise<ICourse[] | null>;
+    getCourseById(id: string): Promise<ICourse | null>;
 }
 
 export default ICourseService;

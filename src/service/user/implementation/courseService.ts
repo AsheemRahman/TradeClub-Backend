@@ -22,6 +22,10 @@ class CourseService implements ICourseService {
         return Category;
     }
 
+    async getCourseById(id: string): Promise<ICourse | null> {
+        const Course = await this.courseRepository.getCourseById(id);
+        return Course;
+    }
 }
 
 
