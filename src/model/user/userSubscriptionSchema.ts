@@ -1,6 +1,6 @@
 import { model, Schema, Document, Types } from "mongoose";
 
-export interface IUserSubscription extends Document {
+interface IUserSubscription extends Document {
     user: Types.ObjectId;
     subscriptionPlan: Types.ObjectId;
     startDate: Date;
@@ -50,4 +50,4 @@ const userSubscriptionSchema = new Schema<IUserSubscription>({
 
 const UserSubscription = model<IUserSubscription>("UserSubscription", userSubscriptionSchema);
 
-export default UserSubscription;
+export { UserSubscription, IUserSubscription };

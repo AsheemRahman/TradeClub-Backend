@@ -1,5 +1,5 @@
 import { Coupon, ICoupon } from "../../../model/admin/couponSchema";
-import SubscriptionPlan, { ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
+import { SubscriptionPlan, ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
 import ISubscriptionRepository from "../ISubscriptionRepository";
 
 
