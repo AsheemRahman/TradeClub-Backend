@@ -3,7 +3,7 @@ import { User, IUser } from "../../../model/user/userSchema";
 import { BaseRepository } from "../../base/implementation/BaseRepository";
 import { IUserType } from "../../../types/IUser";
 import { OTP, OTPType } from "../../../model/user/otp";
-import SubscriptionPlan, { ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
+import { SubscriptionPlan, ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
 
 class userRepository extends BaseRepository<IUser> implements IUserRepository {
     constructor() {

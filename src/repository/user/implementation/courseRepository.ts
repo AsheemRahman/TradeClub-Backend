@@ -13,6 +13,11 @@ class CourseRepository implements ICourseRepository {
         const courses = await Course.find().sort({ createdAt: -1 });
         return courses;
     }
+
+    async getCourseById(id: string): Promise<ICourse | null> {
+        const courses = await Course.findById(id);
+        return courses;
+    }
 }
 
 export default CourseRepository;

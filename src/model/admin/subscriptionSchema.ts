@@ -1,6 +1,6 @@
 import { model, Schema, Document } from "mongoose";
 
-export interface ISubscriptionPlan extends Document {
+interface ISubscriptionPlan extends Document {
     name: string;
     price: number;
     duration: number;
@@ -53,4 +53,4 @@ const subscriptionPlanSchema = new Schema<ISubscriptionPlan>({
 
 const SubscriptionPlan = model<ISubscriptionPlan>("SubscriptionPlan", subscriptionPlanSchema);
 
-export default SubscriptionPlan;
+export { SubscriptionPlan, ISubscriptionPlan };

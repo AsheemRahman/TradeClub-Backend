@@ -12,7 +12,7 @@ export interface ICourse extends Document {
     price: number;
     imageUrl: string;
     category: Types.ObjectId;
-    purchasedUsers?: Types.ObjectId;
+    purchasedUsers?: Types.ObjectId[];
     content: ICourseContent[];
     isPublished: boolean;
     createdAt?: Date;
@@ -60,10 +60,10 @@ const courseSchema = new Schema<ICourse>({
         ref: 'Category',
         required: true
     },
-    purchasedUsers: {
+    purchasedUsers: [{
         type: Schema.Types.ObjectId,
         ref: 'User'
-    },
+    }],
     content: [courseContentSchema],
     isPublished: {
         type: Boolean,
