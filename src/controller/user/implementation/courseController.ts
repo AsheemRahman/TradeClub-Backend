@@ -19,7 +19,7 @@ class CourseController implements ICourseController {
             res.status(STATUS_CODES.OK).json({ status: true, message: "Courses Fetched Successfully", courses })
         } catch (error) {
             console.error("Failed to fetch Courses", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch Courses", error: error instanceof Error ? error.message : String(error), });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch Courses",});
         }
     };
 
@@ -48,7 +48,7 @@ class CourseController implements ICourseController {
             res.status(STATUS_CODES.OK).json({ status: true, message: "Category Fetched Successfully", categories })
         } catch (error) {
             console.error("Failed to fetch category", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch category", error: error instanceof Error ? error.message : String(error), });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch category" });
         }
     };
 
@@ -56,24 +56,20 @@ class CourseController implements ICourseController {
         const userId = req.userId;
         const courseId = req.params.id;
         if (!userId || !courseId) {
-            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND,});
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND, });
             return;
         }
         try {
             const course = await this.courseService.getCourseById(courseId);
             if (!course) {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND,});
+                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND, });
                 return;
             }
             const isEnrolled = course.purchasedUsers?.some((id) => id.toString() === userId);
-            res.status(STATUS_CODES.OK).json({ status: true, isEnrolled: true,});
+            res.status(STATUS_CODES.OK).json({ status: true, isEnrolled: Boolean(isEnrolled), });
         } catch (error) {
             console.error("Failed to check enrollment", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-                status: false,
-                message: "Failed to check enrollment",
-                error: error instanceof Error ? error.message : String(error),
-            });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to check enrollment",});
         }
     }
 }

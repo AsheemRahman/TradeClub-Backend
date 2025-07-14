@@ -34,7 +34,6 @@ const courseContentSchema = new Schema<ICourseContent>(
             required: true
         },
     },
-    { _id: false }
 );
 
 
