@@ -9,7 +9,6 @@ import mongoDB from "./config/dbConfig";
 import userRouter from "./routes/user/userRoute";
 import expertRouter from "./routes/expert/expertRoute";
 import adminRouter from "./routes/admin/adminRouter";
-import sharedRouter from "./routes/shared/sharedRoute";
 
 
 dotenv.config();
@@ -47,7 +46,6 @@ mongoDB();
 app.use("/api/user", userRouter);
 app.use("/api/expert", expertRouter);
 app.use("/api/admin", adminRouter);
-app.use("/api", sharedRouter);
 
 
 //----------------------- Server listening -----------------------
