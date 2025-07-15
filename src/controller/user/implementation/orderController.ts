@@ -22,11 +22,11 @@ class OrderController implements IOrderController {
         const { course } = req.body;
         const userId = req.userId;
         if (!course || !course.title || !course.description || !course.price || !course._id) {
-            res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT || "Course data is missing or incomplete.",});
+            res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT || "Course data is missing or incomplete.", });
             return;
         }
         if (!userId) {
-            res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "User authentication required.",});
+            res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "User authentication required.", });
             return;
         }
         try {
@@ -83,9 +83,10 @@ class OrderController implements IOrderController {
             if (!course) throw new Error('Course not found');
             const order = await Order.create({
                 userId,
-                courseId,
-                courseTitle: course.title,
-                coursePrice: course.price,
+                type: "Course",
+                itemId: courseId,
+                title: course.title,
+                amount: course.price,
                 currency: session.currency?.toUpperCase() || 'INR',
                 stripeSessionId: sessionId,
                 paymentIntentId: session.payment_intent?.toString() || '',
@@ -95,6 +96,21 @@ class OrderController implements IOrderController {
         } catch (error) {
             console.error("Failed to create order", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create order", });
+        }
+    }
+
+    async getPurchaseHistory(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = req.userId;
+            if (!userId) {
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access', });
+                return
+            }
+            const purchases = await Order.find({ userId }).sort({ createdAt: -1 });
+            res.status(STATUS_CODES.OK).json({ status: true, purchases });
+        } catch (error) {
+            console.error('Error fetching purchases:', error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR || 'Server error', });
         }
     }
 }

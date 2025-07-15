@@ -75,5 +75,6 @@ router.get('/fetch-plans', (req, res) => userControllerInstance.fetchPlans(req, 
 
 router.post('/create-checkout-session', validate("user"), (req, res) => orderController.createCheckoutSession(req, res));
 router.post('/create-order', validate("user"), (req, res) => orderController.createOrder(req, res));
+router.get('/purchase-history', validate("user"), (req, res) => orderController.getPurchaseHistory(req, res));
 
 export default router;

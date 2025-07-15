@@ -2,12 +2,13 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 interface IOrder extends Document {
     userId: mongoose.Types.ObjectId;
-    courseId: mongoose.Types.ObjectId;
-    courseTitle: string;
-    coursePrice: number;
+    itemId: mongoose.Types.ObjectId;
+    type: 'Course' | 'SubscriptionPlan';
+    title: string;
+    amount: number;
     currency: string;
     stripeSessionId: string;
-    paymentIntentId: string;
+    paymentIntentId?: string;
     paymentStatus: 'paid' | 'unpaid' | 'pending' | 'failed';
     createdAt: Date;
     updatedAt: Date;
@@ -20,16 +21,21 @@ const orderSchema: Schema = new Schema<IOrder>(
             ref: 'User',
             required: true,
         },
-        courseId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Course',
+        type: {
+            type: String,
+            enum: ['Course', 'SubscriptionPlan'],
             required: true,
         },
-        courseTitle: {
+        itemId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            refPath: 'type',
+        },
+        title: {
             type: String,
             required: true,
         },
-        coursePrice: {
+        amount: {
             type: Number,
             required: true,
         },
@@ -43,7 +49,6 @@ const orderSchema: Schema = new Schema<IOrder>(
         },
         paymentIntentId: {
             type: String,
-            required: false,
         },
         paymentStatus: {
             type: String,
