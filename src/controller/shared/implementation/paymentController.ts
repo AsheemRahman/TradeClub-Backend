@@ -25,12 +25,12 @@ class PaymentController implements ICourseController {
                 line_items: [
                     {
                         price_data: {
-                            currency: 'usd',
+                            currency: 'inr',
                             product_data: {
                                 name: course.title,
                                 description: course.description,
                             },
-                            unit_amount: course.price,
+                            unit_amount: course.price * 100,
                         },
                         quantity: 1,
                     },
