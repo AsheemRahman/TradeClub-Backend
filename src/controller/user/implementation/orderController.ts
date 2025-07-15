@@ -1,0 +1,105 @@
+import { Request, Response } from "express";
+import { STATUS_CODES } from "../../../constants/statusCode";
+import { ERROR_MESSAGES } from "../../../constants/message"
+
+import { Order } from "../../../model/user/orderSchema";
+import Course from "../../../model/admin/courseSchema";
+import IOrderController from "../IOrderController";
+
+import Stripe from "stripe";
+import IOrderService from "../../../service/user/IOrderService";
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-06-30.basil' });
+
+
+class OrderController implements IOrderController {
+    private orderService: IOrderService;
+
+    constructor(orderService: IOrderService) {
+        this.orderService = orderService;
+    }
+
+    async createCheckoutSession(req: Request, res: Response): Promise<void> {
+        const { course } = req.body;
+        const userId = req.userId;
+        if (!course || !course.title || !course.description || !course.price || !course._id) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT || "Course data is missing or incomplete.",});
+            return;
+        }
+        if (!userId) {
+            res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "User authentication required.",});
+            return;
+        }
+        try {
+            const session = await stripe.checkout.sessions.create({
+                payment_method_types: ['card'],
+                mode: 'payment',
+                line_items: [
+                    {
+                        price_data: {
+                            currency: 'inr',
+                            product_data: {
+                                name: course.title,
+                                description: course.description,
+                            },
+                            unit_amount: course.price * 100,
+                        },
+                        quantity: 1,
+                    },
+                ],
+                success_url: `${process.env.CLIENT_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}&courseId=${course._id}`,
+                cancel_url: `${process.env.CLIENT_URL}/payment-failed`,
+                metadata: {
+                    userId: userId,
+                    courseId: course._id,
+                },
+            });
+            res.status(STATUS_CODES.OK).json({ url: session.url });
+            return;
+        } catch (error) {
+            console.error('Stripe error:', error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+                message: "Payment session creation failed.",
+            });
+            return;
+        }
+    }
+
+    async createOrder(req: Request, res: Response): Promise<void> {
+        const { sessionId } = await req.body;
+        try {
+            const session = await stripe.checkout.sessions.retrieve(sessionId);
+            if (!session || session.payment_status !== 'paid') {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: 'Payment not successful' });
+                return
+            }
+            const existing = await Order.findOne({ stripeSessionId: sessionId });
+            if (existing) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: 'Order already exists' });
+            }
+            const courseId = session.metadata?.courseId;
+            const userId = session.metadata?.userId;
+
+            const course = await Course.findById(courseId);
+            if (!course) throw new Error('Course not found');
+            const order = await Order.create({
+                userId,
+                courseId,
+                courseTitle: course.title,
+                coursePrice: course.price,
+                currency: session.currency?.toUpperCase() || 'INR',
+                stripeSessionId: sessionId,
+                paymentIntentId: session.payment_intent?.toString() || '',
+                paymentStatus: session.payment_status,
+            });
+            res.status(STATUS_CODES.CREATED).json({ status: true, message: "Courses Fetched Successfully", order })
+        } catch (error) {
+            console.error("Failed to create order", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create order", });
+        }
+    }
+}
+
+
+
+
+export default OrderController;
