@@ -62,4 +62,8 @@ router.get('/check-enrolled/:id', validate("user"), userCourseController.checkEn
 router.get('/fetch-plans', (req, res) => userControllerInstance.fetchPlans(req, res));
 
 
+//------------------------------------ Order -----------------------------------
+
+router.post('/create-order', validate("user"), (req, res) => userCourseController.createOrder(req, res));
+
 export default router;

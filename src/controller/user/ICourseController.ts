@@ -6,6 +6,8 @@ interface ICourseController {
     getCoursebyId(req: Request, res: Response): Promise<void>;
     getCategory(req: Request, res: Response): Promise<void>;
     checkEnrolled(req: Request, res: Response): Promise<void>;
+
+    createOrder(req: Request, res: Response): Promise<void>;
 }
 
 export default ICourseController;
