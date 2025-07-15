@@ -64,6 +64,7 @@ router.get('/courses', userCourseController.getCourse.bind(userCourseController)
 router.get('/category', userCourseController.getCategory.bind(userCourseController));
 router.get('/course/:id', userCourseController.getCoursebyId.bind(userCourseController));
 router.get('/check-enrolled/:id', validate("user"), userCourseController.checkEnrolled.bind(userCourseController));
+router.get('/course/:courseId/progress', validate("user"), userCourseController.getProgress.bind(userCourseController));
 
 
 //--------------------------------- Subscription --------------------------------

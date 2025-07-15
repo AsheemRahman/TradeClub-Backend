@@ -9,6 +9,7 @@ import IOrderController from "../IOrderController";
 import Stripe from "stripe";
 import IOrderService from "../../../service/user/IOrderService";
 import mongoose from "mongoose";
+import { CourseProgress } from "../../../model/user/progressSchema";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-06-30.basil' });
 
 
@@ -79,10 +80,8 @@ class OrderController implements IOrderController {
             }
             const courseId = session.metadata?.courseId;
             const userId = session.metadata?.userId;
-
             const course = await Course.findById(courseId);
             if (!course) throw new Error('Course not found');
-
             const order = await Order.create({
                 userId,
                 type: "Course",
@@ -122,15 +121,32 @@ class OrderController implements IOrderController {
             const userId = req.userId;
             if (!userId) {
                 res.status(STATUS_CODES.UNAUTHORIZED).json({ message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access', });
-                return
+                return;
             }
-            const courses = await Course.find({ purchasedUsers: new mongoose.Types.ObjectId(userId) }).lean();
-            res.status(STATUS_CODES.OK).json({ status: true, courses });
+            const userObjectId = new mongoose.Types.ObjectId(userId);
+            const courses = await Course.find({ purchasedUsers: userObjectId }).lean();
+            const progressList = await CourseProgress.find({ user: userObjectId }).lean();
+            const orders = await Order.find({ userId: userObjectId, courseId: { $in: courses.map((c) => c._id) } }).lean();
+            const purchaseDateMap: Record<string, Date> = {};
+            orders.forEach(order => { purchaseDateMap[order.itemId.toString()] = order.createdAt; });
+            const progressMap: Record<string, any> = {};
+            progressList.forEach(progress => { progressMap[progress.course.toString()] = progress; });
+            const purchasedCourses = courses.map(course => ({
+                course,
+                progress: progressMap[course._id.toString()] || {
+                    totalCompletedPercent: 0,
+                    progress: [],
+                    lastWatchedAt: null
+                },
+                purchaseDate: purchaseDateMap[course._id.toString()] || course.createdAt
+            }));
+            res.status(STATUS_CODES.OK).json({ status: true, data: purchasedCourses });
         } catch (error) {
             console.error('Error fetching purchases:', error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR || 'Server error', });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR || 'Server error' });
         }
     }
+
 }
 
 

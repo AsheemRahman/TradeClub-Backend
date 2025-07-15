@@ -4,11 +4,6 @@ import { ERROR_MESSAGES } from "../../../constants/message"
 
 import ICourseController from "../ICourseController";
 import ICourseService from "../../../service/user/ICourseService";
-import Stripe from "stripe";
-import { Order } from "../../../model/user/orderSchema";
-import Course from "../../../model/admin/courseSchema";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-06-30.basil' });
 
 
 class CourseController implements ICourseController {
@@ -78,39 +73,22 @@ class CourseController implements ICourseController {
         }
     };
 
-    async createOrder(req: Request, res: Response): Promise<void> {
-        const { sessionId } = await req.body;
-        try {
-            const session = await stripe.checkout.sessions.retrieve(sessionId);
-            if (!session || session.payment_status !== 'paid') {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: 'Payment not successful' });
-                return
-            }
-            const existing = await Order.findOne({ stripeSessionId: sessionId });
-            if (existing) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: 'Order already exists' });
-            }
-            const courseId = session.metadata?.courseId;
-            const userId = session.metadata?.userId;
-            
-            const course = await Course.findById(courseId);
-            if (!course) throw new Error('Course not found');
-            const order = await Order.create({
-                userId,
-                courseId,
-                courseTitle: course.title,
-                coursePrice: course.price,
-                currency: session.currency?.toUpperCase() || 'INR',
-                stripeSessionId: sessionId,
-                paymentIntentId: session.payment_intent?.toString() || '',
-                paymentStatus: session.payment_status,
-            });
-            res.status(STATUS_CODES.CREATED).json({ status: true, message: "Courses Fetched Successfully", order })
-        } catch (error) {
-            console.error("Failed to create order", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create order", });
+
+    async getProgress(req: Request, res: Response): Promise<void> {
+        const userId = req.userId
+        const { courseId } = req.params
+        if (!userId || !courseId) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false,  message: "User ID or Course ID is missing",});
+            return;
         }
-    }
+        try {
+            const progress = await this.courseService.getProgress(courseId, userId);
+            res.status(STATUS_CODES.OK).json({ status: true, message: "progress Fetched Successfully", progress })
+        } catch (error) {
+            console.error("Failed to fetch progress", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch progress", });
+        }
+    };
 }
 
 

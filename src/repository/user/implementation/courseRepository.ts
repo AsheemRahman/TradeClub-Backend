@@ -1,5 +1,6 @@
 import Category, { ICategory } from "../../../model/admin/categorySchema";
 import Course, { ICourse } from "../../../model/admin/courseSchema";
+import { CourseProgress, ICourseProgress } from "../../../model/user/progressSchema";
 import ICourseRepository from "../ICourseRepository";
 
 
@@ -17,6 +18,11 @@ class CourseRepository implements ICourseRepository {
     async getCourseById(id: string): Promise<ICourse | null> {
         const courses = await Course.findById(id);
         return courses;
+    }
+
+    async getProgress(courseId: string, userId: string): Promise<ICourseProgress | null> {
+        const progress = await CourseProgress.findOne({ user: userId, course: courseId });
+        return progress;
     }
 }
 
