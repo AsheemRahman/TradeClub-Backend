@@ -8,6 +8,7 @@ import IOrderController from "../IOrderController";
 
 import Stripe from "stripe";
 import IOrderService from "../../../service/user/IOrderService";
+import mongoose from "mongoose";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-06-30.basil' });
 
 
@@ -81,6 +82,7 @@ class OrderController implements IOrderController {
 
             const course = await Course.findById(courseId);
             if (!course) throw new Error('Course not found');
+
             const order = await Order.create({
                 userId,
                 type: "Course",
@@ -92,6 +94,7 @@ class OrderController implements IOrderController {
                 paymentIntentId: session.payment_intent?.toString() || '',
                 paymentStatus: session.payment_status,
             });
+            await Course.findByIdAndUpdate(courseId, { purchasedUsers: userId })
             res.status(STATUS_CODES.CREATED).json({ status: true, message: "Courses Fetched Successfully", order })
         } catch (error) {
             console.error("Failed to create order", error);
@@ -108,6 +111,21 @@ class OrderController implements IOrderController {
             }
             const purchases = await Order.find({ userId }).sort({ createdAt: -1 });
             res.status(STATUS_CODES.OK).json({ status: true, purchases });
+        } catch (error) {
+            console.error('Error fetching purchases:', error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR || 'Server error', });
+        }
+    }
+
+    async getPurchasedCourse(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = req.userId;
+            if (!userId) {
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access', });
+                return
+            }
+            const courses = await Course.find({ purchasedUsers: new mongoose.Types.ObjectId(userId) }).lean();
+            res.status(STATUS_CODES.OK).json({ status: true, courses });
         } catch (error) {
             console.error('Error fetching purchases:', error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR || 'Server error', });
