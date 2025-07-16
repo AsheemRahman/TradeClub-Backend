@@ -21,8 +21,23 @@ class CourseRepository implements ICourseRepository {
         return courses;
     };
 
+    async updateCourse(courseId: string, purchasedUsers: string): Promise<ICourse | null> {
+        const updatedCourse = await Course.findByIdAndUpdate(courseId, { $addToSet: { purchasedUsers } }, { new: true });
+        return updatedCourse;
+    };
+
+    async getCourseByUser(userId: string): Promise<ICourse[] | null> {
+        const course = await Course.find({ purchasedUsers: userId });
+        return course;
+    };
+
     async getProgress(courseId: string, userId: string): Promise<ICourseProgress | null> {
         const progress = await CourseProgress.findOne({ user: userId, course: courseId });
+        return progress;
+    };
+
+    async getAllProgress( userId: string): Promise<ICourseProgress[] | null> {
+        const progress = await CourseProgress.find({ user: userId});
         return progress;
     };
 

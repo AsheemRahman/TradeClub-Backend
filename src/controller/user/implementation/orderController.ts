@@ -3,13 +3,11 @@ import { STATUS_CODES } from "../../../constants/statusCode";
 import { ERROR_MESSAGES } from "../../../constants/message"
 
 import { Order } from "../../../model/user/orderSchema";
-import Course from "../../../model/admin/courseSchema";
 import IOrderController from "../IOrderController";
-
-import Stripe from "stripe";
 import IOrderService from "../../../service/user/IOrderService";
 import mongoose from "mongoose";
-import { CourseProgress } from "../../../model/user/progressSchema";
+
+import Stripe from "stripe";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-06-30.basil' });
 
 
@@ -29,6 +27,10 @@ class OrderController implements IOrderController {
         }
         if (!userId) {
             res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "User authentication required.", });
+            return;
+        }
+        if (course.purchasedUsers?.some((id: mongoose.Types.ObjectId) => id.toString() === userId)) {
+            res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "Already Purchased" });
             return;
         }
         try {
@@ -74,14 +76,31 @@ class OrderController implements IOrderController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: 'Payment not successful' });
                 return
             }
-            const existing = await Order.findOne({ stripeSessionId: sessionId });
+            const existing = await this.orderService.checkOrderExisting(sessionId);
             if (existing) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: 'Order already exists' });
+                return
             }
             const courseId = session.metadata?.courseId;
             const userId = session.metadata?.userId;
-            const course = await Course.findById(courseId);
+            if (!userId || !courseId) {
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access', });
+                return
+            }
+
+            const course = await this.orderService.getCourseById(courseId);
             if (!course) throw new Error('Course not found');
+            // const order = await this.orderService.createOrder({
+            //     userId,
+            //     type: "Course",
+            //     itemId: courseId,
+            //     title: course.title,
+            //     amount: course.price,
+            //     currency: session.currency?.toUpperCase() || 'INR',
+            //     stripeSessionId: sessionId,
+            //     paymentIntentId: session.payment_intent?.toString() || '',
+            //     paymentStatus: session.payment_status,
+            // })
             const order = await Order.create({
                 userId,
                 type: "Course",
@@ -93,7 +112,7 @@ class OrderController implements IOrderController {
                 paymentIntentId: session.payment_intent?.toString() || '',
                 paymentStatus: session.payment_status,
             });
-            await Course.findByIdAndUpdate(courseId, { purchasedUsers: userId })
+            await this.orderService.updateCourse(courseId, userId)
             res.status(STATUS_CODES.CREATED).json({ status: true, message: "Courses Fetched Successfully", order })
         } catch (error) {
             console.error("Failed to create order", error);
@@ -105,14 +124,14 @@ class OrderController implements IOrderController {
         try {
             const userId = req.userId;
             if (!userId) {
-                res.status(STATUS_CODES.UNAUTHORIZED).json({ message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access', });
+                res.status(STATUS_CODES.UNAUTHORIZED).json({status:false, message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access', });
                 return
             }
-            const purchases = await Order.find({ userId }).sort({ createdAt: -1 });
+            const purchases = await this.orderService.getOrderById(userId)
             res.status(STATUS_CODES.OK).json({ status: true, purchases });
         } catch (error) {
             console.error('Error fetching purchases:', error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR || 'Server error', });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({status:false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR || 'Server error', });
         }
     }
 
@@ -120,36 +139,34 @@ class OrderController implements IOrderController {
         try {
             const userId = req.userId;
             if (!userId) {
-                res.status(STATUS_CODES.UNAUTHORIZED).json({ message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access', });
+                res.status(STATUS_CODES.UNAUTHORIZED).json({status:false, message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access',});
                 return;
             }
-            const userObjectId = new mongoose.Types.ObjectId(userId);
-            const courses = await Course.find({ purchasedUsers: userObjectId }).lean();
-            const progressList = await CourseProgress.find({ user: userObjectId }).lean();
-            const orders = await Order.find({ userId: userObjectId, courseId: { $in: courses.map((c) => c._id) } }).lean();
-            const purchaseDateMap: Record<string, Date> = {};
-            orders.forEach(order => { purchaseDateMap[order.itemId.toString()] = order.createdAt; });
+            // 1. Get all purchased courses for the user
+            const courses = await this.orderService.getCourseByUser(userId);
+            if (!courses || courses.length === 0) {
+                res.status(STATUS_CODES.OK).json({ status: true, data: [] });
+                return;
+            }
+            // 2. Get progress data for all courses
+            const progressList = await this.orderService.getProgressByUser(userId);
             const progressMap: Record<string, any> = {};
-            progressList.forEach(progress => { progressMap[progress.course.toString()] = progress; });
-            const purchasedCourses = courses.map(course => ({
-                course,
-                progress: progressMap[course._id.toString()] || {
-                    totalCompletedPercent: 0,
-                    progress: [],
-                    lastWatchedAt: null
-                },
-                purchaseDate: purchaseDateMap[course._id.toString()] || course.createdAt
-            }));
-            res.status(STATUS_CODES.OK).json({ status: true, data: purchasedCourses });
+            (progressList || []).forEach(progress => { progressMap[progress.course.toString()] = progress;});
+            const purchasedCourses = await Promise.all(
+                courses.map(async (course) => {
+                    const courseId = course.id.toString()
+                    const order = await this.orderService.getPurchasedByUser(userId, courseId);
+                    const progress = progressMap[courseId] || { totalCompletedPercent: 0, progress: [], lastWatchedAt: null };
+                    return { course, progress, purchaseDate: order?.createdAt || course.createdAt};
+                })
+            );
+            res.status(STATUS_CODES.OK).json({ status: true, data: purchasedCourses});
         } catch (error) {
             console.error('Error fetching purchases:', error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR || 'Server error' });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({status : false ,message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR || 'Server error'});
         }
     }
-
 }
-
-
 
 
 export default OrderController;

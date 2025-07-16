@@ -28,6 +28,11 @@ class CourseService implements ICourseService {
         return Course;
     }
 
+    async updateCourse(courseId: string, purchasedUsers: string): Promise<ICourse | null> {
+        const Courses = await this.courseRepository.updateCourse(courseId, purchasedUsers);
+        return Courses;
+    }
+
     async getProgress(courseId: string, userId: string): Promise<ICourseProgress | null> {
         const progress = await this.courseRepository.getProgress(courseId, userId);
         return progress;
@@ -38,7 +43,7 @@ class CourseService implements ICourseService {
         return newProgress;
     }
 
-    async updateProgress(courseProgress:ICourseProgress): Promise<ICourseProgress | null> {
+    async updateProgress(courseProgress: ICourseProgress): Promise<ICourseProgress | null> {
         const progress = await this.courseRepository.updateProgress(courseProgress);
         return progress;
     }

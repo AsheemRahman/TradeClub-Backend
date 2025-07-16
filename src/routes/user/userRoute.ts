@@ -27,7 +27,7 @@ const courseServiceInstance = new CourseService(courseRepositoryInstance);
 const userCourseController: ICourseController = new CourseController(courseServiceInstance);
 
 const orderRepository = new OrderRepository();
-const orderService = new OrderService(orderRepository);
+const orderService = new OrderService(orderRepository, courseRepositoryInstance);
 const orderController: IOrderController = new OrderController(orderService);
 
 

@@ -7,6 +7,7 @@ interface ICourseService {
     getCategory(): Promise<ICategory[] | null>;
     getCourse(): Promise<ICourse[] | null>;
     getCourseById(id: string): Promise<ICourse | null>;
+    updateCourse(courseId: string, purchasedUsers: string): Promise<ICourse | null>;
 
     getProgress(courseId: string, userId: string): Promise<ICourseProgress | null>;
     createProgress(courseId: string, userId: string, progress: IVideoProgress[], lastWatchedAt: Date, totalCompletedPercent: number): Promise<ICourseProgress | null>;
