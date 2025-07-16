@@ -364,9 +364,7 @@ class ExpertController implements IExpertController {
             if (!expertDetails.isActive) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "User Is blocked by admin" });
             }
-
             const walletDetails = await this.expertService.getWalletById(id);
-            console.log("wallet Data", walletDetails)
             res.status(STATUS_CODES.OK).json({ status: true, message: "Data retrieved successfully", walletDetails });
         } catch (error) {
             console.error("Profile error:", error);

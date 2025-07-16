@@ -73,12 +73,11 @@ class CourseController implements ICourseController {
         }
     };
 
-
     async getProgress(req: Request, res: Response): Promise<void> {
         const userId = req.userId
         const { courseId } = req.params
         if (!userId || !courseId) {
-            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false,  message: "User ID or Course ID is missing",});
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "User ID or Course ID is missing", });
             return;
         }
         try {
@@ -89,7 +88,60 @@ class CourseController implements ICourseController {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch progress", });
         }
     };
-}
+
+    async updateProgress(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = req.userId;
+            const { courseId } = req.params;
+            const { contentId, watchedDuration, isCompleted } = req.body;
+            if (!userId || !contentId || watchedDuration === undefined || isCompleted === undefined) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INVALID_INPUT });
+                return;
+            }
+
+            // Find existing progress for the user and course
+            let courseProgress = await this.courseService.getProgress(courseId, userId);
+            const currentDate = new Date();
+            if (!courseProgress) {
+                const newProgress = await this.courseService.createProgress(userId, courseId, [{
+                    contentId,
+                    watchedDuration,
+                    isCompleted,
+                    lastWatchedAt: currentDate
+                }], currentDate, isCompleted ? 100 : 0)
+                res.status(STATUS_CODES.CREATED).json({ status: true, message: "Progress created successfully", progress: newProgress });
+                return;
+            }
+            courseProgress.lastWatchedAt = currentDate;
+            const existingIndex = courseProgress.progress.findIndex(p => p.contentId.equals(contentId));
+            if (existingIndex !== -1) {
+                // Update existing video progress
+                courseProgress.progress[existingIndex].watchedDuration = watchedDuration;
+                courseProgress.progress[existingIndex].isCompleted = isCompleted;
+                courseProgress.progress[existingIndex].lastWatchedAt = currentDate;
+            } else {
+                // Add new video progress
+                courseProgress.progress.push({
+                    contentId,
+                    watchedDuration,
+                    isCompleted,
+                    lastWatchedAt: currentDate
+                });
+            }
+            // Recalculate total completed percent
+            const totalVideos = courseProgress.progress.length;
+            const completedVideos = courseProgress.progress.filter(p => p.isCompleted).length;
+            courseProgress.totalCompletedPercent = Math.round((completedVideos / totalVideos) * 100);
+            // Set completedAt if all videos are completed
+            courseProgress.completedAt = (completedVideos === totalVideos && totalVideos > 0) ? currentDate : undefined;
+            const updatedProgress = await this.courseService.updateProgress(courseProgress);
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Progress updated successfully", progress: updatedProgress });
+        } catch (error) {
+            console.error("Error updating course progress:", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to update progress" });
+        }
+    }
+};
 
 
 

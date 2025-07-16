@@ -3,7 +3,7 @@ import ICourseRepository from "../../../repository/user/ICourseRepository";
 
 import { ICourse } from "../../../model/admin/courseSchema";
 import { ICategory } from "../../../model/admin/categorySchema";
-import { ICourseProgress } from "../../../model/user/progressSchema";
+import { ICourseProgress, IVideoProgress } from "../../../model/user/progressSchema";
 
 
 class CourseService implements ICourseService {
@@ -30,6 +30,16 @@ class CourseService implements ICourseService {
 
     async getProgress(courseId: string, userId: string): Promise<ICourseProgress | null> {
         const progress = await this.courseRepository.getProgress(courseId, userId);
+        return progress;
+    }
+
+    async createProgress(courseId: string, userId: string, progress: IVideoProgress[], lastWatchedAt: Date, totalCompletedPercent: number): Promise<ICourseProgress | null> {
+        const newProgress = await this.courseRepository.createProgress(courseId, userId, progress, lastWatchedAt, totalCompletedPercent);
+        return newProgress;
+    }
+
+    async updateProgress(courseProgress:ICourseProgress): Promise<ICourseProgress | null> {
+        const progress = await this.courseRepository.updateProgress(courseProgress);
         return progress;
     }
 }

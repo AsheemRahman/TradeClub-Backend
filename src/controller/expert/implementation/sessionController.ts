@@ -31,7 +31,6 @@ class SessionController implements ISessionController {
     async addSession(req: Request, res: Response): Promise<void> {
         try {
             const sessionData = { ...req.body, expertId: req.userId };
-            console.log("sample", sessionData)
             const newSession = await this.sessionService.addSession(sessionData);
             res.status(STATUS_CODES.CREATED).json({ status: true, message: "Session slot created Successfully", newSession })
         } catch (error) {
