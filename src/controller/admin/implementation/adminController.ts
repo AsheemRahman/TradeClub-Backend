@@ -27,19 +27,16 @@ class AdminController implements IAdminController {
             if (!email || !password) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: ERROR_MESSAGES.BAD_REQUEST, data: null })
             }
-
             const isAdmin = process.env.ADMIN_USERNAME === email && process.env.ADMIN_PASSWORD === password;
             if (!isAdmin) {
                 res.status(STATUS_CODES.FORBIDDEN).json({ success: false, message: "Login failed. Please check your credentials." });
                 return
             }
-
             const payload: TokenPayload = { userId: email, role: "admin" };
             const accessToken = JwtUtility.generateAccessToken(payload);
             const refreshToken = JwtUtility.generateRefreshToken(payload);
             res.cookie("admin-accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
             res.cookie("admin-refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "none", maxAge: 24 * 60 * 60 * 1000, });
-
             res.status(STATUS_CODES.OK).json({
                 success: true, message: "login successful",
                 data: {
@@ -62,7 +59,6 @@ class AdminController implements IAdminController {
                 res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'Refresh token missing' });
                 return;
             }
-
             // Verify the refresh token using JwtUtility
             let decoded: string | JwtPayload;
             try {
@@ -71,15 +67,12 @@ class AdminController implements IAdminController {
                 res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'Invalid refresh token' });
                 return
             }
-
             const { role, userId } = decoded as TokenPayload;
             if (!userId || !role) {
                 res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: 'Invalid token payload' });
                 return
             }
-
             const newAccessToken = JwtUtility.generateAccessToken({ userId, role });
-
             res.cookie("admin-accessToken", newAccessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 60 * 1000 });
             res.status(STATUS_CODES.OK).json({ status: true, accessToken: newAccessToken, message: "Access token refreshed successfully" });
         } catch (error) {
@@ -115,7 +108,6 @@ class AdminController implements IAdminController {
                 isActive: user.isActive,
                 createdAt: user.createdAt
             }));
-
             res.status(STATUS_CODES.OK).json({
                 success: true,
                 message: "Users fetched successfully",
@@ -130,6 +122,24 @@ class AdminController implements IAdminController {
         }
     }
 
+    async getUserById(req: Request, res: Response): Promise<void> {
+        const { id } = req.params;
+        if (!id) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+            return;
+        }
+        try {
+            const user = await this.adminService.getUserById(id)
+            if (!user) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+                return
+            }
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Course Fetched Successfully", user })
+        } catch (error) {
+            console.error("Failed to fetch Course", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch Course", error: error instanceof Error ? error.message : String(error), });
+        }
+    };
 
     async userStatus(req: Request, res: Response): Promise<void> {
         try {
@@ -139,7 +149,6 @@ class AdminController implements IAdminController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
                 return;
             }
-
             const checkUser = await this.adminService.getUserById(id)
             if (!checkUser) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({
@@ -148,7 +157,6 @@ class AdminController implements IAdminController {
                 })
                 return
             }
-
             await this.adminService.userUpdateStatus(id, status)
             res.status(STATUS_CODES.OK).json({ success: true, message: "Users status change successfully", });
         } catch (error) {
@@ -171,7 +179,6 @@ class AdminController implements IAdminController {
                 isVerified: expert.isVerified,
                 createdAt: expert.createdAt
             }));
-
             res.status(STATUS_CODES.OK).json({
                 status: true, message: "Experts fetched successfully",
                 data: {
@@ -194,13 +201,11 @@ class AdminController implements IAdminController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
                 return;
             }
-
             const checkExpert = await this.adminService.getExpertById(id)
             if (!checkExpert) {
                 res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return
             }
-
             await this.adminService.expertUpdateStatus(id, status)
             res.status(STATUS_CODES.OK).json({ success: true, message: "Expert status change successfully", });
         } catch (error) {
@@ -217,13 +222,11 @@ class AdminController implements IAdminController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
                 return;
             }
-
             const Expert = await this.adminService.getExpertById(id)
             if (!Expert) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return
             }
-
             res.status(STATUS_CODES.OK).json({ status: true, Expert, message: "Expert details fetched successfully", });
         } catch (error) {
             console.error("Get expert Details error:", error);
@@ -265,6 +268,20 @@ class AdminController implements IAdminController {
             }
             await MailUtility.sendRejectionMail(Expert.email, Expert.fullName || 'Expert', rejectionReason, "Application Declined - TradeClub");
             res.status(STATUS_CODES.OK).json({ status: true, message: "Expert declined successfully and notification email sent" })
+        } catch (error) {
+            console.error("Expert decline is failed", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, error: "Expert decline is failed", });
+        }
+    };
+
+    async getOrders(req: Request, res: Response): Promise<void> {
+        try {
+            const orders = await this.adminService.getOrders()
+            if (!orders) {
+                res.status(STATUS_CODES.NOT_FOUND).json({ status: true, orders: [] })
+                return
+            }
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Order Fetched Successfully", orders })
         } catch (error) {
             console.error("Expert decline is failed", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, error: "Expert decline is failed", });

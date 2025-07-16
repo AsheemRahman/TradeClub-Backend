@@ -1,6 +1,7 @@
 import IAdminRepository from "../IAdminRepository";
 import { IUser, User } from "../../../model/user/userSchema";
 import { Expert, IExpert } from "../../../model/expert/expertSchema";
+import { IOrder, Order } from "../../../model/user/orderSchema";
 
 
 class AdminRepository implements IAdminRepository {
@@ -50,6 +51,11 @@ class AdminRepository implements IAdminRepository {
 
     async declineExpert(id: string): Promise<IExpert | null> {
         const expert = await Expert.findByIdAndUpdate(id, { isVerified: "Declined" }, { new: true });
+        return expert;
+    };
+
+    async getOrders(): Promise<IOrder[] | null> {
+        const expert = await Order.find()
         return expert;
     };
 }

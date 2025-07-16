@@ -2,6 +2,7 @@ import IAdminService from "../IAdminService";
 import IAdminRepository from "../../../repository/admin/IAdminRepository";
 import { IUser } from "../../../model/user/userSchema";
 import { IExpert } from "../../../model/expert/expertSchema";
+import { IOrder } from "../../../model/user/orderSchema";
 
 
 
@@ -57,6 +58,11 @@ class AdminService implements IAdminService {
     async declineExpert(id: string): Promise<IExpert | null> {
         const expert = await this.adminRepository.declineExpert(id);
         return expert;
+    }
+
+    async getOrders(): Promise<IOrder[] | null> {
+        const order = await this.adminRepository.getOrders();
+        return order;
     }
 }
 
