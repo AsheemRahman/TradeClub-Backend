@@ -8,6 +8,7 @@ interface IAdminController {
     refreshToken(req: Request, res: Response): Promise<void>;
 
     getUsers(req: Request, res: Response): Promise<void>;
+    getUserById(req: Request, res: Response): Promise<void>;
     userStatus(req: Request, res: Response): Promise<void>;
 
     getExperts(req: Request, res: Response): Promise<void>;
@@ -15,6 +16,8 @@ interface IAdminController {
     expertDetail(req: Request, res: Response): Promise<void>;
     approveExpert(req: Request, res: Response): Promise<void>;
     declineExpert(req: Request, res: Response): Promise<void>;
+
+    getOrders(req: Request, res: Response): Promise<void>;
 }
 
 export default IAdminController;

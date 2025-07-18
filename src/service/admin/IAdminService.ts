@@ -1,4 +1,5 @@
 import { IExpert } from "../../model/expert/expertSchema";
+import { IOrder } from "../../model/user/orderSchema";
 import { IUser } from "../../model/user/userSchema";
 
 
@@ -13,6 +14,8 @@ interface IAdminService {
     expertUpdateStatus(id: string, status: string): Promise<IExpert | null>;
     approveExpert(id: string): Promise<IExpert | null>;
     declineExpert(id: string): Promise<IExpert | null>;
+
+    getOrders(): Promise<IOrder[] | null>;
 }
 
 export default IAdminService;

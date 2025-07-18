@@ -44,6 +44,7 @@ router.post('/refresh-token', adminController.refreshToken.bind(adminController)
 // ----------------------------------- User ------------------------------------
 
 router.get('/get-users', validate("admin"), adminController.getUsers.bind(adminController))
+router.get('/user/:id', validate("admin"), adminController.getUserById.bind(adminController))
 router.patch('/user-status/:id', validate("admin"), adminController.userStatus.bind(adminController))
 
 
@@ -90,5 +91,10 @@ router.post('/create-coupon', validate("admin"), subscriptionController.createCo
 router.put('/update-coupon/:id', validate("admin"),subscriptionController.updateCoupon.bind(subscriptionController) );
 router.delete('/delete-coupon/:id', validate("admin"),subscriptionController.deleteCoupon.bind(subscriptionController) );
 router.patch('/coupon-status/:id', validate("admin"),subscriptionController.couponStatus.bind(subscriptionController) );
+
+
+//---------------------------------- Orders ------------------------------------
+
+router.get('/orders', validate("admin"), adminController.getOrders.bind(adminController))
 
 export default router;
