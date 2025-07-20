@@ -140,7 +140,6 @@ class CourseController implements ICourseController {
         }
     };
 
-
     async editCourse(req: Request, res: Response): Promise<void> {
         const { id } = req.params;
         if (!id) {
