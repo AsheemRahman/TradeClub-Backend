@@ -19,6 +19,10 @@ interface IOrderService {
 
     getPlanById(planId: string): Promise<ISubscriptionPlan | null>;
     checkPlan(userId: string, planId: string): Promise<IUserSubscription[] | null>;
+
+    createUserSubscription(userId: string, planId: string, paymentId: string, paymentStatus: 'paid' | 'pending' | 'failed'): Promise<IUserSubscription>;
+    getAllSubscriptionsByUser(userId: string): Promise<IUserSubscription[] | null>;
+    getActiveSubscription(userId: string): Promise<IUserSubscription | null>
 }
 
 export default IOrderService;

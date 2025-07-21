@@ -7,7 +7,7 @@ import IOrderService from "../../../service/user/IOrderService";
 import { IUserSubscription } from "../../../model/user/userSubscriptionSchema";
 
 import Stripe from "stripe";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-06-30.basil' });
 
@@ -123,6 +123,7 @@ class OrderController implements IOrderController {
                     paymentIntentId: session.payment_intent?.toString() || '',
                     paymentStatus: session.payment_status,
                 })
+                await this.orderService.createUserSubscription( userId, purchaseId, session.payment_intent?.toString() || '', session.payment_status as 'paid' | 'pending' | 'failed');
                 res.status(STATUS_CODES.CREATED).json({ status: true, message: "Subscription purchased Successfully", order })
             }
         } catch (error) {

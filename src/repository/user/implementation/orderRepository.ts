@@ -35,6 +35,27 @@ class OrderRepository implements IOrderRepository {
         const Data = await UserSubscription.find({ user: userId, subscriptionPlan: planId, isActive: true, })
         return Data;
     }
+
+    async createSubscription(data: Partial<IUserSubscription>): Promise<IUserSubscription> {
+        console.log("asheem repro", data)
+        return await UserSubscription.create(data);
+    }
+
+    async findActiveSubscription(userId: string): Promise<IUserSubscription | null> {
+        return await UserSubscription.findOne({ user: userId, isActive: true, });
+    }
+
+    async findByUserAndPlan(userId: string, planId: string): Promise<IUserSubscription | null> {
+        return await UserSubscription.findOne({ user: userId, subscriptionPlan: planId, });
+    }
+
+    async deactivateSubscription(userId: string): Promise<void> {
+        await UserSubscription.updateMany({ user: userId, isActive: true }, { $set: { isActive: false } });
+    }
+
+    async getAllSubscriptionsByUser(userId: string): Promise<IUserSubscription[] | null> {
+        return await UserSubscription.find({ user: userId });
+    }
 }
 
 export default OrderRepository;

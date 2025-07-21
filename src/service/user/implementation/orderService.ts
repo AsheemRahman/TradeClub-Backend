@@ -67,6 +67,25 @@ class OrderService implements IOrderService {
         const Data = await this.orderRepository.checkPlan(userId, planId);
         return Data;
     }
+
+    async createUserSubscription(userId: string, planId: string, paymentId: string, paymentStatus: 'paid' | 'pending' | 'failed', durationInDays: number = 30, autoRenew: boolean = false): Promise<IUserSubscription> {
+        const startDate = new Date();
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + durationInDays);
+        await this.orderRepository.deactivateSubscription(userId);
+        return await this.orderRepository.createSubscription({
+            user: userId, subscriptionPlan: planId, startDate, endDate, isActive: true,
+            paymentId, paymentStatus, autoRenew,
+        });
+    }
+
+    async getActiveSubscription(userId: string): Promise<IUserSubscription | null> {
+        return await this.orderRepository.findActiveSubscription(userId);
+    }
+
+    async getAllSubscriptionsByUser(userId: string): Promise<IUserSubscription[] | null> {
+        return await this.orderRepository.getAllSubscriptionsByUser(userId);
+    }
 }
 
 

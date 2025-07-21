@@ -1,13 +1,13 @@
 import { model, Schema, Document, Types } from "mongoose";
 
 interface IUserSubscription extends Document {
-    user: Types.ObjectId;
-    subscriptionPlan: Types.ObjectId;
+    user: Types.ObjectId | string;
+    subscriptionPlan: Types.ObjectId | string;
     startDate: Date;
     endDate: Date;
     isActive: boolean;
     paymentId?: string;
-    paymentStatus?: 'success' | 'pending' | 'failed';
+    paymentStatus?: 'paid' | 'pending' | 'failed';
     autoRenew?: boolean;
 }
 
@@ -39,7 +39,7 @@ const userSubscriptionSchema = new Schema<IUserSubscription>({
     },
     paymentStatus: {
         type: String,
-        enum: ['success', 'pending', 'failed'],
+        enum: ['paid', 'pending', 'failed'],
         default: 'pending',
     },
     autoRenew: {

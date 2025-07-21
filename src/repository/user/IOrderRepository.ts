@@ -12,6 +12,12 @@ interface IOrderRepository {
 
     getPlanById(planId: string): Promise<ISubscriptionPlan | null>;
     checkPlan(userId: string, planId: string): Promise<IUserSubscription[] | null>;
+
+    createSubscription(data: Partial<IUserSubscription>): Promise<IUserSubscription>;
+    findActiveSubscription(userId: string): Promise<IUserSubscription | null>;
+    findByUserAndPlan(userId: string, planId: string): Promise<IUserSubscription | null>;
+    deactivateSubscription(userId: string): Promise<void>;
+    getAllSubscriptionsByUser(userId: string): Promise<IUserSubscription[] | null>;
 }
 
 
