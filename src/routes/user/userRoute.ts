@@ -71,6 +71,7 @@ router.post('/course/:courseId/progress', validate("user"), userCourseController
 //--------------------------------- Subscription --------------------------------
 
 router.get('/fetch-plans', (req, res) => userControllerInstance.fetchPlans(req, res));
+router.post('/subscription-checkout', validate("user"), (req, res) => orderController.subscriptionCheckout(req, res));
 
 
 //------------------------------------ Order -----------------------------------

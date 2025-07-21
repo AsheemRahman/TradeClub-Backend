@@ -6,6 +6,8 @@ interface IOrderController {
     createOrder(req: Request, res: Response): Promise<void>;
     getPurchaseHistory(req: Request, res: Response): Promise<void>;
     getPurchasedCourse(req: Request, res: Response): Promise<void>;
+
+    subscriptionCheckout(req: Request, res: Response): Promise<void>;
 }
 
 export default IOrderController;

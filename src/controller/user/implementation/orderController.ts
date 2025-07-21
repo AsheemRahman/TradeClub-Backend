@@ -8,6 +8,7 @@ import IOrderService from "../../../service/user/IOrderService";
 import mongoose from "mongoose";
 
 import Stripe from "stripe";
+import { IUserSubscription } from "../../../model/user/userSubscriptionSchema";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-06-30.basil' });
 
 
@@ -44,6 +45,7 @@ class OrderController implements IOrderController {
                             product_data: {
                                 name: course.title,
                                 description: course.description,
+                                images: [course.imageUrl],
                             },
                             unit_amount: course.price * 100,
                         },
@@ -124,14 +126,14 @@ class OrderController implements IOrderController {
         try {
             const userId = req.userId;
             if (!userId) {
-                res.status(STATUS_CODES.UNAUTHORIZED).json({status:false, message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access', });
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access', });
                 return
             }
             const purchases = await this.orderService.getOrderById(userId)
             res.status(STATUS_CODES.OK).json({ status: true, purchases });
         } catch (error) {
             console.error('Error fetching purchases:', error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({status:false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR || 'Server error', });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR || 'Server error', });
         }
     }
 
@@ -139,7 +141,7 @@ class OrderController implements IOrderController {
         try {
             const userId = req.userId;
             if (!userId) {
-                res.status(STATUS_CODES.UNAUTHORIZED).json({status:false, message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access',});
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access', });
                 return;
             }
             // 1. Get all purchased courses for the user
@@ -151,19 +153,76 @@ class OrderController implements IOrderController {
             // 2. Get progress data for all courses
             const progressList = await this.orderService.getProgressByUser(userId);
             const progressMap: Record<string, any> = {};
-            (progressList || []).forEach(progress => { progressMap[progress.course.toString()] = progress;});
+            (progressList || []).forEach(progress => { progressMap[progress.course.toString()] = progress; });
             const purchasedCourses = await Promise.all(
                 courses.map(async (course) => {
                     const courseId = course.id.toString()
                     const order = await this.orderService.getPurchasedByUser(userId, courseId);
                     const progress = progressMap[courseId] || { totalCompletedPercent: 0, progress: [], lastWatchedAt: null };
-                    return { course, progress, purchaseDate: order?.createdAt || course.createdAt};
+                    return { course, progress, purchaseDate: order?.createdAt || course.createdAt };
                 })
             );
-            res.status(STATUS_CODES.OK).json({ status: true, data: purchasedCourses});
+            res.status(STATUS_CODES.OK).json({ status: true, data: purchasedCourses });
         } catch (error) {
             console.error('Error fetching purchases:', error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({status : false ,message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR || 'Server error'});
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR || 'Server error' });
+        }
+    }
+
+    async subscriptionCheckout(req: Request, res: Response): Promise<void> {
+        const { planId } = req.body;
+        const userId = req.userId;
+
+        if (!userId) {
+            res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "User authentication required." });
+            return;
+        }
+
+        try {
+            const planData = await this.orderService.getPlanById(planId);
+            if (!planData || !planData.name || !planData.features || !planData.price || !planData._id) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT || "Plan data is missing or incomplete." });
+                return;
+            }
+
+            const existingSubscriptions: IUserSubscription[] | null = await this.orderService.checkPlan(userId, planId);
+            const now = new Date();
+            const activeSubscription = existingSubscriptions?.find(sub => {
+                return sub.isActive && new Date(sub.endDate) > now;
+            });
+            if (activeSubscription) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ message: "You already have an active subscription to this plan." });
+                return;
+            }
+
+            const session = await stripe.checkout.sessions.create({
+                payment_method_types: ['card'],
+                mode: 'payment',
+                line_items: [
+                    {
+                        price_data: {
+                            currency: 'inr',
+                            product_data: {
+                                name: planData.name,
+                                description: `• ${planData.features.join('\n• ')}`,
+                            },
+                            unit_amount: planData.price * 100,
+                        },
+                        quantity: 1,
+                    },
+                ],
+                success_url: `${process.env.CLIENT_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}&planId=${planData._id}`,
+                cancel_url: `${process.env.CLIENT_URL}/payment-failed`,
+                metadata: {
+                    userId,
+                    planId: String(planData._id),
+                },
+            });
+
+            res.status(STATUS_CODES.OK).json({ url: session.url });
+        } catch (error) {
+            console.error("Stripe error:", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Payment session creation failed." });
         }
     }
 }

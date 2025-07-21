@@ -1,6 +1,8 @@
 import { ICourse } from "../../../model/admin/courseSchema";
+import { ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
 import { IOrder } from "../../../model/user/orderSchema";
 import { ICourseProgress } from "../../../model/user/progressSchema";
+import { IUserSubscription } from "../../../model/user/userSubscriptionSchema";
 import ICourseRepository from "../../../repository/user/ICourseRepository";
 import IOrderRepository from "../../../repository/user/IOrderRepository";
 import IOrderService from "../IOrderService";
@@ -53,6 +55,16 @@ class OrderService implements IOrderService {
     async getPurchasedByUser(userId: string, courseId: string): Promise<IOrder | null> {
         const order = await this.orderRepository.getPurchasedByUser(userId, courseId);
         return order;
+    }
+
+    async getPlanById(planId: string): Promise<ISubscriptionPlan | null> {
+        const planData = await this.orderRepository.getPlanById(planId);
+        return planData;
+    }
+
+    async checkPlan(userId: string, planId: string): Promise<IUserSubscription[] | null> {
+        const Data = await this.orderRepository.checkPlan(userId, planId);
+        return Data;
     }
 }
 
