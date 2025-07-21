@@ -10,8 +10,8 @@ interface IOrder extends Document {
     stripeSessionId: string;
     paymentIntentId?: string;
     paymentStatus: 'paid' | 'unpaid' | 'pending' | 'failed';
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 const orderSchema: Schema = new Schema<IOrder>(

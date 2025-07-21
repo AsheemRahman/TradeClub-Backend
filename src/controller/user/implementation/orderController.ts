@@ -2,19 +2,18 @@ import { Request, Response } from "express";
 import { STATUS_CODES } from "../../../constants/statusCode";
 import { ERROR_MESSAGES } from "../../../constants/message"
 
-import { Order } from "../../../model/user/orderSchema";
 import IOrderController from "../IOrderController";
 import IOrderService from "../../../service/user/IOrderService";
-import mongoose from "mongoose";
+import { IUserSubscription } from "../../../model/user/userSubscriptionSchema";
 
 import Stripe from "stripe";
-import { IUserSubscription } from "../../../model/user/userSubscriptionSchema";
+import mongoose from "mongoose";
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-06-30.basil' });
 
 
 class OrderController implements IOrderController {
     private orderService: IOrderService;
-
     constructor(orderService: IOrderService) {
         this.orderService = orderService;
     }
@@ -71,7 +70,11 @@ class OrderController implements IOrderController {
     }
 
     async createOrder(req: Request, res: Response): Promise<void> {
-        const { sessionId } = await req.body;
+        const { sessionId } = req.body;
+        if (!sessionId) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Session ID is required" });
+            return;
+        }
         try {
             const session = await stripe.checkout.sessions.retrieve(sessionId);
             if (!session || session.payment_status !== 'paid') {
@@ -83,39 +86,45 @@ class OrderController implements IOrderController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: 'Order already exists' });
                 return
             }
-            const courseId = session.metadata?.courseId;
+            const purchaseId = session.metadata?.courseId || session.metadata?.planId;
+            const isCourse = !!session.metadata?.courseId;
             const userId = session.metadata?.userId;
-            if (!userId || !courseId) {
+            if (!userId || !purchaseId) {
                 res.status(STATUS_CODES.UNAUTHORIZED).json({ message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access', });
                 return
             }
-
-            const course = await this.orderService.getCourseById(courseId);
-            if (!course) throw new Error('Course not found');
-            // const order = await this.orderService.createOrder({
-            //     userId,
-            //     type: "Course",
-            //     itemId: courseId,
-            //     title: course.title,
-            //     amount: course.price,
-            //     currency: session.currency?.toUpperCase() || 'INR',
-            //     stripeSessionId: sessionId,
-            //     paymentIntentId: session.payment_intent?.toString() || '',
-            //     paymentStatus: session.payment_status,
-            // })
-            const order = await Order.create({
-                userId,
-                type: "Course",
-                itemId: courseId,
-                title: course.title,
-                amount: course.price,
-                currency: session.currency?.toUpperCase() || 'INR',
-                stripeSessionId: sessionId,
-                paymentIntentId: session.payment_intent?.toString() || '',
-                paymentStatus: session.payment_status,
-            });
-            await this.orderService.updateCourse(courseId, userId)
-            res.status(STATUS_CODES.CREATED).json({ status: true, message: "Courses Fetched Successfully", order })
+            if (isCourse) {
+                const course = await this.orderService.getCourseById(purchaseId);
+                if (!course) throw new Error('Course not found');
+                const order = await this.orderService.createOrder({
+                    userId,
+                    itemId: purchaseId,
+                    type: "Course",
+                    title: course.title,
+                    amount: course.price,
+                    currency: session.currency?.toUpperCase() || 'INR',
+                    stripeSessionId: sessionId,
+                    paymentIntentId: session.payment_intent?.toString() || '',
+                    paymentStatus: session.payment_status,
+                })
+                await this.orderService.updateCourse(purchaseId, userId)
+                res.status(STATUS_CODES.CREATED).json({ status: true, message: "Courses purchased Successfully", order })
+            } else {
+                const plan = await this.orderService.getPlanById(purchaseId);
+                if (!plan) throw new Error('Subscription is not found');
+                const order = await this.orderService.createOrder({
+                    userId,
+                    itemId: purchaseId,
+                    type: "SubscriptionPlan",
+                    title: plan.name,
+                    amount: plan.price,
+                    currency: session.currency?.toUpperCase() || 'INR',
+                    stripeSessionId: sessionId,
+                    paymentIntentId: session.payment_intent?.toString() || '',
+                    paymentStatus: session.payment_status,
+                })
+                res.status(STATUS_CODES.CREATED).json({ status: true, message: "Subscription purchased Successfully", order })
+            }
         } catch (error) {
             console.error("Failed to create order", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create order", });
@@ -172,19 +181,16 @@ class OrderController implements IOrderController {
     async subscriptionCheckout(req: Request, res: Response): Promise<void> {
         const { planId } = req.body;
         const userId = req.userId;
-
         if (!userId) {
             res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "User authentication required." });
             return;
         }
-
         try {
             const planData = await this.orderService.getPlanById(planId);
             if (!planData || !planData.name || !planData.features || !planData.price || !planData._id) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT || "Plan data is missing or incomplete." });
                 return;
             }
-
             const existingSubscriptions: IUserSubscription[] | null = await this.orderService.checkPlan(userId, planId);
             const now = new Date();
             const activeSubscription = existingSubscriptions?.find(sub => {
@@ -194,7 +200,6 @@ class OrderController implements IOrderController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ message: "You already have an active subscription to this plan." });
                 return;
             }
-
             const session = await stripe.checkout.sessions.create({
                 payment_method_types: ['card'],
                 mode: 'payment',
@@ -218,7 +223,6 @@ class OrderController implements IOrderController {
                     planId: String(planData._id),
                 },
             });
-
             res.status(STATUS_CODES.OK).json({ url: session.url });
         } catch (error) {
             console.error("Stripe error:", error);

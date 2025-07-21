@@ -5,6 +5,7 @@ import { ICourseProgress } from "../../../model/user/progressSchema";
 import { IUserSubscription } from "../../../model/user/userSubscriptionSchema";
 import ICourseRepository from "../../../repository/user/ICourseRepository";
 import IOrderRepository from "../../../repository/user/IOrderRepository";
+import { IOrderInput } from "../../../types/IUser";
 import IOrderService from "../IOrderService";
 
 
@@ -37,7 +38,7 @@ class OrderService implements IOrderService {
         return Courses;
     }
 
-    async createOrder(order: IOrder): Promise<IOrder | null> {
+    async createOrder(order: IOrderInput): Promise<IOrder | null> {
         const newOrder = await this.orderRepository.createOrder(order);
         return newOrder;
     }

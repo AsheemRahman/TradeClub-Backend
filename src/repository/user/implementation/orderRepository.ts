@@ -1,11 +1,12 @@
 import { ISubscriptionPlan, SubscriptionPlan } from "../../../model/admin/subscriptionSchema";
 import { IOrder, Order } from "../../../model/user/orderSchema";
 import { IUserSubscription, UserSubscription } from "../../../model/user/userSubscriptionSchema";
+import { IOrderInput } from "../../../types/IUser";
 import IOrderRepository from "../IOrderRepository";
 
 
 class OrderRepository implements IOrderRepository {
-    async createOrder(order: IOrder): Promise<IOrder | null> {
+    async createOrder(order: IOrderInput): Promise<IOrder | null> {
         const newOrder = await Order.create(order);
         return newOrder;
     };
