@@ -37,7 +37,6 @@ class OrderRepository implements IOrderRepository {
     }
 
     async createSubscription(data: Partial<IUserSubscription>): Promise<IUserSubscription> {
-        console.log("asheem repro", data)
         return await UserSubscription.create(data);
     }
 
