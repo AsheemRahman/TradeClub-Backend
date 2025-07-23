@@ -5,6 +5,7 @@ import { IUserType } from "../../../types/IUser";
 import { OTP, OTPType } from "../../../model/user/otp";
 import { SubscriptionPlan, ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
 import { Expert, IExpert } from "../../../model/expert/expertSchema";
+import { ExpertAvailability, IExpertAvailability } from "../../../model/expert/AvailabilitySchema";
 
 class userRepository extends BaseRepository<IUser> implements IUserRepository {
     constructor() {
@@ -67,6 +68,16 @@ class userRepository extends BaseRepository<IUser> implements IUserRepository {
 
     async getExpertById(id: string): Promise<IExpert | null> {
         const expert = await Expert.findOne({ _id: id, isActive: true, isVerified: "Approved", });
+        return expert;
+    }
+    async getAvailabilityByExpert(id: string, startDate: Date, endDate: Date): Promise<IExpertAvailability[] | null> {
+        const expert = await ExpertAvailability.find({
+            expertId: id,
+            // date: {
+            //     $gte: startDate,
+            //     $lte: endDate
+            // }
+        }).sort({ date: 1 });
         return expert;
     }
 }

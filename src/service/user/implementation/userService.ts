@@ -9,6 +9,7 @@ import { OTPType } from "../../../model/user/otp";
 import { IUser } from "../../../model/user/userSchema";
 import { ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
 import { IExpert } from "../../../model/expert/expertSchema";
+import { IExpertAvailability } from "../../../model/expert/AvailabilitySchema";
 
 
 
@@ -79,6 +80,11 @@ class UserService implements IUserService {
     async getExpertById(id: string): Promise<IExpert | null> {
         const expert = await this.userRepository.getExpertById(id);
         return expert;
+    }
+
+    async getAvailabilityByExpert(id: string, startDate: Date, endDate: Date): Promise<IExpertAvailability[] | null> {
+        const availability = await this.userRepository.getAvailabilityByExpert(id, startDate, endDate);
+        return availability;
     }
 }
 

@@ -1,4 +1,5 @@
 import { ISubscriptionPlan } from "../../model/admin/subscriptionSchema";
+import { IExpertAvailability } from "../../model/expert/AvailabilitySchema";
 import { IExpert } from "../../model/expert/expertSchema";
 import { OTPType } from "../../model/user/otp";
 import { IUser } from "../../model/user/userSchema";
@@ -21,6 +22,7 @@ interface IUserRepository {
 
     getAllExpert(): Promise<IExpert[] | null>;
     getExpertById(id: string): Promise<IExpert | null>;
+    getAvailabilityByExpert(id: string, startDate: Date, endDate: Date): Promise<IExpertAvailability[] | null>;
 }
 
 

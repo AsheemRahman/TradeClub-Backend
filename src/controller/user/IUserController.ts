@@ -19,6 +19,7 @@ interface IUserController {
 
     getAllExpert(req: Request, res: Response): Promise<void>;
     getExpertById(req: Request, res: Response): Promise<void>;
+    getExpertAvailability(req: Request, res: Response): Promise<void>;
 }
 
 export default IUserController;

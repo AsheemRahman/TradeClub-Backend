@@ -86,7 +86,7 @@ router.get('/purchased-courses', validate("user"), (req, res) => orderController
 
 router.get('/experts', validate("user"), (req, res) => userControllerInstance.getAllExpert(req, res));
 router.get('/expert/:id', validate("user"), (req, res) => userControllerInstance.getExpertById(req, res));
-// router.get('/expert/:id/availability', validate("user"), (req, res) => userControllerInstance.getExpertAvailability(req, res));
+router.get('/expert/:id/availability', validate("user"), (req, res) => userControllerInstance.getExpertAvailability(req, res));
 
 
 export default router;

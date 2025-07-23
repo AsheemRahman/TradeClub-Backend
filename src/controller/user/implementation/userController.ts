@@ -380,18 +380,39 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
                 return;
             }
-            const Expert = await this.userService.getExpertById(id)
-            if (!Expert) {
+            const expert = await this.userService.getExpertById(id)
+            if (!expert) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return
             }
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Expert details fetched successfully", Expert });
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Expert details fetched successfully", expert });
         } catch (error) {
             console.error("Get expert Details error:", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, error: "Get expert Details error", });
         }
     };
-}
+
+    async getExpertAvailability(req: Request, res: Response): Promise<void> {
+        try {
+            const { id } = req.params;
+            const { startDate, endDate } = req.query;
+            if (!id || !startDate || !endDate) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.MISSING_REQUIRED_FIELDS, });
+                return;
+            }
+            const Expert = await this.userService.getExpertById(id)
+            if (!Expert) {
+                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
+                return
+            }
+            const availability = await this.userService.getAvailabilityByExpert(id, new Date(startDate as string), new Date(endDate as string));
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Expert availability fetched successfully", availability });
+        } catch (error) {
+            console.error("Get expert availability error:", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch expert availability", });
+        }
+    };
+};
 
 
 export default UserController;
