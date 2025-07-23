@@ -4,6 +4,7 @@ import { BaseRepository } from "../../base/implementation/BaseRepository";
 import { IUserType } from "../../../types/IUser";
 import { OTP, OTPType } from "../../../model/user/otp";
 import { SubscriptionPlan, ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
+import { Expert, IExpert } from "../../../model/expert/expertSchema";
 
 class userRepository extends BaseRepository<IUser> implements IUserRepository {
     constructor() {
@@ -57,6 +58,11 @@ class userRepository extends BaseRepository<IUser> implements IUserRepository {
     async fetchPlans(): Promise<ISubscriptionPlan[] | null> {
         const plans = await SubscriptionPlan.find().sort({ createdAt: -1 });
         return plans;
+    }
+
+    async getAllExpert(): Promise<IExpert[] | null> {
+        const experts = await Expert.find().sort({ createdAt: -1 });
+        return experts;
     }
 }
 

@@ -17,11 +17,9 @@ import { JwtPayload } from "jsonwebtoken";
 class UserController implements IUserController {
     private userService: IUserService;
 
-
     constructor(userService: IUserService) {
         this.userService = userService;
     }
-
 
     async registerPost(req: Request, res: Response): Promise<void> {
         try {
@@ -57,7 +55,6 @@ class UserController implements IUserController {
         }
     }
 
-
     async verifyOtp(req: Request, res: Response): Promise<void> {
         const { otp, email } = req.body;
         if (!otp || !email) {
@@ -83,7 +80,6 @@ class UserController implements IUserController {
         }
     }
 
-
     async resendOtp(req: Request, res: Response): Promise<void> {
         const { email } = req.body;
         if (!email) {
@@ -100,7 +96,6 @@ class UserController implements IUserController {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Failed to send the verification mail" });
         }
     }
-
 
     async loginPost(req: Request, res: Response): Promise<void> {
         const { email, password } = req.body;
@@ -146,7 +141,6 @@ class UserController implements IUserController {
         }
     }
 
-
     async refreshToken(req: Request, res: Response): Promise<void> {
         try {
             const refreshToken = req.cookies['refreshToken'];
@@ -175,7 +169,6 @@ class UserController implements IUserController {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Internal server error' });
         }
     };
-
 
     async googleLogin(req: Request, res: Response): Promise<void> {
         try {
@@ -234,7 +227,6 @@ class UserController implements IUserController {
         }
     }
 
-
     async forgotPassword(req: Request, res: Response): Promise<void> {
         const { email } = req.body;
         if (!email) {
@@ -264,7 +256,6 @@ class UserController implements IUserController {
         }
     }
 
-
     async resetPassword(req: Request, res: Response): Promise<void> {
         const { email, password } = req.body;
         if (!email || !password) {
@@ -287,7 +278,6 @@ class UserController implements IUserController {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, });
         }
     }
-
 
     async getProfile(req: Request, res: Response): Promise<void> {
         try {
@@ -312,7 +302,6 @@ class UserController implements IUserController {
             return
         }
     }
-
 
     async updateProfile(req: Request, res: Response): Promise<void> {
         try {
@@ -350,6 +339,37 @@ class UserController implements IUserController {
         } catch (error) {
             console.error("Failed to fetch Subscription plan", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch Subscription plan", error: error instanceof Error ? error.message : String(error), });
+        }
+    };
+
+    async getAllExpert(req: Request, res: Response): Promise<void> {
+        try {
+            const response = await this.userService.getAllExpert();
+            const expert = response || [];
+            const formattedExperts = expert.map((expert: any) => ({
+                id: expert._id,
+                fullName: expert.fullName,
+                isActive: expert.isActive,
+                profilePicture: expert.profilePicture,
+                experience_level: expert.experience_level,
+                year_of_experience: expert.year_of_experience,
+                markets_Traded: expert.markets_Traded,
+                trading_style: expert.trading_style,
+                state: expert.state,
+                country: expert.country,
+                isVerified: expert.isVerified,
+                createdAt: expert.createdAt
+            }));
+            res.status(STATUS_CODES.OK).json({
+                status: true, message: "Experts fetched successfully",
+                data: {
+                    experts: formattedExperts,
+                    // expertCount: response.total
+                },
+            });
+        } catch (error) {
+            console.error("Get experts error:", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, error: "Failed to fetch experts", });
         }
     };
 }

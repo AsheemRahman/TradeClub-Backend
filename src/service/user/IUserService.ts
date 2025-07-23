@@ -1,4 +1,5 @@
 import { ISubscriptionPlan } from '../../model/admin/subscriptionSchema';
+import { IExpert } from '../../model/expert/expertSchema';
 import { OTPType } from '../../model/user/otp';
 import { IUser } from '../../model/user/userSchema';
 import { IUserType } from '../../types/IUser';
@@ -17,6 +18,7 @@ interface IUserService {
     updateUserById(id: string, updateData: Partial<IUser>): Promise<IUser | null>;
 
     fetchPlans(): Promise<ISubscriptionPlan[] | null>;
+    getAllExpert(): Promise<IExpert[] | null>;
 }
 
 export default IUserService;

@@ -8,6 +8,7 @@ import PasswordUtils from "../../../utils/passwordUtils";
 import { OTPType } from "../../../model/user/otp";
 import { IUser } from "../../../model/user/userSchema";
 import { ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
+import { IExpert } from "../../../model/expert/expertSchema";
 
 
 
@@ -68,6 +69,11 @@ class UserService implements IUserService {
     async fetchPlans(): Promise<ISubscriptionPlan[] | null> {
         const planData = await this.userRepository.fetchPlans();
         return planData;
+    }
+
+    async getAllExpert(): Promise<IExpert[] | null> {
+        const experts = await this.userRepository.getAllExpert();
+        return experts;
     }
 }
 

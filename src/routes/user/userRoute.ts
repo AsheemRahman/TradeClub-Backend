@@ -74,12 +74,19 @@ router.get('/fetch-plans', (req, res) => userControllerInstance.fetchPlans(req, 
 router.post('/subscription-checkout', validate("user"), (req, res) => orderController.subscriptionCheckout(req, res));
 
 
-//------------------------------------ Order -----------------------------------
+//------------------------------------ Order ------------------------------------
 
 router.post('/create-checkout-session', validate("user"), (req, res) => orderController.createCheckoutSession(req, res));
 router.post('/create-order', validate("user"), (req, res) => orderController.createOrder(req, res));
 router.get('/purchase-history', validate("user"), (req, res) => orderController.getPurchaseHistory(req, res));
 router.get('/purchased-courses', validate("user"), (req, res) => orderController.getPurchasedCourse(req, res));
+
+
+//------------------------------------ Consultation ------------------------------------
+
+router.get('/experts', validate("user"), (req, res) => userControllerInstance.getAllExpert(req, res));
+// router.get('/expert/:id', validate("user"), (req, res) => userCourseController.getExpertById(req, res));
+// router.get('/expert/:id/availability', validate("user"), (req, res) => userCourseController.getExpertAvailability(req, res));
 
 
 export default router;
