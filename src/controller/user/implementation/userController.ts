@@ -372,6 +372,25 @@ class UserController implements IUserController {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, error: "Failed to fetch experts", });
         }
     };
+
+    async getExpertById(req: Request, res: Response): Promise<void> {
+        try {
+            const { id } = req.params;
+            if (!id) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
+                return;
+            }
+            const Expert = await this.userService.getExpertById(id)
+            if (!Expert) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
+                return
+            }
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Expert details fetched successfully", Expert });
+        } catch (error) {
+            console.error("Get expert Details error:", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, error: "Get expert Details error", });
+        }
+    };
 }
 
 

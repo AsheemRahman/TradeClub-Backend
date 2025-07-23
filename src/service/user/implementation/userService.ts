@@ -75,6 +75,11 @@ class UserService implements IUserService {
         const experts = await this.userRepository.getAllExpert();
         return experts;
     }
+
+    async getExpertById(id: string): Promise<IExpert | null> {
+        const expert = await this.userRepository.getExpertById(id);
+        return expert;
+    }
 }
 
 

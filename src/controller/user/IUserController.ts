@@ -18,6 +18,7 @@ interface IUserController {
     fetchPlans(req: Request, res: Response): Promise<void>;
 
     getAllExpert(req: Request, res: Response): Promise<void>;
+    getExpertById(req: Request, res: Response): Promise<void>;
 }
 
 export default IUserController;

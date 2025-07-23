@@ -20,6 +20,7 @@ interface IUserRepository {
     fetchPlans(): Promise<ISubscriptionPlan[] | null>;
 
     getAllExpert(): Promise<IExpert[] | null>;
+    getExpertById(id: string): Promise<IExpert | null>;
 }
 
 

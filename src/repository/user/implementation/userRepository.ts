@@ -61,8 +61,13 @@ class userRepository extends BaseRepository<IUser> implements IUserRepository {
     }
 
     async getAllExpert(): Promise<IExpert[] | null> {
-        const experts = await Expert.find().sort({ createdAt: -1 });
+        const experts = await Expert.find({ isActive: true, isVerified: "Approved", }).sort({ createdAt: -1 });
         return experts;
+    }
+
+    async getExpertById(id: string): Promise<IExpert | null> {
+        const expert = await Expert.findOne({ _id: id, isActive: true, isVerified: "Approved", });
+        return expert;
     }
 }
 
