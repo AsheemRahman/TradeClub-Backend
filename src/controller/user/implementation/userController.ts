@@ -395,7 +395,8 @@ class UserController implements IUserController {
     async getExpertAvailability(req: Request, res: Response): Promise<void> {
         try {
             const { id } = req.params;
-            const { startDate, endDate } = req.query;
+            const startDate = req.query.startDate as string;
+            const endDate = req.query.endDate as string;
             if (!id || !startDate || !endDate) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.MISSING_REQUIRED_FIELDS, });
                 return;
@@ -405,7 +406,7 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return
             }
-            const availability = await this.userService.getAvailabilityByExpert(id, new Date(startDate as string), new Date(endDate as string));
+            const availability = await this.userService.getAvailabilityByExpert(id, startDate, endDate);
             res.status(STATUS_CODES.OK).json({ status: true, message: "Expert availability fetched successfully", availability });
         } catch (error) {
             console.error("Get expert availability error:", error);

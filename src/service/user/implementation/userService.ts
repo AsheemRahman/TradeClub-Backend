@@ -82,7 +82,7 @@ class UserService implements IUserService {
         return expert;
     }
 
-    async getAvailabilityByExpert(id: string, startDate: Date, endDate: Date): Promise<IExpertAvailability[] | null> {
+    async getAvailabilityByExpert(id: string, startDate: string, endDate: string): Promise<IExpertAvailability[] | null> {
         const availability = await this.userRepository.getAvailabilityByExpert(id, startDate, endDate);
         return availability;
     }

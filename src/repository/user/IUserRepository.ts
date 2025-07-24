@@ -22,7 +22,7 @@ interface IUserRepository {
 
     getAllExpert(): Promise<IExpert[] | null>;
     getExpertById(id: string): Promise<IExpert | null>;
-    getAvailabilityByExpert(id: string, startDate: Date, endDate: Date): Promise<IExpertAvailability[] | null>;
+    getAvailabilityByExpert(id: string, startDate: string, endDate: string): Promise<IExpertAvailability[] | null>;
 }
 
 
