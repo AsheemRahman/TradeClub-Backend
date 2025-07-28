@@ -3,6 +3,7 @@ import { IExpertAvailability } from '../../model/expert/AvailabilitySchema';
 import { IExpert } from '../../model/expert/expertSchema';
 import { OTPType } from '../../model/user/otp';
 import { IUser } from '../../model/user/userSchema';
+import { IUserSubscription } from '../../model/user/userSubscriptionSchema';
 import { IUserType } from '../../types/IUser';
 
 
@@ -22,6 +23,7 @@ interface IUserService {
     getAllExpert(): Promise<IExpert[] | null>;
     getExpertById(id: string): Promise<IExpert | null>;
     getAvailabilityByExpert(id: string, startDate: string, endDate: string): Promise<IExpertAvailability[] | null>;
+    checkSubscription(userId: string): Promise<IUserSubscription | null>;
 }
 
 export default IUserService;

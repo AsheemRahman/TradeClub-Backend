@@ -6,6 +6,7 @@ import { OTP, OTPType } from "../../../model/user/otp";
 import { SubscriptionPlan, ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
 import { Expert, IExpert } from "../../../model/expert/expertSchema";
 import { ExpertAvailability, IExpertAvailability } from "../../../model/expert/AvailabilitySchema";
+import { IUserSubscription, UserSubscription } from "../../../model/user/userSubscriptionSchema";
 
 class userRepository extends BaseRepository<IUser> implements IUserRepository {
     constructor() {
@@ -70,16 +71,18 @@ class userRepository extends BaseRepository<IUser> implements IUserRepository {
         const expert = await Expert.findOne({ _id: id, isActive: true, isVerified: "Approved", });
         return expert;
     }
-
+    
     async getAvailabilityByExpert(id: string, startDate: string, endDate: string): Promise<IExpertAvailability[] | null> {
         const expert = await ExpertAvailability.find({
             expertId: id,
-            date: {
-                $gte: startDate,
-                $lte: endDate
-            }
+            date: { $gte: startDate, $lte: endDate}
         }).sort({ date: 1 });
         return expert;
+    }
+
+    async checkSubscription(userId: string): Promise<IUserSubscription | null> {
+        const subscription = await UserSubscription.findOne({ user: userId, isActive: true,  paymentStatus: 'paid',  endDate: { $gt: new Date() },});
+        return subscription;
     }
 }
 

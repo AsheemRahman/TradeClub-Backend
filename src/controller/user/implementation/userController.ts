@@ -11,6 +11,7 @@ import OtpUtility from "../../../utils/otpUtility";
 import MailUtility from "../../../utils/mailUtility";
 import PasswordUtils from "../../../utils/passwordUtils";
 import { JwtPayload } from "jsonwebtoken";
+import { UserSubscription } from "../../../model/user/userSubscriptionSchema";
 
 
 
@@ -413,6 +414,21 @@ class UserController implements IUserController {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch expert availability", });
         }
     };
+
+    async checkSubscription(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = req.userId;
+            if (!userId) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND, });
+                return;
+            }
+            const subscription = await this.userService.checkSubscription(userId)
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Subscription status retrieved successfully", subscription });
+        } catch (error) {
+            console.error("checkSubscription error:", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to retrieve subscription status", });
+        }
+    }
 };
 
 

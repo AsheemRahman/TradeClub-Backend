@@ -10,6 +10,7 @@ import { IUser } from "../../../model/user/userSchema";
 import { ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
 import { IExpert } from "../../../model/expert/expertSchema";
 import { IExpertAvailability } from "../../../model/expert/AvailabilitySchema";
+import { IUserSubscription } from "../../../model/user/userSubscriptionSchema";
 
 
 
@@ -81,10 +82,15 @@ class UserService implements IUserService {
         const expert = await this.userRepository.getExpertById(id);
         return expert;
     }
-
+    
     async getAvailabilityByExpert(id: string, startDate: string, endDate: string): Promise<IExpertAvailability[] | null> {
         const availability = await this.userRepository.getAvailabilityByExpert(id, startDate, endDate);
         return availability;
+    }
+
+    async checkSubscription(userId: string): Promise<IUserSubscription | null> {
+        const subscription = await this.userRepository.checkSubscription(userId);
+        return subscription;
     }
 }
 
