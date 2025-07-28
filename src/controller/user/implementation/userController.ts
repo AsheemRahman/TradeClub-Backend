@@ -377,7 +377,7 @@ class UserController implements IUserController {
         try {
             const { id } = req.params;
             if (!id) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return;
             }
             const expert = await this.userService.getExpertById(id)
