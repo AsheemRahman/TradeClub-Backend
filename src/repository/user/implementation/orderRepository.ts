@@ -1,7 +1,8 @@
 import { ISubscriptionPlan, SubscriptionPlan } from "../../../model/admin/subscriptionSchema";
+import { ISession, Session } from "../../../model/expert/sessionSchema";
 import { IOrder, Order } from "../../../model/user/orderSchema";
 import { IUserSubscription, UserSubscription } from "../../../model/user/userSubscriptionSchema";
-import { IOrderInput } from "../../../types/IUser";
+import { CreateSessionDTO, IOrderInput } from "../../../types/IUser";
 import IOrderRepository from "../IOrderRepository";
 
 
@@ -54,6 +55,18 @@ class OrderRepository implements IOrderRepository {
 
     async getAllSubscriptionsByUser(userId: string): Promise<IUserSubscription[] | null> {
         return await UserSubscription.find({ user: userId });
+    }
+
+    async createSession(data: CreateSessionDTO): Promise<ISession | null> {
+        return await Session.create({ ...data, status: 'upcoming', bookedAt: new Date(), });
+    }
+
+    async getSessionsByUser(userId: string): Promise<ISession[] | null>  {
+        return await Session.find({ userId }).populate('expertId availabilityId');
+    }
+
+    async updateSessionStatus(sessionId: string, status: 'completed' | 'missed'): Promise<ISession | null>  {
+        return await Session.findByIdAndUpdate(sessionId, { status }, { new: true });
     }
 }
 

@@ -82,12 +82,16 @@ router.get('/purchase-history', validate("user"), (req, res) => orderController.
 router.get('/purchased-courses', validate("user"), (req, res) => orderController.getPurchasedCourse(req, res));
 
 
-//------------------------------------ Consultation ------------------------------------
+//-------------------------------- Consultation ---------------------------------
 
 router.get('/experts', validate("user"), (req, res) => userControllerInstance.getAllExpert(req, res));
 router.get('/expert/:id', validate("user"), (req, res) => userControllerInstance.getExpertById(req, res));
 router.get('/expert/:id/availability', validate("user"), (req, res) => userControllerInstance.getExpertAvailability(req, res));
 router.get('/check-subscription', validate("user"), (req, res) => userControllerInstance.checkSubscription(req, res));
 
+
+//------------------------------------ Slot -------------------------------------
+
+router.post('/slot-booking', validate("user"), (req, res) => orderController.slotBooking(req, res));
 
 export default router;

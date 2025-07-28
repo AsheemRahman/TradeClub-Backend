@@ -123,7 +123,7 @@ class OrderController implements IOrderController {
                     paymentIntentId: session.payment_intent?.toString() || '',
                     paymentStatus: session.payment_status,
                 })
-                await this.orderService.createUserSubscription( userId, purchaseId, session.payment_intent?.toString() || '', session.payment_status as 'paid' | 'pending' | 'failed');
+                await this.orderService.createUserSubscription(userId, purchaseId, session.payment_intent?.toString() || '', session.payment_status as 'paid' | 'pending' | 'failed');
                 res.status(STATUS_CODES.CREATED).json({ status: true, message: "Subscription purchased Successfully", order })
             }
         } catch (error) {
@@ -228,6 +228,42 @@ class OrderController implements IOrderController {
         } catch (error) {
             console.error("Stripe error:", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Payment session creation failed." });
+        }
+    }
+
+    async slotBooking(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = req.userId;
+            if (!userId) {
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access', });
+                return
+            }
+            const { expertId, availabilityId, meetingLink } = req.body;
+            console.log("request data", req.body)
+            if (!expertId || !availabilityId) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: 'expertId and availabilityId are required', });
+                return;
+            }
+            const sessionData = { userId, expertId, availabilityId, meetingLink, };
+            const newSession = await this.orderService.createSession(sessionData);
+            res.status(STATUS_CODES.CREATED).json({ status: true, message: 'Session created successfully', session: newSession, });
+        } catch (error) {
+            console.error('Error creating session:', error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Could not create session', });
+        }
+    }
+
+    async getSessionsByUser(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = req.userId;
+            if (!userId) {
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access', });
+                return
+            }
+            const sessions = await this.orderService.getUserSessions(userId);
+            res.status(STATUS_CODES.OK).json({ status: true, sessions, });
+        } catch (error) {
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false });
         }
     }
 }

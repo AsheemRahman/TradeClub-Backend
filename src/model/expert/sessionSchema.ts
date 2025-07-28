@@ -45,7 +45,7 @@ const SessionSchema: Schema<ISession> = new Schema({
     endedAt: {
         type: Date
     },
-});
+}, { timestamps: true });
 
 
 const Session = mongoose.model<ISession>('Session', SessionSchema);

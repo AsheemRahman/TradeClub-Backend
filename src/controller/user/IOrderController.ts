@@ -8,6 +8,9 @@ interface IOrderController {
     getPurchasedCourse(req: Request, res: Response): Promise<void>;
 
     subscriptionCheckout(req: Request, res: Response): Promise<void>;
+
+    slotBooking(req: Request, res: Response): Promise<void>;
+    getSessionsByUser(req: Request, res: Response): Promise<void>;
 }
 
 export default IOrderController;

@@ -1,9 +1,10 @@
 import { ICourse } from "../../model/admin/courseSchema";
 import { ISubscriptionPlan } from "../../model/admin/subscriptionSchema";
+import { ISession } from "../../model/expert/sessionSchema";
 import { IOrder } from "../../model/user/orderSchema";
 import { ICourseProgress } from "../../model/user/progressSchema";
 import { IUserSubscription } from "../../model/user/userSubscriptionSchema";
-import { IOrderInput } from "../../types/IUser";
+import { CreateSessionDTO, IOrderInput } from "../../types/IUser";
 
 interface IOrderService {
     getCourseById(id: string): Promise<ICourse | null>;
@@ -23,6 +24,10 @@ interface IOrderService {
     createUserSubscription(userId: string, planId: string, paymentId: string, paymentStatus: 'paid' | 'pending' | 'failed'): Promise<IUserSubscription>;
     getAllSubscriptionsByUser(userId: string): Promise<IUserSubscription[] | null>;
     getActiveSubscription(userId: string): Promise<IUserSubscription | null>
+
+    createSession(data: CreateSessionDTO): Promise<ISession | null>;
+    getUserSessions(userId: string): Promise<ISession[] | null>;
+    markSessionStatus(sessionId: string, status: 'completed' | 'missed'): Promise<ISession | null>;
 }
 
 export default IOrderService;

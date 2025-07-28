@@ -19,3 +19,10 @@ export interface IOrderInput {
     paymentIntentId: string;
     paymentStatus: "paid" | string;
 }
+
+export interface CreateSessionDTO {
+    userId: string;
+    expertId: string;
+    availabilityId: string;
+    meetingLink?: string;
+}
