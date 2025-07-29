@@ -71,17 +71,18 @@ class userRepository extends BaseRepository<IUser> implements IUserRepository {
         const expert = await Expert.findOne({ _id: id, isActive: true, isVerified: "Approved", });
         return expert;
     }
-    
+
     async getAvailabilityByExpert(id: string, startDate: string, endDate: string): Promise<IExpertAvailability[] | null> {
         const expert = await ExpertAvailability.find({
             expertId: id,
-            date: { $gte: startDate, $lte: endDate}
+            date: { $gte: startDate, $lte: endDate },
+            isBooked: false,
         }).sort({ date: 1 });
         return expert;
     }
 
     async checkSubscription(userId: string): Promise<IUserSubscription | null> {
-        const subscription = await UserSubscription.findOne({ user: userId, isActive: true,  paymentStatus: 'paid',  endDate: { $gt: new Date() },});
+        const subscription = await UserSubscription.findOne({ user: userId, isActive: true, paymentStatus: 'paid', endDate: { $gt: new Date() }, });
         return subscription;
     }
 }
