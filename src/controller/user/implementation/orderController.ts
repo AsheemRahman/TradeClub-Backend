@@ -52,7 +52,7 @@ class OrderController implements IOrderController {
                     },
                 ],
                 success_url: `${process.env.CLIENT_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}&courseId=${course._id}`,
-                cancel_url: `${process.env.CLIENT_URL}/payment-failed`,
+                cancel_url: `${process.env.CLIENT_URL}/payment-failed?session_id={CHECKOUT_SESSION_ID}&courseId=${course._id}`,
                 metadata: {
                     userId: userId,
                     courseId: course._id,
@@ -79,6 +79,69 @@ class OrderController implements IOrderController {
             const session = await stripe.checkout.sessions.retrieve(sessionId);
             if (!session || session.payment_status !== 'paid') {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: 'Payment not successful' });
+                return
+            }
+            const existing = await this.orderService.checkOrderExisting(sessionId);
+            if (existing) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: 'Order already exists' });
+                return
+            }
+            const purchaseId = session.metadata?.courseId || session.metadata?.planId;
+            const isCourse = !!session.metadata?.courseId;
+            const userId = session.metadata?.userId;
+            if (!userId || !purchaseId) {
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access', });
+                return
+            }
+            if (isCourse) {
+                const course = await this.orderService.getCourseById(purchaseId);
+                if (!course) throw new Error('Course not found');
+                const order = await this.orderService.createOrder({
+                    userId,
+                    itemId: purchaseId,
+                    type: "Course",
+                    title: course.title,
+                    amount: course.price,
+                    currency: session.currency?.toUpperCase() || 'INR',
+                    stripeSessionId: sessionId,
+                    paymentIntentId: session.payment_intent?.toString() || '',
+                    paymentStatus: session.payment_status,
+                })
+                await this.orderService.updateCourse(purchaseId, userId)
+                res.status(STATUS_CODES.CREATED).json({ status: true, message: "Courses purchased Successfully", order })
+            } else {
+                const plan = await this.orderService.getPlanById(purchaseId);
+                if (!plan) throw new Error('Subscription is not found');
+                const order = await this.orderService.createOrder({
+                    userId,
+                    itemId: purchaseId,
+                    type: "SubscriptionPlan",
+                    title: plan.name,
+                    amount: plan.price,
+                    currency: session.currency?.toUpperCase() || 'INR',
+                    stripeSessionId: sessionId,
+                    paymentIntentId: session.payment_intent?.toString() || '',
+                    paymentStatus: session.payment_status,
+                })
+                await this.orderService.createUserSubscription(userId, purchaseId, session.payment_intent?.toString() || '', session.payment_status as 'paid' | 'pending' | 'failed', plan.accessLevel?.expertCallsPerMonth ?? 0);
+                res.status(STATUS_CODES.CREATED).json({ status: true, message: "Subscription purchased Successfully", order })
+            }
+        } catch (error) {
+            console.error("Failed to create order", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create order", });
+        }
+    }
+
+    async failedOrder(req: Request, res: Response): Promise<void> {
+        const { sessionId } = req.body;
+        if (!sessionId) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Session ID is required" });
+            return;
+        }
+        try {
+            const session = await stripe.checkout.sessions.retrieve(sessionId);
+            if (session.payment_status == 'paid') {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: 'Payment successful' });
                 return
             }
             const existing = await this.orderService.checkOrderExisting(sessionId);
@@ -218,7 +281,7 @@ class OrderController implements IOrderController {
                     },
                 ],
                 success_url: `${process.env.CLIENT_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}&planId=${planData._id}`,
-                cancel_url: `${process.env.CLIENT_URL}/payment-failed`,
+                cancel_url: `${process.env.CLIENT_URL}/payment-failed?session_id={CHECKOUT_SESSION_ID}&planId=${planData._id}`,
                 metadata: {
                     userId,
                     planId: String(planData._id),

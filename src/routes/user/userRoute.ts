@@ -72,12 +72,14 @@ router.post('/course/:courseId/progress', validate("user"), userCourseController
 
 router.get('/fetch-plans', (req, res) => userControllerInstance.fetchPlans(req, res));
 router.post('/subscription-checkout', validate("user"), (req, res) => orderController.subscriptionCheckout(req, res));
+router.get('/check-subscription', validate("user"), (req, res) => userControllerInstance.checkSubscription(req, res));
 
 
 //------------------------------------ Order ------------------------------------
 
 router.post('/create-checkout-session', validate("user"), (req, res) => orderController.createCheckoutSession(req, res));
 router.post('/create-order', validate("user"), (req, res) => orderController.createOrder(req, res));
+router.post('/order-failed', validate("user"), (req, res) => orderController.failedOrder(req, res));
 router.get('/purchase-history', validate("user"), (req, res) => orderController.getPurchaseHistory(req, res));
 router.get('/purchased-courses', validate("user"), (req, res) => orderController.getPurchasedCourse(req, res));
 
@@ -87,7 +89,6 @@ router.get('/purchased-courses', validate("user"), (req, res) => orderController
 router.get('/experts', validate("user"), (req, res) => userControllerInstance.getAllExpert(req, res));
 router.get('/expert/:id', validate("user"), (req, res) => userControllerInstance.getExpertById(req, res));
 router.get('/expert/:id/availability', validate("user"), (req, res) => userControllerInstance.getExpertAvailability(req, res));
-router.get('/check-subscription', validate("user"), (req, res) => userControllerInstance.checkSubscription(req, res));
 
 
 //------------------------------------ Slot -------------------------------------
