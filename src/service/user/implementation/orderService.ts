@@ -69,14 +69,14 @@ class OrderService implements IOrderService {
         return Data;
     }
 
-    async createUserSubscription(userId: string, planId: string, paymentId: string, paymentStatus: 'paid' | 'pending' | 'failed', durationInDays: number = 30, autoRenew: boolean = false): Promise<IUserSubscription> {
+    async createUserSubscription(userId: string, planId: string, paymentId: string, paymentStatus: 'paid' | 'pending' | 'failed', callsRemaining: number, durationInDays: number = 30, autoRenew: boolean = false,): Promise<IUserSubscription> {
         const startDate = new Date();
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + durationInDays);
         await this.orderRepository.deactivateSubscription(userId);
         return await this.orderRepository.createSubscription({
             user: userId, subscriptionPlan: planId, startDate, endDate, isActive: true,
-            paymentId, paymentStatus, autoRenew,
+            paymentId, paymentStatus, autoRenew, callsRemaining
         });
     }
 
@@ -86,6 +86,10 @@ class OrderService implements IOrderService {
 
     async getAllSubscriptionsByUser(userId: string): Promise<IUserSubscription[] | null> {
         return await this.orderRepository.getAllSubscriptionsByUser(userId);
+    }
+
+    async updateSubscription(userId: string, planId: string): Promise<IUserSubscription | null> {
+        return await this.orderRepository.updateSubscription(userId, planId);
     }
 
     async createSession(data: CreateSessionDTO): Promise<ISession | null> {

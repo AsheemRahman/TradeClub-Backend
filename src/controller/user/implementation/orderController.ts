@@ -4,7 +4,7 @@ import { ERROR_MESSAGES } from "../../../constants/message"
 
 import IOrderController from "../IOrderController";
 import IOrderService from "../../../service/user/IOrderService";
-import { IUserSubscription } from "../../../model/user/userSubscriptionSchema";
+import { IUserSubscription, UserSubscription } from "../../../model/user/userSubscriptionSchema";
 
 import Stripe from "stripe";
 import mongoose, { Types } from "mongoose";
@@ -123,7 +123,7 @@ class OrderController implements IOrderController {
                     paymentIntentId: session.payment_intent?.toString() || '',
                     paymentStatus: session.payment_status,
                 })
-                await this.orderService.createUserSubscription(userId, purchaseId, session.payment_intent?.toString() || '', session.payment_status as 'paid' | 'pending' | 'failed');
+                await this.orderService.createUserSubscription(userId, purchaseId, session.payment_intent?.toString() || '', session.payment_status as 'paid' | 'pending' | 'failed', plan.accessLevel?.expertCallsPerMonth ?? 0);
                 res.status(STATUS_CODES.CREATED).json({ status: true, message: "Subscription purchased Successfully", order })
             }
         } catch (error) {
@@ -235,21 +235,41 @@ class OrderController implements IOrderController {
         try {
             const userId = req.userId;
             if (!userId) {
-                res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access', });
-                return
-            }
-            const { expertId, availabilityId, meetingLink } = req.body;
-            console.log("request data", req.body)
-            if (!expertId || !availabilityId) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: 'expertId and availabilityId are required', });
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: ERROR_MESSAGES.UNAUTHORIZED || "Unauthorized access", });
                 return;
             }
-            const sessionData = { userId, expertId, availabilityId, meetingLink, };
+            const { expertId, availabilityId, meetingLink } = req.body;
+            console.log("request data", req.body);
+            if (!expertId || !availabilityId) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "expertId and availabilityId are required", });
+                return;
+            }
+            // Check user subscription
+            // const subscription = await UserSubscription.findOne({ user: userId, isActive: true,}).populate("subscriptionPlan");
+            const subscription = await this.orderService.getActiveSubscription(userId);
+            if (!subscription) {
+                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "No active subscription found.", });
+                return;
+            }
+            if (subscription.callsRemaining === undefined) {
+                subscription.callsRemaining = 0;
+            }
+            if (subscription.callsRemaining == 0) {
+                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "You have reached your monthly call limit.", });
+                return;
+            }
+            const sessionData = { userId, expertId, availabilityId, meetingLink };
             const newSession = await this.orderService.createSession(sessionData);
-            res.status(STATUS_CODES.CREATED).json({ status: true, message: 'Session created successfully', session: newSession, });
+            // subscription.callsRemaining -= 1;
+            // await subscription.save();
+            await this.orderService.updateSubscription(userId, subscription.id)
+            res.status(STATUS_CODES.CREATED).json({ status: true, message: "Session created successfully", session: newSession, remainingCalls: subscription.callsRemaining, });
         } catch (error) {
-            console.error('Error creating session:', error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Could not create session', });
+            console.error("Error creating session:", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+                status: false,
+                message: "Could not create session",
+            });
         }
     }
 

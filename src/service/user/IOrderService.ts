@@ -21,9 +21,10 @@ interface IOrderService {
     getPlanById(planId: string): Promise<ISubscriptionPlan | null>;
     checkPlan(userId: string, planId: string): Promise<IUserSubscription[] | null>;
 
-    createUserSubscription(userId: string, planId: string, paymentId: string, paymentStatus: 'paid' | 'pending' | 'failed'): Promise<IUserSubscription>;
+    createUserSubscription(userId: string, planId: string, paymentId: string, paymentStatus: 'paid' | 'pending' | 'failed', callsRemaining: number): Promise<IUserSubscription>;
     getAllSubscriptionsByUser(userId: string): Promise<IUserSubscription[] | null>;
-    getActiveSubscription(userId: string): Promise<IUserSubscription | null>
+    getActiveSubscription(userId: string): Promise<IUserSubscription | null>;
+    updateSubscription(userId: string, planId: string): Promise<IUserSubscription | null>;
 
     createSession(data: CreateSessionDTO): Promise<ISession | null>;
     getUserSessions(userId: string): Promise<ISession[] | null>;

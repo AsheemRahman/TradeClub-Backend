@@ -6,6 +6,7 @@ interface IUserSubscription extends Document {
     startDate: Date;
     endDate: Date;
     isActive: boolean;
+    callsRemaining: number;
     paymentId?: string;
     paymentStatus?: 'paid' | 'pending' | 'failed';
     autoRenew?: boolean;
@@ -33,6 +34,9 @@ const userSubscriptionSchema = new Schema<IUserSubscription>({
     isActive: {
         type: Boolean,
         default: true,
+    },
+    callsRemaining: {
+        type: Number,
     },
     paymentId: {
         type: String,

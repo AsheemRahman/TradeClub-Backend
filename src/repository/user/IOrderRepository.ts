@@ -19,6 +19,7 @@ interface IOrderRepository {
     findByUserAndPlan(userId: string, planId: string): Promise<IUserSubscription | null>;
     deactivateSubscription(userId: string): Promise<void>;
     getAllSubscriptionsByUser(userId: string): Promise<IUserSubscription[] | null>;
+    updateSubscription(userId: string, planId: string): Promise<IUserSubscription | null>;
 
     createSession(data: CreateSessionDTO): Promise<ISession | null>;
     getSessionsByUser(userId: string): Promise<ISession[] | null>;

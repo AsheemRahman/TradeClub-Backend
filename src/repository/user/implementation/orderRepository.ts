@@ -58,6 +58,11 @@ class OrderRepository implements IOrderRepository {
         return await UserSubscription.find({ user: userId });
     }
 
+    async updateSubscription(userId: string, planId: string): Promise<IUserSubscription | null> {
+        const res = await UserSubscription.findOneAndUpdate({ user: userId, subscriptionPlan: planId, isActive: true, $expr: { $gt: ["$endDate", new Date()] } }, { $inc: { callsRemaining: -1 } }, { new: true });
+        return res
+    }
+
     async createSession(data: CreateSessionDTO): Promise<ISession | null> {
         await ExpertAvailability.findByIdAndUpdate(data.availabilityId, { isBooked: true });
         return await Session.create({ ...data, status: 'upcoming', bookedAt: new Date(), });
