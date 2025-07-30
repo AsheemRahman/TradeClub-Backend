@@ -3,6 +3,7 @@ import IAdminRepository from "../../../repository/admin/IAdminRepository";
 import { IUser } from "../../../model/user/userSchema";
 import { IExpert } from "../../../model/expert/expertSchema";
 import { IOrder } from "../../../model/user/orderSchema";
+import { GetUsersParams } from "../../../types/IAdmin";
 
 
 
@@ -14,9 +15,9 @@ class AdminService implements IAdminService {
         this.adminRepository = adminRepository;
     }
 
-    async getUsers(): Promise<{ users: IUser[] | null; total: number }> {
+    async getUsers(params: GetUsersParams): Promise<{ users: IUser[] | null; total: number }> {
         const [users, totalUsers] = await Promise.all([
-            this.adminRepository.getUsers(),
+            this.adminRepository.getUsers(params),
             this.adminRepository.getUserCount(),
         ]);
         return { users: users ?? null, total: totalUsers, };

@@ -11,3 +11,11 @@ export interface CreateCouponDTO {
     applicableToUsers: string[];
     usedCount?: number;
 }
+
+export interface GetUsersParams {
+    search?: string;
+    status?: string;
+    sort?: string;
+    page: number;
+    limit: number;
+}

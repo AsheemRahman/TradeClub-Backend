@@ -2,13 +2,22 @@ import IAdminRepository from "../IAdminRepository";
 import { IUser, User } from "../../../model/user/userSchema";
 import { Expert, IExpert } from "../../../model/expert/expertSchema";
 import { IOrder, Order } from "../../../model/user/orderSchema";
+import { GetUsersParams } from "../../../types/IAdmin";
 
 
 class AdminRepository implements IAdminRepository {
 
-    async getUsers(): Promise<IUser[] | null> {
-        const users = await User.find().sort({ createdAt: -1 })
-        return users;
+    async getUsers(params: GetUsersParams): Promise<IUser[] | null> {
+        const { search, status, page, limit } = params;
+        const query: any = {};
+        if (search) {
+            query.$or = [{ fullName: { $regex: search, $options: "i" } }, { email: { $regex: search, $options: "i" } },];
+        }
+        if (status) {
+            query.isActive = status === "active";
+        }
+        const skip = (page - 1) * limit;
+        return await User.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit);
     };
 
     async getUserCount(): Promise<number> {

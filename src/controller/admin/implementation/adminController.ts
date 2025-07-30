@@ -98,27 +98,41 @@ class AdminController implements IAdminController {
 
     async getUsers(req: Request, res: Response): Promise<void> {
         try {
-            const response = await this.adminService.getUsers();
+            const { search = "", status, sort = "createdAt", page = "1", limit = "10" } = req.query;
+            const pageNumber = parseInt(page as string, 10);
+            const limitNumber = parseInt(limit as string, 10);
+            const response = await this.adminService.getUsers({
+                search: search as string,
+                status: status as string,
+                sort: sort as string,
+                page: pageNumber,
+                limit: limitNumber
+            });
             const users = response?.users || [];
+
             const formattedUsers = users.map((user: any) => ({
                 id: user._id,
                 email: user.email,
                 fullName: user.fullName,
                 phoneNumber: user.phoneNumber,
                 isActive: user.isActive,
-                createdAt: user.createdAt
+                createdAt: user.createdAt,
             }));
+
             res.status(STATUS_CODES.OK).json({
-                success: true,
+                status: true,
                 message: "Users fetched successfully",
-                data: {
-                    users: formattedUsers,
-                    userCount: response.total
+                users: formattedUsers,
+                pagination: {
+                    total: response.total,
+                    page: pageNumber,
+                    limit: limitNumber,
+                    totalPages: Math.ceil(response.total / limitNumber),
                 },
             });
         } catch (error) {
             console.error("Get users error:", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, error: "Failed to fetch users", });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, error: "Failed to fetch users", });
         }
     }
 
@@ -311,7 +325,7 @@ class AdminController implements IAdminController {
                 revenue: revenueByMonth[month].revenue,
                 customers: revenueByMonth[month].customers,
             }));
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Revenue data fetched successfully", revenue: revenueData,});
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Revenue data fetched successfully", revenue: revenueData, });
         } catch (error) {
             console.error("Revenue fetching failed", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
