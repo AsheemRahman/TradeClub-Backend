@@ -5,6 +5,7 @@ interface ISubscriptionController {
     //-------------------- Subscription --------------------
 
     fetchPlans(req: Request, res: Response): Promise<void>;
+    getPlanById(req: Request, res: Response): Promise<void>;
     createPlan(req: Request, res: Response): Promise<void>;
     updatePlan(req: Request, res: Response): Promise<void>;
     deletePlan(req: Request, res: Response): Promise<void>;

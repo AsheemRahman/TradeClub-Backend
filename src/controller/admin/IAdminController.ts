@@ -18,6 +18,7 @@ interface IAdminController {
     declineExpert(req: Request, res: Response): Promise<void>;
 
     getOrders(req: Request, res: Response): Promise<void>;
+    getRevenue(req: Request, res: Response): Promise<void>;
 }
 
 export default IAdminController;

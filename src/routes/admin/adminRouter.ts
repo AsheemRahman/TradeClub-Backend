@@ -41,6 +41,7 @@ router.get('/logout', adminController.logout.bind(adminController));
 
 router.post('/refresh-token', adminController.refreshToken.bind(adminController));
 
+
 // ----------------------------------- User ------------------------------------
 
 router.get('/get-users', validate("admin"), adminController.getUsers.bind(adminController))
@@ -78,6 +79,7 @@ router.patch('/course/:id/toggle-publish', validate("admin"), courseController.t
 //------------------------------- Subscription ---------------------------------
 
 router.get('/fetch-plans', validate("admin"), subscriptionController.fetchPlans.bind(subscriptionController) );
+router.get('/SubscriptionPlan/:id', validate("admin"), subscriptionController.getPlanById.bind(subscriptionController));
 router.post('/create-plan', validate("admin"), subscriptionController.createPlan.bind(subscriptionController));
 router.put('/update-plan/:id', validate("admin"),subscriptionController.updatePlan.bind(subscriptionController) );
 router.delete('/delete-plan/:id', validate("admin"),subscriptionController.deletePlan.bind(subscriptionController) );
@@ -96,5 +98,7 @@ router.patch('/coupon-status/:id', validate("admin"),subscriptionController.coup
 //---------------------------------- Orders ------------------------------------
 
 router.get('/orders', validate("admin"), adminController.getOrders.bind(adminController))
+router.get('/revenue', validate("admin"), adminController.getRevenue.bind(adminController))
+
 
 export default router;

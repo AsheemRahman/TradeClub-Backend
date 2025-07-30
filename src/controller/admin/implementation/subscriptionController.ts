@@ -26,6 +26,25 @@ class SubscriptionController implements ISubscriptionController {
         }
     };
 
+    async getPlanById(req: Request, res: Response): Promise<void> {
+        const { id } = req.params;
+        if (!id) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+            return;
+        }
+        try {
+            const subscription = await this.SubscriptionService.getPlanById(id)
+            if (!subscription) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+                return
+            }
+            res.status(STATUS_CODES.OK).json({ status: true, message: "subscription Fetched Successfully", subscription })
+        } catch (error) {
+            console.error("Failed to fetch subscription", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch subscription", error: error instanceof Error ? error.message : String(error), });
+        }
+    };
+
     async createPlan(req: Request, res: Response): Promise<void> {
         const { name, price, duration, features, accessLevel, isActive } = req.body;
         if (!name || !price || !duration || !features || !accessLevel) {

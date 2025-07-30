@@ -287,6 +287,39 @@ class AdminController implements IAdminController {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, error: "Expert decline is failed", });
         }
     };
+
+    async getRevenue(req: Request, res: Response): Promise<void> {
+        try {
+            // Fetch only paid orders
+            const orders = await this.adminService.getOrders();
+            if (!orders || orders.length === 0) {
+                res.status(STATUS_CODES.OK).json({ status: true, revenue: [] });
+                return;
+            }
+            const revenueByMonth: Record<string, { revenue: number; customers: number }> = {};
+            orders.forEach((order) => {
+                const date = new Date(order.createdAt!);
+                const month = date.toLocaleString('default', { month: 'short' });
+                if (!revenueByMonth[month]) {
+                    revenueByMonth[month] = { revenue: 0, customers: 0 };
+                }
+                revenueByMonth[month].revenue += order.amount;
+                revenueByMonth[month].customers += 1;
+            });
+            const revenueData = Object.keys(revenueByMonth).map((month) => ({
+                month,
+                revenue: revenueByMonth[month].revenue,
+                customers: revenueByMonth[month].customers,
+            }));
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Revenue data fetched successfully", revenue: revenueData,});
+        } catch (error) {
+            console.error("Revenue fetching failed", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+                status: false,
+                error: "Failed to fetch revenue data",
+            });
+        }
+    }
 }
 
 export default AdminController;
