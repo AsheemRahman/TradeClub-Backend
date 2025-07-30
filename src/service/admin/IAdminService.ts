@@ -10,7 +10,7 @@ interface IAdminService {
     getUserById(id: string): Promise<IUser | null>;
     userUpdateStatus(id: string, status: string): Promise<IUser | null>;
 
-    getExperts(): Promise<{ experts: IExpert[] | null; total: number }>;
+    getExperts(params: GetUsersParams): Promise<{ experts: IExpert[] | null; total: number }>;
     getExpertById(id: string): Promise<IExpert | null>;
     expertUpdateStatus(id: string, status: string): Promise<IExpert | null>;
     approveExpert(id: string): Promise<IExpert | null>;

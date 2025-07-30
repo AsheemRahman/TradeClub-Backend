@@ -182,7 +182,14 @@ class AdminController implements IAdminController {
 
     async getExperts(req: Request, res: Response): Promise<void> {
         try {
-            const response = await this.adminService.getExperts();
+            const { search = "", page = "1", limit = "10" } = req.query;
+            const pageNumber = parseInt(page as string, 10);
+            const limitNumber = parseInt(limit as string, 10);
+            const response = await this.adminService.getExperts({
+                search: search as string,
+                page: pageNumber,
+                limit: limitNumber
+            });
             const expert = response?.experts || [];
             const formattedExperts = expert.map((expert: any) => ({
                 id: expert._id,
@@ -195,9 +202,12 @@ class AdminController implements IAdminController {
             }));
             res.status(STATUS_CODES.OK).json({
                 status: true, message: "Experts fetched successfully",
-                data: {
-                    experts: formattedExperts,
-                    expertCount: response.total
+                experts: formattedExperts,
+                pagination: {
+                    total: response.total,
+                    page: pageNumber,
+                    limit: limitNumber,
+                    totalPages: Math.ceil(response.total / limitNumber),
                 },
             });
         } catch (error) {
@@ -212,7 +222,7 @@ class AdminController implements IAdminController {
             const { id } = req.params;
             const { status } = req.body;
             if (!id || status === undefined) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
                 return;
             }
             const checkExpert = await this.adminService.getExpertById(id)
@@ -221,10 +231,10 @@ class AdminController implements IAdminController {
                 return
             }
             await this.adminService.expertUpdateStatus(id, status)
-            res.status(STATUS_CODES.OK).json({ success: true, message: "Expert status change successfully", });
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Expert status change successfully", });
         } catch (error) {
             console.error("Get users error:", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, error: "Failed to Change Status", });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, error: "Failed to Change Status", });
         }
     };
 

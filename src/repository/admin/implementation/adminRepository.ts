@@ -34,9 +34,14 @@ class AdminRepository implements IAdminRepository {
         return user;
     };
 
-    async getExperts(): Promise<IExpert[] | null> {
-        const experts = await Expert.find().sort({ createdAt: -1 })
-        return experts;
+    async getExperts(params: GetUsersParams): Promise<IExpert[] | null> {
+        const { search, page, limit } = params;
+        const query: any = {};
+        if (search) {
+            query.$or = [{ fullName: { $regex: search, $options: "i" } }, { email: { $regex: search, $options: "i" } },];
+        }
+        const skip = (page - 1) * limit;
+        return await Expert.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit);
     };
 
     async getExpertById(id: string): Promise<IExpert | null> {

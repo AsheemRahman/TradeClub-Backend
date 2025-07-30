@@ -33,9 +33,9 @@ class AdminService implements IAdminService {
         return user;
     }
 
-    async getExperts(): Promise<{ experts: IExpert[] | null; total: number }> {
+    async getExperts(params: GetUsersParams): Promise<{ experts: IExpert[] | null; total: number }> {
         const [experts, totalExperts] = await Promise.all([
-            this.adminRepository.getExperts(),
+            this.adminRepository.getExperts(params),
             this.adminRepository.getExpertCount(),
         ]);
         return { experts: experts ?? null, total: totalExperts, };
