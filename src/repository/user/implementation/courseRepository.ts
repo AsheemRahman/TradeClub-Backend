@@ -11,10 +11,34 @@ class CourseRepository implements ICourseRepository {
         return category;
     };
 
-    async getCourse(): Promise<ICourse[] | null> {
-        const courses = await Course.find().sort({ createdAt: -1 });
-        return courses;
-    };
+    async getCourse(filters: { search: string; category?: string; minPrice: number; maxPrice: number; sort: string; page: number; limit: number; }): Promise<{ courses: ICourse[]; totalPages: number; totalCourses: number }> {
+        const { search, category, minPrice, maxPrice, sort, page, limit } = filters;
+        const query: any = { price: { $gte: minPrice, $lte: maxPrice } };
+        if (category) query.category = category;
+        if (search) query.title = { $regex: search, $options: 'i' };
+        const sortOption: Record<string, 1 | -1> = {};
+        switch (sort) {
+            case 'price-low':
+                sortOption.price = 1;
+                break;
+            case 'price-high':
+                sortOption.price = -1;
+                break;
+            case 'oldest':
+                sortOption.createdAt = 1;
+                break;
+            default:
+                sortOption.createdAt = -1;
+        }
+        const skip = (page - 1) * limit;
+        // Fetch courses
+        const [courses, totalCourses] = await Promise.all([
+            Course.find(query).sort(sortOption).skip(skip).limit(limit),
+            Course.countDocuments()
+        ]);
+        const totalPages = Math.ceil(totalCourses / limit);
+        return { courses, totalPages, totalCourses };
+    }
 
     async getCourseById(id: string): Promise<ICourse | null> {
         const courses = await Course.findById(id);
@@ -36,8 +60,8 @@ class CourseRepository implements ICourseRepository {
         return progress;
     };
 
-    async getAllProgress( userId: string): Promise<ICourseProgress[] | null> {
-        const progress = await CourseProgress.find({ user: userId});
+    async getAllProgress(userId: string): Promise<ICourseProgress[] | null> {
+        const progress = await CourseProgress.find({ user: userId });
         return progress;
     };
 

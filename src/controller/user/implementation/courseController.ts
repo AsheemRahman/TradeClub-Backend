@@ -15,8 +15,17 @@ class CourseController implements ICourseController {
 
     async getCourse(req: Request, res: Response): Promise<void> {
         try {
-            const courses = await this.courseService.getCourse();
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Courses Fetched Successfully", courses })
+            const { search = '', category, minPrice = 0, maxPrice = 10000, sort = 'newest', page = 1, limit = 4 } = req.query;
+            const result = await this.courseService.getCourse({
+                search: search as string,
+                category: category as string,
+                minPrice: Number(minPrice),
+                maxPrice: Number(maxPrice),
+                sort: sort as string,
+                page: Number(page),
+                limit: Number(limit),
+            });
+            res.status(STATUS_CODES.OK).json({ status: true, message: 'Courses Fetched Successfully', ...result });
         } catch (error) {
             console.error("Failed to fetch Courses", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch Courses", });

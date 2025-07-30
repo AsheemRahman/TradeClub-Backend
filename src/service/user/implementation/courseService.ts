@@ -13,9 +13,13 @@ class CourseService implements ICourseService {
         this.courseRepository = courseRepository;
     };
 
-    async getCourse(): Promise<ICourse[] | null> {
-        const Courses = await this.courseRepository.getCourse();
-        return Courses;
+    async getCourse(filters: { search: string; category?: string; minPrice: number; maxPrice: number; sort: string; page: number; limit: number; }): Promise<{ courses: ICourse[]; totalPages: number; totalCourses: number }> {
+        const res = await this.courseRepository.getCourse(filters);
+        return {
+            courses: res.courses,
+            totalPages: res.totalPages,
+            totalCourses: res.totalCourses
+        };
     }
 
     async getCategory(): Promise<ICategory[] | null> {
