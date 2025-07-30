@@ -170,7 +170,6 @@ class OrderController implements IOrderController {
                     paymentIntentId: session.payment_intent?.toString() || '',
                     paymentStatus: session.payment_status,
                 })
-                await this.orderService.updateCourse(purchaseId, userId)
                 res.status(STATUS_CODES.CREATED).json({ status: true, message: "Courses purchased Successfully", order })
             } else {
                 const plan = await this.orderService.getPlanById(purchaseId);
@@ -186,7 +185,6 @@ class OrderController implements IOrderController {
                     paymentIntentId: session.payment_intent?.toString() || '',
                     paymentStatus: session.payment_status,
                 })
-                await this.orderService.createUserSubscription(userId, purchaseId, session.payment_intent?.toString() || '', session.payment_status as 'paid' | 'pending' | 'failed', plan.accessLevel?.expertCallsPerMonth ?? 0);
                 res.status(STATUS_CODES.CREATED).json({ status: true, message: "Subscription purchased Successfully", order })
             }
         } catch (error) {
@@ -308,7 +306,6 @@ class OrderController implements IOrderController {
                 return;
             }
             // Check user subscription
-            // const subscription = await UserSubscription.findOne({ user: userId, isActive: true,}).populate("subscriptionPlan");
             const subscription = await this.orderService.getActiveSubscription(userId);
             if (!subscription) {
                 res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "No active subscription found.", });
@@ -323,8 +320,6 @@ class OrderController implements IOrderController {
             }
             const sessionData = { userId, expertId, availabilityId, meetingLink };
             const newSession = await this.orderService.createSession(sessionData);
-            // subscription.callsRemaining -= 1;
-            // await subscription.save();
             await this.orderService.updateSubscription(userId, subscription.id)
             res.status(STATUS_CODES.CREATED).json({ status: true, message: "Session created successfully", session: newSession, remainingCalls: subscription.callsRemaining, });
         } catch (error) {
