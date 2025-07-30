@@ -61,7 +61,8 @@ const courseSchema = new Schema<ICourse>({
     },
     purchasedUsers: [{
         type: Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        default: []
     }],
     content: [courseContentSchema],
     isPublished: {
