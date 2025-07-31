@@ -48,12 +48,12 @@ router.get('/get-expert', validate("expert"), (req, res) => expertControllerInst
 router.post('/update-profile', validate("expert"), (req, res) => expertControllerInstance.updateProfile(req, res));
 
 
-//------------------------------------ Session ----------------------------------
+//------------------------------------- Slot ------------------------------------
 
-router.get('/sessions', validate("expert"), (req, res) => sessionInstance.getSessions(req, res));
-router.post('/add-session', validate("expert"), (req, res) => sessionInstance.addSession(req, res));
-router.patch('/edit-session', validate("expert"), (req, res) => sessionInstance.editSession(req, res));
-router.delete('/delete-session/:id', validate("expert"), (req, res) => sessionInstance.deleteSession(req, res));
+router.get('/slots', validate("expert"), (req, res) => sessionInstance.getSlots(req, res));
+router.post('/add-slot', validate("expert"), (req, res) => sessionInstance.addSlot(req, res));
+router.patch('/edit-slot', validate("expert"), (req, res) => sessionInstance.editSlot(req, res));
+router.delete('/delete-slot/:id', validate("expert"), (req, res) => sessionInstance.deleteSlot(req, res));
 
 
 //----------------------------------- Dashboard ---------------------------------
@@ -62,8 +62,13 @@ router.get('/dashboard/stats', validate("expert"), (req, res) => sessionInstance
 router.get('/dashboard/analytics', validate("expert"), (req, res) => sessionInstance.getSessionAnalytics(req, res));
 
 
-//------------------------------------ wallet ----------------------------------
+//------------------------------------ wallet -----------------------------------
 
 router.get('/wallet', validate("expert"), (req, res) => expertControllerInstance.getWallet(req, res));
+
+
+//------------------------------------ sessions ----------------------------------
+
+router.get('/sessions', validate("expert"), (req, res) => sessionInstance.getSessions(req, res));
 
 export default router;

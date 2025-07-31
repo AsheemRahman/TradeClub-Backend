@@ -2,7 +2,7 @@
 import ISessionService from "../ISessionService";
 import ISessionRepository from "../../../repository/expert/ISessionRepository";
 import { IExpertAvailability } from "../../../model/expert/AvailabilitySchema";
-import { IDashboardStats, ISessionAnalytics } from "../../../types/IExpert";
+import { IDashboardStats, IGetSessionsResponse, ISessionAnalytics, ISessionFilters } from "../../../types/IExpert";
 
 
 
@@ -13,19 +13,19 @@ class SessionService implements ISessionService {
         this.sessionRepository = sessionRepository;
     };
 
-    async getSessions(expertId: string): Promise<IExpertAvailability[] | null> {
+    async getSlots(expertId: string): Promise<IExpertAvailability[] | null> {
         return await this.sessionRepository.getAllByExpertId(expertId);
     };
 
-    async addSession(sessionData: Partial<IExpertAvailability>): Promise<IExpertAvailability | null> {
+    async addSlot(sessionData: Partial<IExpertAvailability>): Promise<IExpertAvailability | null> {
         return await this.sessionRepository.addSession(sessionData);
     };
 
-    async editSession(id: string, sessionData: Partial<IExpertAvailability>): Promise<IExpertAvailability | null> {
+    async editSlot(id: string, sessionData: Partial<IExpertAvailability>): Promise<IExpertAvailability | null> {
         return await this.sessionRepository.updateSession(id, sessionData);
     };
 
-    async deleteSession(id: string): Promise<IExpertAvailability | null> {
+    async deleteSlot(id: string): Promise<IExpertAvailability | null> {
         return await this.sessionRepository.deleteSession(id);
     };
 
@@ -62,6 +62,39 @@ class SessionService implements ISessionService {
             sessions: data.sessions,
             students: data.students.length
         }));
+    }
+
+    async getSessions( expertId: string, page: number, limit: number, filters: ISessionFilters): Promise<IGetSessionsResponse> {
+        const { status, date, startDate, endDate, search } = filters;
+        const query: any = { expertId };
+        if (status && status !== 'all') query.status = status;
+        if (date) {
+            const startOfDay = new Date(date);
+            const endOfDay = new Date(startOfDay);
+            endOfDay.setDate(endOfDay.getDate() + 1);
+            query['availabilityId.startTime'] = { $gte: startOfDay, $lt: endOfDay };
+        } else if (startDate && endDate) {
+            query['availabilityId.startTime'] = { $gte: new Date(startDate), $lte: new Date(endDate) };
+        }
+        if (search) {
+            query.$or = [
+                { 'userId.fullName': { $regex: search, $options: 'i' } },
+                { 'userId.email': { $regex: search, $options: 'i' } }
+            ];
+        }
+        const sessions = await this.sessionRepository.findSessions(query, page, limit);
+        const total = await this.sessionRepository.countSessions(query);
+        return {
+            sessions,
+            pagination: {
+                currentPage: page,
+                totalPages: Math.ceil(total / limit),
+                totalItems: total,
+                itemsPerPage: limit,
+                hasNextPage: page * limit < total,
+                hasPrevPage: page > 1,
+            },
+        };
     }
 }
 

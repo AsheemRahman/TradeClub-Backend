@@ -1,7 +1,7 @@
 import ISessionRepository from "../ISessionRepository";
 import { BaseRepository } from "../../base/implementation/BaseRepository";
 import { ExpertAvailability, IExpertAvailability, } from "../../../model/expert/AvailabilitySchema";
-import mongoose from "mongoose";
+import mongoose, { FilterQuery } from "mongoose";
 import { ISession, Session } from "../../../model/expert/sessionSchema";
 import { IAnalyticsResult } from "../../../types/IExpert";
 
@@ -59,10 +59,23 @@ class SessionRepository extends BaseRepository<IExpertAvailability> implements I
                     sessions: { $sum: 1 },
                     students: { $addToSet: '$userId' }
                 }
-            },{ $sort: { _id: 1 } }
+            }, { $sort: { _id: 1 } }
         ]);
     }
 
+    async findSessions(query: FilterQuery<any>, page: number, limit: number): Promise<ISession[]> {
+        return Session.find(query)
+            .populate('userId', 'fullName email profilePicture')
+            .populate('expertId', 'fullName')
+            .populate('availabilityId', 'startTime endTime')
+            .sort({ 'availabilityId.startTime': -1 })
+            .limit(limit)
+            .skip((page - 1) * limit);
+    }
+
+    async countSessions(query: FilterQuery<any>): Promise<number> {
+        return Session.countDocuments(query);
+    }
 }
 
 export default SessionRepository;

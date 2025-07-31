@@ -1,3 +1,4 @@
+import { ISession } from "../model/expert/sessionSchema";
 
 export type ExpertFormData = {
     email?: string;
@@ -36,4 +37,26 @@ export interface IAnalyticsResult {
     _id: string;
     sessions: number;
     students: string[];
+}
+
+export interface IPagination {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+}
+
+export interface ISessionFilters {
+    status?: string;
+    date?: string;
+    startDate?: string;
+    endDate?: string;
+    search?: string;
+}
+
+export interface IGetSessionsResponse {
+    sessions: ISession[];
+    pagination: IPagination;
 }
