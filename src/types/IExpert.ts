@@ -15,3 +15,25 @@ export type ExpertFormData = {
     Government_Id: File | null;
     selfie_Id: File | null;
 }
+
+export interface IDashboardStats {
+    totalStudents: number;
+    totalSessions: number;
+    averageRating?: number;
+    pendingMessages?: number;
+    upcomingSessions: number;
+    completionRate: number;
+    monthlyGrowth: number;
+}
+
+export interface ISessionAnalytics {
+    date: string;
+    sessions: number;
+    students: number;
+}
+
+export interface IAnalyticsResult {
+    _id: string;
+    sessions: number;
+    students: string[];
+}

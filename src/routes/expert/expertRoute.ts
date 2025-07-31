@@ -56,6 +56,12 @@ router.patch('/edit-session', validate("expert"), (req, res) => sessionInstance.
 router.delete('/delete-session/:id', validate("expert"), (req, res) => sessionInstance.deleteSession(req, res));
 
 
+//----------------------------------- Dashboard ---------------------------------
+
+router.get('/dashboard/stats', validate("expert"), (req, res) => sessionInstance.getDashboardStats(req, res));
+router.get('/dashboard/analytics', validate("expert"), (req, res) => sessionInstance.getSessionAnalytics(req, res));
+
+
 //------------------------------------ wallet ----------------------------------
 
 router.get('/wallet', validate("expert"), (req, res) => expertControllerInstance.getWallet(req, res));

@@ -61,6 +61,37 @@ class SessionController implements ISessionController {
         }
     }
 
+
+    async getDashboardStats(req: Request, res: Response): Promise<void> {
+        try {
+            const expertId = req.userId;
+            if (!expertId) {
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: "Expert ID is missing in request." });
+                return
+            }
+            const stats = await this.sessionService.getDashboardStats(expertId);
+            res.status(STATUS_CODES.OK).json({ status: true, message: 'fetch dashboard stats', stats });
+        } catch (error) {
+            console.error('Error fetching dashboard stats:', error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Failed to fetch dashboard stats' });
+        }
+    }
+
+    async getSessionAnalytics(req: Request, res: Response): Promise<void> {
+        try {
+            const expertId = req.userId;
+            if (!expertId) {
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: "Expert ID is missing in request." });
+                return
+            }
+            const { period = '30d' } = req.query;
+            const analytics = await this.sessionService.getSessionAnalytics(expertId, period as '7d' | '30d' | '90d');
+            res.status(STATUS_CODES.OK).json({ status: true, message: 'fetch session analytics', analytics });
+        } catch (error) {
+            console.error('Error fetching session analytics:', error);
+            res.status(500).json({ message: 'Failed to fetch session analytics' });
+        }
+    }
 }
 
 

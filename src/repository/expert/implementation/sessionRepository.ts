@@ -1,6 +1,9 @@
 import ISessionRepository from "../ISessionRepository";
 import { BaseRepository } from "../../base/implementation/BaseRepository";
 import { ExpertAvailability, IExpertAvailability, } from "../../../model/expert/AvailabilitySchema";
+import mongoose from "mongoose";
+import { ISession, Session } from "../../../model/expert/sessionSchema";
+import { IAnalyticsResult } from "../../../types/IExpert";
 
 
 class SessionRepository extends BaseRepository<IExpertAvailability> implements ISessionRepository {
@@ -24,6 +27,42 @@ class SessionRepository extends BaseRepository<IExpertAvailability> implements I
     async deleteSession(id: string): Promise<IExpertAvailability | null> {
         return await ExpertAvailability.findByIdAndDelete(id);
     }
+
+    //-------------------------------- Dashboard ---------------------------------
+
+    async countSessionsByExpert(expertId: string): Promise<number> {
+        return Session.countDocuments({ expertId: new mongoose.Types.ObjectId(expertId) });
+    }
+
+    async countCompletedSessions(expertId: string): Promise<number> {
+        return Session.countDocuments({ expertId: expertId, status: 'completed' });
+    }
+
+    async getDistinctStudents(expertId: string): Promise<mongoose.Types.ObjectId[]> {
+        return Session.distinct('userId', { expertId });
+    }
+
+    async getRecentStudents(expertId: string, lastMonth: Date): Promise<mongoose.Types.ObjectId[]> {
+        return Session.distinct('userId', { expertId: expertId, date: { $gte: lastMonth } });
+    }
+
+    async getUpcomingSessions(expertId: string): Promise<number> {
+        return Session.countDocuments({ expertId: expertId, status: 'upcoming' });
+    }
+
+    async getSessionAnalytics(expertId: string, startDate: Date): Promise<IAnalyticsResult[]> {
+        return Session.aggregate<IAnalyticsResult>([
+            { $match: { expertId: new mongoose.Types.ObjectId(expertId), bookedAt: { $gte: startDate } } },
+            {
+                $group: {
+                    _id: { $dateToString: { format: '%Y-%m-%d', date: '$bookedAt' } },
+                    sessions: { $sum: 1 },
+                    students: { $addToSet: '$userId' }
+                }
+            },{ $sort: { _id: 1 } }
+        ]);
+    }
+
 }
 
 export default SessionRepository;
