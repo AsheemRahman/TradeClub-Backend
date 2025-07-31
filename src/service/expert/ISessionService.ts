@@ -1,5 +1,4 @@
 import { IExpertAvailability } from "../../model/expert/AvailabilitySchema";
-import { ISession } from "../../model/expert/sessionSchema";
 import { IDashboardStats, IGetSessionsResponse, ISessionAnalytics, ISessionFilters } from "../../types/IExpert";
 
 
