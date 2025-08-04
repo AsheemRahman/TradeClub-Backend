@@ -300,7 +300,6 @@ class OrderController implements IOrderController {
                 return;
             }
             const { expertId, availabilityId, meetingLink } = req.body;
-            console.log("request data", req.body);
             if (!expertId || !availabilityId) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "expertId and availabilityId are required", });
                 return;

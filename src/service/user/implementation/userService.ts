@@ -95,7 +95,6 @@ class UserService implements IUserService {
     }
 
     async getSessions(userId: string, page: number, limit: number, status: string): Promise<ISessionsResponse> {
-        console.log("inside the service")
         const skip = (page - 1) * limit;
         const filters: any = { userId };
         if (status && status !== 'all') {
