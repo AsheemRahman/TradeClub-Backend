@@ -94,5 +94,6 @@ router.get('/expert/:id/availability', validate("user"), (req, res) => userContr
 //------------------------------------ Slot -------------------------------------
 
 router.post('/slot-booking', validate("user"), (req, res) => orderController.slotBooking(req, res));
+router.get('/sessions', validate("user"), (req, res) => userControllerInstance.getSessions(req, res));
 
 export default router;

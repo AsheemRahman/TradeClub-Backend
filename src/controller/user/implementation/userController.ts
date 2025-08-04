@@ -429,6 +429,24 @@ class UserController implements IUserController {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to retrieve subscription status", });
         }
     }
+
+    async getSessions(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = req.userId;
+            if (!userId) {
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND, });
+                return;
+            }
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 10;
+            const status = req.query.status as string;
+            const result = await this._userService.getSessions(userId, page, limit, status);
+            res.status(STATUS_CODES.OK).json({ status: true, message: 'Sessions fetched successfully', ...result, });
+        } catch (error) {
+            console.error('retrieve sessions error:', error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Failed to retrieve sessions', });
+        }
+    }
 };
 
 

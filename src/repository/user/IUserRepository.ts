@@ -1,6 +1,7 @@
 import { ISubscriptionPlan } from "../../model/admin/subscriptionSchema";
 import { IExpertAvailability } from "../../model/expert/AvailabilitySchema";
 import { IExpert } from "../../model/expert/expertSchema";
+import { ISession } from "../../model/expert/sessionSchema";
 import { OTPType } from "../../model/user/otp";
 import { IUser } from "../../model/user/userSchema";
 import { IUserSubscription } from "../../model/user/userSubscriptionSchema";
@@ -26,6 +27,9 @@ interface IUserRepository {
     getAvailabilityByExpert(id: string, startDate: string, endDate: string): Promise<IExpertAvailability[] | null>;
 
     checkSubscription(userId: string): Promise<IUserSubscription | null>;
+
+    findSessions(filters: any, skip: number, limit: number): Promise<ISession[] | []>;
+    countSessions(filters: any): Promise<number>;
 }
 
 

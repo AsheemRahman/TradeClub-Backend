@@ -7,6 +7,7 @@ import { SubscriptionPlan, ISubscriptionPlan } from "../../../model/admin/subscr
 import { Expert, IExpert } from "../../../model/expert/expertSchema";
 import { ExpertAvailability, IExpertAvailability } from "../../../model/expert/AvailabilitySchema";
 import { IUserSubscription, UserSubscription } from "../../../model/user/userSubscriptionSchema";
+import { ISession, Session } from "../../../model/expert/sessionSchema";
 
 class userRepository extends BaseRepository<IUser> implements IUserRepository {
     constructor() {
@@ -84,6 +85,14 @@ class userRepository extends BaseRepository<IUser> implements IUserRepository {
     async checkSubscription(userId: string): Promise<IUserSubscription | null> {
         const subscription = await UserSubscription.findOne({ user: userId, isActive: true, paymentStatus: 'paid', endDate: { $gt: new Date() }, });
         return subscription;
+    }
+
+    async findSessions(filters: any, skip: number, limit: number): Promise<ISession[] | []> {
+        return Session.find(filters).skip(skip).limit(limit).sort({ date: -1 }).lean().populate('expertId availabilityId');;
+    }
+
+    async countSessions(filters: any): Promise<number> {
+        return Session.countDocuments(filters);
     }
 }
 

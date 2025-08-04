@@ -1,7 +1,7 @@
 
 import IUserRepository from "../../../repository/user/IUserRepository";
 import IUserService from "../IUserService";
-import { IUserType } from '../../../types/IUser'
+import { ISessionsResponse, IUserType } from '../../../types/IUser'
 
 
 import PasswordUtils from "../../../utils/passwordUtils";
@@ -11,6 +11,7 @@ import { ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
 import { IExpert } from "../../../model/expert/expertSchema";
 import { IExpertAvailability } from "../../../model/expert/AvailabilitySchema";
 import { IUserSubscription } from "../../../model/user/userSubscriptionSchema";
+import { ISession } from "../../../model/expert/sessionSchema";
 
 
 
@@ -82,7 +83,7 @@ class UserService implements IUserService {
         const expert = await this._userRepository.getExpertById(id);
         return expert;
     }
-    
+
     async getAvailabilityByExpert(id: string, startDate: string, endDate: string): Promise<IExpertAvailability[] | null> {
         const availability = await this._userRepository.getAvailabilityByExpert(id, startDate, endDate);
         return availability;
@@ -91,6 +92,17 @@ class UserService implements IUserService {
     async checkSubscription(userId: string): Promise<IUserSubscription | null> {
         const subscription = await this._userRepository.checkSubscription(userId);
         return subscription;
+    }
+
+    async getSessions(userId: string, page: number, limit: number, status: string): Promise<ISessionsResponse> {
+        console.log("inside the service")
+        const skip = (page - 1) * limit;
+        const filters: any = { userId };
+        if (status && status !== 'all') {
+            filters.status = status;
+        }
+        const [sessions, total] = await Promise.all([this._userRepository.findSessions(filters, skip, limit), this._userRepository.countSessions(filters),]);
+        return { sessions, total, limit, page, };
     }
 }
 

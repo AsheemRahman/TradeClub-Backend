@@ -1,3 +1,4 @@
+import { ISession } from "../model/expert/sessionSchema";
 
 
 export type IUserType = {
@@ -25,4 +26,11 @@ export interface CreateSessionDTO {
     expertId: string;
     availabilityId: string;
     meetingLink?: string;
+}
+
+export interface ISessionsResponse {
+    sessions: ISession[];
+    total: number;
+    page: number;
+    limit: number;
 }
