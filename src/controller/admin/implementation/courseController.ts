@@ -9,17 +9,17 @@ import { ICourse } from "../../../model/admin/courseSchema";
 
 class CourseController implements ICourseController {
 
-    private courseService: ICourseService;
+    private _courseService: ICourseService;
 
     constructor(courseService: ICourseService) {
-        this.courseService = courseService;
+        this._courseService = courseService;
     }
 
     //----------------------------- Category -----------------------------
 
     async getCategory(req: Request, res: Response): Promise<void> {
         try {
-            const categories = await this.courseService.getCategory();
+            const categories = await this._courseService.getCategory();
             res.status(STATUS_CODES.OK).json({ status: true, message: "Category Fetched Successfully", categories })
         } catch (error) {
             console.error("Failed to fetch category", error);
@@ -34,7 +34,7 @@ class CourseController implements ICourseController {
             return;
         }
         try {
-            const newCategory = await this.courseService.addCategory(categoryName);
+            const newCategory = await this._courseService.addCategory(categoryName);
             res.status(STATUS_CODES.CREATED).json({ status: true, message: "Category Created Successfully", newCategory })
         } catch (error) {
             console.error("Category Creation failed", error);
@@ -49,7 +49,7 @@ class CourseController implements ICourseController {
             return;
         }
         try {
-            const newCategory = await this.courseService.deleteCategory(id);
+            const newCategory = await this._courseService.deleteCategory(id);
             res.status(STATUS_CODES.CREATED).json({ status: true, message: "Category Deleted Successfully", newCategory })
         } catch (error) {
             console.error("Failed to delete category", error);
@@ -65,7 +65,7 @@ class CourseController implements ICourseController {
             return;
         }
         try {
-            const newCategory = await this.courseService.editCategory(id, categoryName);
+            const newCategory = await this._courseService.editCategory(id, categoryName);
             res.status(STATUS_CODES.OK).json({ status: true, message: "Category Edited Successfully", newCategory })
         } catch (error) {
             console.error("Failed to Edited category", error);
@@ -81,12 +81,12 @@ class CourseController implements ICourseController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
                 return;
             }
-            const checkCategory = await this.courseService.getCategoryById(id)
+            const checkCategory = await this._courseService.getCategoryById(id)
             if (!checkCategory) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return
             }
-            await this.courseService.categoryStatus(id, status)
+            await this._courseService.categoryStatus(id, status)
             res.status(STATUS_CODES.OK).json({ success: true, message: "Category status change successfully", });
         } catch (error) {
             console.error("Category status change failed:", error);
@@ -98,7 +98,7 @@ class CourseController implements ICourseController {
 
     async getCourse(req: Request, res: Response): Promise<void> {
         try {
-            const courses = await this.courseService.getCourse();
+            const courses = await this._courseService.getCourse();
             res.status(STATUS_CODES.OK).json({ status: true, message: "Courses Fetched Successfully", courses })
         } catch (error) {
             console.error("Failed to fetch Courses", error);
@@ -113,7 +113,7 @@ class CourseController implements ICourseController {
             return;
         }
         try {
-            const course = await this.courseService.getCourseById(id)
+            const course = await this._courseService.getCourseById(id)
             if (!course) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
                 return
@@ -132,7 +132,7 @@ class CourseController implements ICourseController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT });
                 return;
             }
-            const course = await this.courseService.addCourse({ title, description, price, imageUrl, category, content, isPublished } as ICourse);
+            const course = await this._courseService.addCourse({ title, description, price, imageUrl, category, content, isPublished } as ICourse);
             res.status(STATUS_CODES.OK).json({ status: true, message: "course created successfully", course });
         } catch (error) {
             console.error("Course creation:", error);
@@ -152,12 +152,12 @@ class CourseController implements ICourseController {
             return;
         }
         try {
-            const checkCourse = await this.courseService.getCourseById(id)
+            const checkCourse = await this._courseService.getCourseById(id)
             if (!checkCourse) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
                 return
             }
-            const course = await this.courseService.editCourse(id, { title, description, price, imageUrl, category, content, isPublished } as ICourse);
+            const course = await this._courseService.editCourse(id, { title, description, price, imageUrl, category, content, isPublished } as ICourse);
             res.status(STATUS_CODES.OK).json({ status: true, message: "Course updated successfully", course });
         } catch (error) {
             console.error("Failed to Edited category", error);
@@ -172,12 +172,12 @@ class CourseController implements ICourseController {
             return;
         }
         try {
-            const checkCourse = await this.courseService.getCourseById(id)
+            const checkCourse = await this._courseService.getCourseById(id)
             if (!checkCourse) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
                 return
             }
-            const course = await this.courseService.deleteCourse(id);
+            const course = await this._courseService.deleteCourse(id);
             res.status(STATUS_CODES.CREATED).json({ status: true, message: "course Deleted Successfully", course })
         } catch (error) {
             console.error("Failed to delete course", error);
@@ -192,12 +192,12 @@ class CourseController implements ICourseController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
                 return;
             }
-            const checkCourse = await this.courseService.getCourseById(id)
+            const checkCourse = await this._courseService.getCourseById(id)
             if (!checkCourse) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
                 return
             }
-            await this.courseService.togglePublish(id, !checkCourse.isPublished)
+            await this._courseService.togglePublish(id, !checkCourse.isPublished)
             res.status(STATUS_CODES.OK).json({ status: true, message: "Course status change successfully", });
         } catch (error) {
             console.error("Get users error:", error);

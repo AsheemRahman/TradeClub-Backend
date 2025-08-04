@@ -15,10 +15,10 @@ dotenv.config();
 
 class AdminController implements IAdminController {
 
-    private adminService: IAdminService;
+    private _adminService: IAdminService;
 
     constructor(adminService: IAdminService) {
-        this.adminService = adminService;
+        this._adminService = adminService;
     }
 
     async adminLogin(req: Request, res: Response): Promise<void> {
@@ -101,7 +101,7 @@ class AdminController implements IAdminController {
             const { search = "", status, sort = "createdAt", page = "1", limit = "10" } = req.query;
             const pageNumber = parseInt(page as string, 10);
             const limitNumber = parseInt(limit as string, 10);
-            const response = await this.adminService.getUsers({
+            const response = await this._adminService.getUsers({
                 search: search as string,
                 status: status as string,
                 sort: sort as string,
@@ -143,7 +143,7 @@ class AdminController implements IAdminController {
             return;
         }
         try {
-            const user = await this.adminService.getUserById(id)
+            const user = await this._adminService.getUserById(id)
             if (!user) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
                 return
@@ -163,7 +163,7 @@ class AdminController implements IAdminController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
                 return;
             }
-            const checkUser = await this.adminService.getUserById(id)
+            const checkUser = await this._adminService.getUserById(id)
             if (!checkUser) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({
                     status: false,
@@ -171,7 +171,7 @@ class AdminController implements IAdminController {
                 })
                 return
             }
-            await this.adminService.userUpdateStatus(id, status)
+            await this._adminService.userUpdateStatus(id, status)
             res.status(STATUS_CODES.OK).json({ success: true, message: "Users status change successfully", });
         } catch (error) {
             console.error("Get users error:", error);
@@ -185,7 +185,7 @@ class AdminController implements IAdminController {
             const { search = "", page = "1", limit = "10" } = req.query;
             const pageNumber = parseInt(page as string, 10);
             const limitNumber = parseInt(limit as string, 10);
-            const response = await this.adminService.getExperts({
+            const response = await this._adminService.getExperts({
                 search: search as string,
                 page: pageNumber,
                 limit: limitNumber
@@ -225,12 +225,12 @@ class AdminController implements IAdminController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
                 return;
             }
-            const checkExpert = await this.adminService.getExpertById(id)
+            const checkExpert = await this._adminService.getExpertById(id)
             if (!checkExpert) {
                 res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return
             }
-            await this.adminService.expertUpdateStatus(id, status)
+            await this._adminService.expertUpdateStatus(id, status)
             res.status(STATUS_CODES.OK).json({ status: true, message: "Expert status change successfully", });
         } catch (error) {
             console.error("Get users error:", error);
@@ -246,7 +246,7 @@ class AdminController implements IAdminController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
                 return;
             }
-            const Expert = await this.adminService.getExpertById(id)
+            const Expert = await this._adminService.getExpertById(id)
             if (!Expert) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return
@@ -265,7 +265,7 @@ class AdminController implements IAdminController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
                 return;
             }
-            const Expert = await this.adminService.approveExpert(id)
+            const Expert = await this._adminService.approveExpert(id)
             if (!Expert) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
                 return
@@ -285,7 +285,7 @@ class AdminController implements IAdminController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
                 return;
             }
-            const Expert = await this.adminService.declineExpert(id)
+            const Expert = await this._adminService.declineExpert(id)
             if (!Expert) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
                 return
@@ -300,7 +300,7 @@ class AdminController implements IAdminController {
 
     async getOrders(req: Request, res: Response): Promise<void> {
         try {
-            const orders = await this.adminService.getOrders()
+            const orders = await this._adminService.getOrders()
             if (!orders) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: true, orders: [] })
                 return
@@ -315,7 +315,7 @@ class AdminController implements IAdminController {
     async getRevenue(req: Request, res: Response): Promise<void> {
         try {
             // Fetch only paid orders
-            const orders = await this.adminService.getOrders();
+            const orders = await this._adminService.getOrders();
             if (!orders || orders.length === 0) {
                 res.status(STATUS_CODES.OK).json({ status: true, revenue: [] });
                 return;

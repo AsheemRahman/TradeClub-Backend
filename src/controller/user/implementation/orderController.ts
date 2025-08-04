@@ -13,9 +13,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-06
 
 
 class OrderController implements IOrderController {
-    private orderService: IOrderService;
+    private _orderService: IOrderService;
     constructor(orderService: IOrderService) {
-        this.orderService = orderService;
+        this._orderService = orderService;
     }
 
     async createCheckoutSession(req: Request, res: Response): Promise<void> {
@@ -81,7 +81,7 @@ class OrderController implements IOrderController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: 'Payment not successful' });
                 return
             }
-            const existing = await this.orderService.checkOrderExisting(sessionId);
+            const existing = await this._orderService.checkOrderExisting(sessionId);
             if (existing) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: 'Order already exists' });
                 return
@@ -94,9 +94,9 @@ class OrderController implements IOrderController {
                 return
             }
             if (isCourse) {
-                const course = await this.orderService.getCourseById(purchaseId);
+                const course = await this._orderService.getCourseById(purchaseId);
                 if (!course) throw new Error('Course not found');
-                const order = await this.orderService.createOrder({
+                const order = await this._orderService.createOrder({
                     userId,
                     itemId: purchaseId,
                     type: "Course",
@@ -107,12 +107,12 @@ class OrderController implements IOrderController {
                     paymentIntentId: session.payment_intent?.toString() || '',
                     paymentStatus: session.payment_status,
                 })
-                await this.orderService.updateCourse(purchaseId, userId)
+                await this._orderService.updateCourse(purchaseId, userId)
                 res.status(STATUS_CODES.CREATED).json({ status: true, message: "Courses purchased Successfully", order })
             } else {
-                const plan = await this.orderService.getPlanById(purchaseId);
+                const plan = await this._orderService.getPlanById(purchaseId);
                 if (!plan) throw new Error('Subscription is not found');
-                const order = await this.orderService.createOrder({
+                const order = await this._orderService.createOrder({
                     userId,
                     itemId: purchaseId,
                     type: "SubscriptionPlan",
@@ -123,7 +123,7 @@ class OrderController implements IOrderController {
                     paymentIntentId: session.payment_intent?.toString() || '',
                     paymentStatus: session.payment_status,
                 })
-                await this.orderService.createUserSubscription(userId, purchaseId, session.payment_intent?.toString() || '', session.payment_status as 'paid' | 'pending' | 'failed', plan.accessLevel?.expertCallsPerMonth ?? 0);
+                await this._orderService.createUserSubscription(userId, purchaseId, session.payment_intent?.toString() || '', session.payment_status as 'paid' | 'pending' | 'failed', plan.accessLevel?.expertCallsPerMonth ?? 0);
                 res.status(STATUS_CODES.CREATED).json({ status: true, message: "Subscription purchased Successfully", order })
             }
         } catch (error) {
@@ -144,7 +144,7 @@ class OrderController implements IOrderController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: 'Payment successful' });
                 return
             }
-            const existing = await this.orderService.checkOrderExisting(sessionId);
+            const existing = await this._orderService.checkOrderExisting(sessionId);
             if (existing) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: 'Order already exists' });
                 return
@@ -157,9 +157,9 @@ class OrderController implements IOrderController {
                 return
             }
             if (isCourse) {
-                const course = await this.orderService.getCourseById(purchaseId);
+                const course = await this._orderService.getCourseById(purchaseId);
                 if (!course) throw new Error('Course not found');
-                const order = await this.orderService.createOrder({
+                const order = await this._orderService.createOrder({
                     userId,
                     itemId: purchaseId,
                     type: "Course",
@@ -172,9 +172,9 @@ class OrderController implements IOrderController {
                 })
                 res.status(STATUS_CODES.CREATED).json({ status: true, message: "Courses purchased Successfully", order })
             } else {
-                const plan = await this.orderService.getPlanById(purchaseId);
+                const plan = await this._orderService.getPlanById(purchaseId);
                 if (!plan) throw new Error('Subscription is not found');
-                const order = await this.orderService.createOrder({
+                const order = await this._orderService.createOrder({
                     userId,
                     itemId: purchaseId,
                     type: "SubscriptionPlan",
@@ -200,7 +200,7 @@ class OrderController implements IOrderController {
                 res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access', });
                 return
             }
-            const purchases = await this.orderService.getOrderById(userId)
+            const purchases = await this._orderService.getOrderById(userId)
             res.status(STATUS_CODES.OK).json({ status: true, purchases });
         } catch (error) {
             console.error('Error fetching purchases:', error);
@@ -216,19 +216,19 @@ class OrderController implements IOrderController {
                 return;
             }
             // 1. Get all purchased courses for the user
-            const courses = await this.orderService.getCourseByUser(userId);
+            const courses = await this._orderService.getCourseByUser(userId);
             if (!courses || courses.length === 0) {
                 res.status(STATUS_CODES.OK).json({ status: true, data: [] });
                 return;
             }
             // 2. Get progress data for all courses
-            const progressList = await this.orderService.getProgressByUser(userId);
+            const progressList = await this._orderService.getProgressByUser(userId);
             const progressMap: Record<string, any> = {};
             (progressList || []).forEach(progress => { progressMap[progress.course.toString()] = progress; });
             const purchasedCourses = await Promise.all(
                 courses.map(async (course) => {
                     const courseId = course.id.toString()
-                    const order = await this.orderService.getPurchasedByUser(userId, courseId);
+                    const order = await this._orderService.getPurchasedByUser(userId, courseId);
                     const progress = progressMap[courseId] || { totalCompletedPercent: 0, progress: [], lastWatchedAt: null };
                     return { course, progress, purchaseDate: order?.createdAt || course.createdAt };
                 })
@@ -248,12 +248,12 @@ class OrderController implements IOrderController {
             return;
         }
         try {
-            const planData = await this.orderService.getPlanById(planId);
+            const planData = await this._orderService.getPlanById(planId);
             if (!planData || !planData.name || !planData.features || !planData.price || !planData._id) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT || "Plan data is missing or incomplete." });
                 return;
             }
-            const existingSubscriptions: IUserSubscription[] | null = await this.orderService.checkPlan(userId, planId);
+            const existingSubscriptions: IUserSubscription[] | null = await this._orderService.checkPlan(userId, planId);
             const now = new Date();
             const activeSubscription = existingSubscriptions?.find(sub => {
                 return sub.isActive && new Date(sub.endDate) > now;
@@ -306,7 +306,7 @@ class OrderController implements IOrderController {
                 return;
             }
             // Check user subscription
-            const subscription = await this.orderService.getActiveSubscription(userId);
+            const subscription = await this._orderService.getActiveSubscription(userId);
             if (!subscription) {
                 res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "No active subscription found.", });
                 return;
@@ -319,8 +319,8 @@ class OrderController implements IOrderController {
                 return;
             }
             const sessionData = { userId, expertId, availabilityId, meetingLink };
-            const newSession = await this.orderService.createSession(sessionData);
-            await this.orderService.updateSubscription(userId, subscription.id)
+            const newSession = await this._orderService.createSession(sessionData);
+            await this._orderService.updateSubscription(userId, subscription.id)
             res.status(STATUS_CODES.CREATED).json({ status: true, message: "Session created successfully", session: newSession, remainingCalls: subscription.callsRemaining, });
         } catch (error) {
             console.error("Error creating session:", error);
@@ -338,7 +338,7 @@ class OrderController implements IOrderController {
                 res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: ERROR_MESSAGES.UNAUTHORIZED || 'Unauthorized access', });
                 return
             }
-            const sessions = await this.orderService.getUserSessions(userId);
+            const sessions = await this._orderService.getUserSessions(userId);
             res.status(STATUS_CODES.OK).json({ status: true, sessions, });
         } catch (error) {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false });

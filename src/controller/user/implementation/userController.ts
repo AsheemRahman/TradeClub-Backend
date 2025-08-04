@@ -16,10 +16,10 @@ import { UserSubscription } from "../../../model/user/userSubscriptionSchema";
 
 
 class UserController implements IUserController {
-    private userService: IUserService;
+    private _userService: IUserService;
 
     constructor(userService: IUserService) {
-        this.userService = userService;
+        this._userService = userService;
     }
 
     async registerPost(req: Request, res: Response): Promise<void> {
@@ -30,18 +30,18 @@ class UserController implements IUserController {
                 return;
             }
             // Check if email already exists
-            const isEmailUsed = await this.userService.findUser(email);
+            const isEmailUsed = await this._userService.findUser(email);
             if (isEmailUsed) {
                 res.status(STATUS_CODES.CONFLICT).json({ message: ERROR_MESSAGES.EMAIL_ALREADY_EXIST });
                 return;
             }
             // Proceed with registration
-            await this.userService.registerUser({ fullName, phoneNumber, email, password, } as IUserType);
+            await this._userService.registerUser({ fullName, phoneNumber, email, password, } as IUserType);
             // Proceed with OTP
             const otp = await OtpUtility.otpGenerator();
             try {
                 await MailUtility.sendMail(email, otp, "Verification OTP");
-                await this.userService.storeOtp(email, otp);
+                await this._userService.storeOtp(email, otp);
                 res.status(STATUS_CODES.OK).json({ message: "An otp has sent to your email", email, otp, });
             } catch (error) {
                 console.error("Failed to send OTP:", error);
@@ -63,13 +63,13 @@ class UserController implements IUserController {
             return;
         }
         try {
-            const response = await this.userService.findOtp(email);
+            const response = await this._userService.findOtp(email);
             const storedOTP = response?.otp;
             if (storedOTP !== otp) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Incorrect OTP" });
                 return;
             }
-            const currentUser = await this.userService.findUser(email);
+            const currentUser = await this._userService.findUser(email);
             if (!currentUser) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND });
                 return;
@@ -91,7 +91,7 @@ class UserController implements IUserController {
         try {
             await MailUtility.sendMail(email, otp, "Verification otp");
             res.status(STATUS_CODES.OK).json({ message: "Otp sent to the given mail id", email, otp, });
-            await this.userService.storeResendOtp(email, otp);
+            await this._userService.storeResendOtp(email, otp);
         } catch (error) {
             console.error("Failed to send otp", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Failed to send the verification mail" });
@@ -105,7 +105,7 @@ class UserController implements IUserController {
             return;
         }
         try {
-            const currentUser = await this.userService.findUser(email);
+            const currentUser = await this._userService.findUser(email);
             if (!currentUser || !currentUser.password) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
                 return;
@@ -179,9 +179,9 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "name, email, and image are required.", });
                 return
             }
-            let currentUser = await this.userService.findUser(email);
+            let currentUser = await this._userService.findUser(email);
             if (!currentUser) {
-                currentUser = await this.userService.registerUser({ fullName, email, profilePicture } as IUserType);
+                currentUser = await this._userService.registerUser({ fullName, email, profilePicture } as IUserType);
                 if (!currentUser) {
                     res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create user.", });
                     return
@@ -235,22 +235,22 @@ class UserController implements IUserController {
             return;
         }
         try {
-            const currentUser = await this.userService.findUser(email);
+            const currentUser = await this._userService.findUser(email);
             if (!currentUser) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
                 return;
             }
-            const response = await this.userService.findOtp(email);
+            const response = await this._userService.findOtp(email);
             const storedOTP = response?.otp;
             if (!storedOTP) {
                 const otp = await OtpUtility.otpGenerator();
                 await MailUtility.sendMail(email, otp, "Verification otp");
                 res.status(STATUS_CODES.OK).json({ status: true, message: "Otp sent to the given mail id", email, otp });
-                await this.userService.storeOtp(email, otp);
+                await this._userService.storeOtp(email, otp);
             } else {
                 await MailUtility.sendMail(email, Number(storedOTP), "Verification otp");
                 res.status(STATUS_CODES.OK).json({ status: true, message: "Otp sent to the given mail id", email, storedOTP, });
-                await this.userService.storeResendOtp(email, Number(storedOTP));
+                await this._userService.storeResendOtp(email, Number(storedOTP));
             }
         } catch (error) {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, });
@@ -264,12 +264,12 @@ class UserController implements IUserController {
             return;
         }
         try {
-            const currentUser = await this.userService.findUser(email);
+            const currentUser = await this._userService.findUser(email);
             if (!currentUser) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
                 return;
             }
-            const updateUser = await this.userService.resetPassword(email, password);
+            const updateUser = await this._userService.resetPassword(email, password);
             if (updateUser) {
                 res.status(STATUS_CODES.OK).json({ status: true, message: "Password Change successfully" });
             } else {
@@ -287,7 +287,7 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return
             }
-            const userDetails = await this.userService.getUserById(id)
+            const userDetails = await this._userService.getUserById(id)
             if (!userDetails) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return
@@ -311,7 +311,7 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND || 'User ID is required', });
                 return;
             }
-            const user = await this.userService.getUserById(id);
+            const user = await this._userService.getUserById(id);
             if (!user) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND || 'User not found', });
                 return;
@@ -325,7 +325,7 @@ class UserController implements IUserController {
             if (phoneNumber) updateData.phoneNumber = phoneNumber;
             if (newPassword) updateData.password = newPassword;
             if (profilePicture) updateData.profilePicture = profilePicture;
-            const updatedUser = await this.userService.updateUserById(id, updateData);
+            const updatedUser = await this._userService.updateUserById(id, updateData);
             res.status(STATUS_CODES.OK).json({ status: true, message: 'Profile updated successfully', userDetails: updatedUser, });
         } catch (error) {
             console.error('Update Profile Error:', error);
@@ -335,7 +335,7 @@ class UserController implements IUserController {
 
     async fetchPlans(req: Request, res: Response): Promise<void> {
         try {
-            const planData = await this.userService.fetchPlans();
+            const planData = await this._userService.fetchPlans();
             res.status(STATUS_CODES.OK).json({ status: true, message: "Subscription plan Fetched Successfully", planData })
         } catch (error) {
             console.error("Failed to fetch Subscription plan", error);
@@ -345,7 +345,7 @@ class UserController implements IUserController {
 
     async getAllExpert(req: Request, res: Response): Promise<void> {
         try {
-            const response = await this.userService.getAllExpert();
+            const response = await this._userService.getAllExpert();
             const expert = response || [];
             const formattedExperts = expert.map((expert: any) => ({
                 id: expert._id,
@@ -381,7 +381,7 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return;
             }
-            const expert = await this.userService.getExpertById(id)
+            const expert = await this._userService.getExpertById(id)
             if (!expert) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return
@@ -402,12 +402,12 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.MISSING_REQUIRED_FIELDS, });
                 return;
             }
-            const Expert = await this.userService.getExpertById(id)
+            const Expert = await this._userService.getExpertById(id)
             if (!Expert) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return
             }
-            const availability = await this.userService.getAvailabilityByExpert(id, startDate, endDate);
+            const availability = await this._userService.getAvailabilityByExpert(id, startDate, endDate);
             res.status(STATUS_CODES.OK).json({ status: true, message: "Expert availability fetched successfully", availability });
         } catch (error) {
             console.error("Get expert availability error:", error);
@@ -422,7 +422,7 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND, });
                 return;
             }
-            const subscription = await this.userService.checkSubscription(userId)
+            const subscription = await this._userService.checkSubscription(userId)
             res.status(STATUS_CODES.OK).json({ status: true, message: "Subscription status retrieved successfully", subscription });
         } catch (error) {
             console.error("checkSubscription error:", error);

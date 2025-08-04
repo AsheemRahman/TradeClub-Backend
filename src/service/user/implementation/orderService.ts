@@ -11,61 +11,61 @@ import IOrderService from "../IOrderService";
 
 
 class OrderService implements IOrderService {
-    private orderRepository: IOrderRepository;
-    private courseRepository: ICourseRepository;
+    private _orderRepository: IOrderRepository;
+    private _courseRepository: ICourseRepository;
 
     constructor(orderRepository: IOrderRepository, courseRepository: ICourseRepository) {
-        this.orderRepository = orderRepository;
-        this.courseRepository = courseRepository;
+        this._orderRepository = orderRepository;
+        this._courseRepository = courseRepository;
     };
 
     async getCourseById(id: string): Promise<ICourse | null> {
-        const Course = await this.courseRepository.getCourseById(id);
+        const Course = await this._courseRepository.getCourseById(id);
         return Course;
     }
 
     async updateCourse(courseId: string, purchasedUsers: string): Promise<ICourse | null> {
-        const Courses = await this.courseRepository.updateCourse(courseId, purchasedUsers);
+        const Courses = await this._courseRepository.updateCourse(courseId, purchasedUsers);
         return Courses;
     }
 
     async getCourseByUser(userId: string): Promise<ICourse[] | null> {
-        const Courses = await this.courseRepository.getCourseByUser(userId);
+        const Courses = await this._courseRepository.getCourseByUser(userId);
         return Courses;
     }
 
     async getProgressByUser(userId: string): Promise<ICourseProgress[] | null> {
-        const Courses = await this.courseRepository.getAllProgress(userId);
+        const Courses = await this._courseRepository.getAllProgress(userId);
         return Courses;
     }
 
     async createOrder(order: IOrderInput): Promise<IOrder | null> {
-        const newOrder = await this.orderRepository.createOrder(order);
+        const newOrder = await this._orderRepository.createOrder(order);
         return newOrder;
     }
 
     async getOrderById(id: string): Promise<IOrder[] | null> {
-        const Course = await this.orderRepository.getOrderById(id);
+        const Course = await this._orderRepository.getOrderById(id);
         return Course;
     }
 
     async checkOrderExisting(id: string): Promise<IOrder | null> {
-        const order = await this.orderRepository.checkOrderExisting(id);
+        const order = await this._orderRepository.checkOrderExisting(id);
         return order;
     }
 
     async getPurchasedByUser(userId: string, courseId: string): Promise<IOrder | null> {
-        const order = await this.orderRepository.getPurchasedByUser(userId, courseId);
+        const order = await this._orderRepository.getPurchasedByUser(userId, courseId);
         return order;
     }
 
     async getPlanById(planId: string): Promise<ISubscriptionPlan | null> {
-        const planData = await this.orderRepository.getPlanById(planId);
+        const planData = await this._orderRepository.getPlanById(planId);
         return planData;
     }
 
     async checkPlan(userId: string, planId: string): Promise<IUserSubscription[] | null> {
-        const Data = await this.orderRepository.checkPlan(userId, planId);
+        const Data = await this._orderRepository.checkPlan(userId, planId);
         return Data;
     }
 
@@ -73,35 +73,35 @@ class OrderService implements IOrderService {
         const startDate = new Date();
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + durationInDays);
-        await this.orderRepository.deactivateSubscription(userId);
-        return await this.orderRepository.createSubscription({
+        await this._orderRepository.deactivateSubscription(userId);
+        return await this._orderRepository.createSubscription({
             user: userId, subscriptionPlan: planId, startDate, endDate, isActive: true,
             paymentId, paymentStatus, autoRenew, callsRemaining
         });
     }
 
     async getActiveSubscription(userId: string): Promise<IUserSubscription | null> {
-        return await this.orderRepository.findActiveSubscription(userId);
+        return await this._orderRepository.findActiveSubscription(userId);
     }
 
     async getAllSubscriptionsByUser(userId: string): Promise<IUserSubscription[] | null> {
-        return await this.orderRepository.getAllSubscriptionsByUser(userId);
+        return await this._orderRepository.getAllSubscriptionsByUser(userId);
     }
 
     async updateSubscription(userId: string, planId: string): Promise<IUserSubscription | null> {
-        return await this.orderRepository.updateSubscription(userId, planId);
+        return await this._orderRepository.updateSubscription(userId, planId);
     }
 
     async createSession(data: CreateSessionDTO): Promise<ISession | null> {
-        return await this.orderRepository.createSession(data);
+        return await this._orderRepository.createSession(data);
     }
 
     async getUserSessions(userId: string): Promise<ISession[] | null> {
-        return await this.orderRepository.getSessionsByUser(userId);
+        return await this._orderRepository.getSessionsByUser(userId);
     }
 
     async markSessionStatus(sessionId: string, status: 'completed' | 'missed'): Promise<ISession | null> {
-        return await this.orderRepository.updateSessionStatus(sessionId, status);
+        return await this._orderRepository.updateSessionStatus(sessionId, status);
     }
 }
 

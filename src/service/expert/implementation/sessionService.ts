@@ -7,39 +7,39 @@ import { IDashboardStats, IGetSessionsResponse, ISessionAnalytics, ISessionFilte
 
 
 class SessionService implements ISessionService {
-    private sessionRepository: ISessionRepository;
+    private _sessionRepository: ISessionRepository;
 
     constructor(sessionRepository: ISessionRepository) {
-        this.sessionRepository = sessionRepository;
+        this._sessionRepository = sessionRepository;
     };
 
     async getSlots(expertId: string): Promise<IExpertAvailability[] | null> {
-        return await this.sessionRepository.getAllByExpertId(expertId);
+        return await this._sessionRepository.getAllByExpertId(expertId);
     };
 
     async addSlot(sessionData: Partial<IExpertAvailability>): Promise<IExpertAvailability | null> {
-        return await this.sessionRepository.addSession(sessionData);
+        return await this._sessionRepository.addSession(sessionData);
     };
 
     async editSlot(id: string, sessionData: Partial<IExpertAvailability>): Promise<IExpertAvailability | null> {
-        return await this.sessionRepository.updateSession(id, sessionData);
+        return await this._sessionRepository.updateSession(id, sessionData);
     };
 
     async deleteSlot(id: string): Promise<IExpertAvailability | null> {
-        return await this.sessionRepository.deleteSession(id);
+        return await this._sessionRepository.deleteSession(id);
     };
 
     async getDashboardStats(expertId: string): Promise<IDashboardStats> {
-        const totalStudents = (await this.sessionRepository.getDistinctStudents(expertId)).length;
-        const totalSessions = await this.sessionRepository.countSessionsByExpert(expertId);
-        // const averageRating = await this.sessionRepository.getAverageRating(expertId);
-        // const pendingMessages = await this.sessionRepository.countPendingMessages(expertId);
-        const upcomingSessions = await this.sessionRepository.getUpcomingSessions(expertId);
-        const completedSessions = await this.sessionRepository.countCompletedSessions(expertId);
+        const totalStudents = (await this._sessionRepository.getDistinctStudents(expertId)).length;
+        const totalSessions = await this._sessionRepository.countSessionsByExpert(expertId);
+        // const averageRating = await this._sessionRepository.getAverageRating(expertId);
+        // const pendingMessages = await this._sessionRepository.countPendingMessages(expertId);
+        const upcomingSessions = await this._sessionRepository.getUpcomingSessions(expertId);
+        const completedSessions = await this._sessionRepository.countCompletedSessions(expertId);
         const completionRate = totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 0;
         const lastMonth = new Date();
         lastMonth.setDate(lastMonth.getDate() - 30);
-        const recentStudents = (await this.sessionRepository.getRecentStudents(expertId, lastMonth))?.length;
+        const recentStudents = (await this._sessionRepository.getRecentStudents(expertId, lastMonth))?.length;
         const monthlyGrowth = totalStudents > 0 ? Math.round((recentStudents / totalStudents) * 100) : 0;
         return {
             totalStudents,
@@ -56,7 +56,7 @@ class SessionService implements ISessionService {
         const days = period === '7d' ? 7 : period === '90d' ? 90 : 30;
         const startDate = new Date();
         startDate.setDate(startDate.getDate() - days);
-        const analytics = await this.sessionRepository.getSessionAnalytics(expertId, startDate);
+        const analytics = await this._sessionRepository.getSessionAnalytics(expertId, startDate);
         return analytics.map((data) => ({
             date: data._id as string,
             sessions: data.sessions,
@@ -82,8 +82,8 @@ class SessionService implements ISessionService {
                 { 'userId.email': { $regex: search, $options: 'i' } }
             ];
         }
-        const sessions = await this.sessionRepository.findSessions(query, page, limit);
-        const total = await this.sessionRepository.countSessions(query);
+        const sessions = await this._sessionRepository.findSessions(query, page, limit);
+        const total = await this._sessionRepository.countSessions(query);
         return {
             sessions,
             pagination: {

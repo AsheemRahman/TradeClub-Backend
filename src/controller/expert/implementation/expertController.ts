@@ -14,10 +14,10 @@ import JwtUtility from "../../../utils/JwtUtility";
 
 
 class ExpertController implements IExpertController {
-    private expertService: IExpertService;
+    private _expertService: IExpertService;
 
     constructor(expertService: IExpertService) {
-        this.expertService = expertService;
+        this._expertService = expertService;
     }
 
     //----------------------------- Expert Register -----------------------------
@@ -29,16 +29,16 @@ class ExpertController implements IExpertController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT });
                 return;
             }
-            const isEmailUsed = await this.expertService.findExpertByEmail(email);
+            const isEmailUsed = await this._expertService.findExpertByEmail(email);
             if (isEmailUsed) {
                 res.status(STATUS_CODES.CONFLICT).json({ message: ERROR_MESSAGES.EMAIL_ALREADY_EXIST });
                 return;
             }
-            await this.expertService.registerExpert({ fullName, phoneNumber, email, password, } as IUserType);
+            await this._expertService.registerExpert({ fullName, phoneNumber, email, password, } as IUserType);
             const otp = await OtpUtility.otpGenerator();
             try {
                 await MailUtility.sendMail(email, otp, "Verification OTP");
-                await this.expertService.storeOtp(email, otp);
+                await this._expertService.storeOtp(email, otp);
                 res.status(STATUS_CODES.OK).json({ message: "An otp has sent to your email", email, otp, });
             } catch (error) {
                 console.error("Failed to send OTP:", error);
@@ -62,13 +62,13 @@ class ExpertController implements IExpertController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INVALID_INPUT });
                 return;
             }
-            const response = await this.expertService.findOtp(email);
+            const response = await this._expertService.findOtp(email);
             const storedOTP = response?.otp;
             if (storedOTP !== otp) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Incorrect OTP" });
                 return;
             }
-            const currentExpert = await this.expertService.findExpertByEmail(email);
+            const currentExpert = await this._expertService.findExpertByEmail(email);
             if (!currentExpert) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.Expert_NOT_FOUND });
                 return;
@@ -95,7 +95,7 @@ class ExpertController implements IExpertController {
         try {
             await MailUtility.sendMail(email, otp, "Verification otp");
             res.status(STATUS_CODES.OK).json({ status: true, message: "Otp sent to the given mail id", email, otp, });
-            await this.expertService.storeResendOtp(email, otp);
+            await this._expertService.storeResendOtp(email, otp);
         } catch (error) {
             console.error("Failed to send otp", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Failed to send the verification mail" });
@@ -111,7 +111,7 @@ class ExpertController implements IExpertController {
             return;
         }
         try {
-            const currentExpert = await this.expertService.findExpertByEmail(email);
+            const currentExpert = await this._expertService.findExpertByEmail(email);
             if (!currentExpert) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.EMAIL_NOT_FOUND });
                 return;
@@ -164,9 +164,9 @@ class ExpertController implements IExpertController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "name, email, and image are required.", });
                 return
             }
-            let currentExpert = await this.expertService.findExpertByEmail(email);
+            let currentExpert = await this._expertService.findExpertByEmail(email);
             if (!currentExpert) {
-                currentExpert = await this.expertService.registerExpert({ fullName, email, profilePicture, } as IUserType);
+                currentExpert = await this._expertService.registerExpert({ fullName, email, profilePicture, } as IUserType);
                 if (!currentExpert) {
                     res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create user.", });
                     return
@@ -209,22 +209,22 @@ class ExpertController implements IExpertController {
             return;
         }
         try {
-            const currentExpert = await this.expertService.findExpertByEmail(email);
+            const currentExpert = await this._expertService.findExpertByEmail(email);
             if (!currentExpert) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
                 return;
             }
-            const response = await this.expertService.findOtp(email);
+            const response = await this._expertService.findOtp(email);
             const storedOTP = response?.otp;
             if (!storedOTP) {
                 const otp = await OtpUtility.otpGenerator();
                 await MailUtility.sendMail(email, otp, "Verification otp");
                 res.status(STATUS_CODES.OK).json({ status: true, message: "Otp sent to the given mail id", email, otp });
-                await this.expertService.storeOtp(email, otp);
+                await this._expertService.storeOtp(email, otp);
             } else {
                 await MailUtility.sendMail(email, Number(storedOTP), "Verification otp");
                 res.status(STATUS_CODES.OK).json({ status: true, message: "Otp sent to the given mail id", email, storedOTP, });
-                await this.expertService.storeResendOtp(email, Number(storedOTP));
+                await this._expertService.storeResendOtp(email, Number(storedOTP));
             }
         } catch (error) {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, });
@@ -240,12 +240,12 @@ class ExpertController implements IExpertController {
             return;
         }
         try {
-            const currentUser = await this.expertService.findExpertByEmail(email);
+            const currentUser = await this._expertService.findExpertByEmail(email);
             if (!currentUser) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
                 return;
             }
-            const updateExpert = await this.expertService.resetPassword(email, password);
+            const updateExpert = await this._expertService.resetPassword(email, password);
             if (updateExpert) {
                 res.status(STATUS_CODES.OK).json({ status: true, message: "Password Change successfuly" });
             } else {
@@ -265,12 +265,12 @@ class ExpertController implements IExpertController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT });
                 return;
             }
-            const isExpert = await this.expertService.findExpertByEmail(email);
+            const isExpert = await this._expertService.findExpertByEmail(email);
             if (!isExpert) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
                 return;
             }
-            await this.expertService.updateDetails({ email, phoneNumber, profilePicture, DOB, state, country, experience_level, markets_Traded, trading_style, proof_of_experience, year_of_experience, Introduction_video, Government_Id, selfie_Id } as ExpertFormData);
+            await this._expertService.updateDetails({ email, phoneNumber, profilePicture, DOB, state, country, experience_level, markets_Traded, trading_style, proof_of_experience, year_of_experience, Introduction_video, Government_Id, selfie_Id } as ExpertFormData);
             res.status(STATUS_CODES.OK).json({ status: true, message: "Expert details added successfully", });
         } catch (error) {
             console.error("Get expert verification error:", error);
@@ -299,7 +299,7 @@ class ExpertController implements IExpertController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return
             }
-            const expertDetails = await this.expertService.getExpertById(id)
+            const expertDetails = await this._expertService.getExpertById(id)
             if (!expertDetails) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return
@@ -323,7 +323,7 @@ class ExpertController implements IExpertController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND || 'User ID is required', });
                 return;
             }
-            const Expert = await this.expertService.getExpertById(id);
+            const Expert = await this._expertService.getExpertById(id);
             if (!Expert) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND || 'User not found', });
                 return;
@@ -341,7 +341,7 @@ class ExpertController implements IExpertController {
                 }
                 password = password = await PasswordUtils.passwordHash(newPassword);
             }
-            const expertDetails = await this.expertService.updateExpertById(id, { id, fullName, phoneNumber, password, profilePicture, markets_Traded, trading_style });
+            const expertDetails = await this._expertService.updateExpertById(id, { id, fullName, phoneNumber, password, profilePicture, markets_Traded, trading_style });
             res.status(STATUS_CODES.OK).json({ status: true, message: 'Profile updated successfully', expertDetails });
         } catch (error) {
             console.error('Update Profile Error:', error);
@@ -356,7 +356,7 @@ class ExpertController implements IExpertController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return
             }
-            const expertDetails = await this.expertService.getExpertById(id)
+            const expertDetails = await this._expertService.getExpertById(id)
             if (!expertDetails) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
                 return
@@ -364,7 +364,7 @@ class ExpertController implements IExpertController {
             if (!expertDetails.isActive) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "User Is blocked by admin" });
             }
-            const walletDetails = await this.expertService.getWalletById(id);
+            const walletDetails = await this._expertService.getWalletById(id);
             res.status(STATUS_CODES.OK).json({ status: true, message: "Data retrieved successfully", walletDetails });
         } catch (error) {
             console.error("Profile error:", error);

@@ -8,10 +8,10 @@ import { ISessionFilters } from "../../../types/IExpert";
 
 
 class SessionController implements ISessionController {
-    private sessionService: ISessionService;
+    private _sessionService: ISessionService;
 
     constructor(sessionService: ISessionService) {
-        this.sessionService = sessionService;
+        this._sessionService = sessionService;
     }
 
     async getSlots(req: Request, res: Response): Promise<void> {
@@ -21,7 +21,7 @@ class SessionController implements ISessionController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Expert ID is missing in request.", });
                 return;
             }
-            const slots = await this.sessionService.getSlots(expertId);
+            const slots = await this._sessionService.getSlots(expertId);
             res.status(STATUS_CODES.OK).json({ status: true, message: "Session slot Fetched Successfully", slots });
         } catch (error) {
             console.error("Failed to fetch Session slot", error);
@@ -32,7 +32,7 @@ class SessionController implements ISessionController {
     async addSlot(req: Request, res: Response): Promise<void> {
         try {
             const sessionData = { ...req.body, expertId: req.userId };
-            const newSession = await this.sessionService.addSlot(sessionData);
+            const newSession = await this._sessionService.addSlot(sessionData);
             res.status(STATUS_CODES.CREATED).json({ status: true, message: "Session slot created Successfully", newSession })
         } catch (error) {
             console.error("Error adding session slot", error);
@@ -43,7 +43,7 @@ class SessionController implements ISessionController {
     async editSlot(req: Request, res: Response): Promise<void> {
         try {
             const { _id, ...sessionData } = req.body;
-            const updatedSlot = await this.sessionService.editSlot(_id, sessionData);
+            const updatedSlot = await this._sessionService.editSlot(_id, sessionData);
             res.status(STATUS_CODES.CREATED).json({ status: true, message: "Session slot edited Successfully", updatedSlot })
         } catch (error) {
             console.error("Error adding session slot", error);
@@ -54,7 +54,7 @@ class SessionController implements ISessionController {
     async deleteSlot(req: Request, res: Response): Promise<void> {
         try {
             const { id } = req.params;
-            const deleted = await this.sessionService.deleteSlot(id);
+            const deleted = await this._sessionService.deleteSlot(id);
             res.status(STATUS_CODES.CREATED).json({ status: true, message: "Session slot deleted Successfully", deleted })
         } catch (error) {
             console.error("Error deleted session slot", error);
@@ -70,7 +70,7 @@ class SessionController implements ISessionController {
                 res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: "Expert ID is missing in request." });
                 return
             }
-            const stats = await this.sessionService.getDashboardStats(expertId);
+            const stats = await this._sessionService.getDashboardStats(expertId);
             res.status(STATUS_CODES.OK).json({ status: true, message: 'fetch dashboard stats', stats });
         } catch (error) {
             console.error('Error fetching dashboard stats:', error);
@@ -86,7 +86,7 @@ class SessionController implements ISessionController {
                 return
             }
             const { period = '30d' } = req.query;
-            const analytics = await this.sessionService.getSessionAnalytics(expertId, period as '7d' | '30d' | '90d');
+            const analytics = await this._sessionService.getSessionAnalytics(expertId, period as '7d' | '30d' | '90d');
             res.status(STATUS_CODES.OK).json({ status: true, message: 'fetch session analytics', analytics });
         } catch (error) {
             console.error('Error fetching session analytics:', error);
@@ -111,7 +111,7 @@ class SessionController implements ISessionController {
                 endDate: endDate as string,
                 search: search as string,
             };
-            const result = await this.sessionService.getSessions(expertId, page, limit, filters);
+            const result = await this._sessionService.getSessions(expertId, page, limit, filters);
             res.status(STATUS_CODES.OK).json({ status: true, ...result });
         } catch (error) {
             console.error('Failed to fetch Session slot', error);

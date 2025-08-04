@@ -7,16 +7,16 @@ import ICourseService from "../../../service/user/ICourseService";
 
 
 class CourseController implements ICourseController {
-    private courseService: ICourseService;
+    private _courseService: ICourseService;
 
     constructor(courseService: ICourseService) {
-        this.courseService = courseService;
+        this._courseService = courseService;
     }
 
     async getCourse(req: Request, res: Response): Promise<void> {
         try {
             const { search = '', category, minPrice = 0, maxPrice = 10000, sort = 'newest', page = 1, limit = 4 } = req.query;
-            const result = await this.courseService.getCourse({
+            const result = await this._courseService.getCourse({
                 search: search as string,
                 category: category as string,
                 minPrice: Number(minPrice),
@@ -39,7 +39,7 @@ class CourseController implements ICourseController {
             return;
         }
         try {
-            const course = await this.courseService.getCourseById(id)
+            const course = await this._courseService.getCourseById(id)
             if (!course) {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
                 return
@@ -53,7 +53,7 @@ class CourseController implements ICourseController {
 
     async getCategory(req: Request, res: Response): Promise<void> {
         try {
-            const categories = await this.courseService.getCategory();
+            const categories = await this._courseService.getCategory();
             res.status(STATUS_CODES.OK).json({ status: true, message: "Category Fetched Successfully", categories })
         } catch (error) {
             console.error("Failed to fetch category", error);
@@ -69,7 +69,7 @@ class CourseController implements ICourseController {
             return;
         }
         try {
-            const course = await this.courseService.getCourseById(courseId);
+            const course = await this._courseService.getCourseById(courseId);
             if (!course) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND, });
                 return;
@@ -90,7 +90,7 @@ class CourseController implements ICourseController {
             return;
         }
         try {
-            const progress = await this.courseService.getProgress(courseId, userId);
+            const progress = await this._courseService.getProgress(courseId, userId);
             res.status(STATUS_CODES.OK).json({ status: true, message: "progress Fetched Successfully", progress })
         } catch (error) {
             console.error("Failed to fetch progress", error);
@@ -109,10 +109,10 @@ class CourseController implements ICourseController {
             }
 
             // Find existing progress for the user and course
-            let courseProgress = await this.courseService.getProgress(courseId, userId);
+            let courseProgress = await this._courseService.getProgress(courseId, userId);
             const currentDate = new Date();
             if (!courseProgress) {
-                const newProgress = await this.courseService.createProgress(userId, courseId, [{
+                const newProgress = await this._courseService.createProgress(userId, courseId, [{
                     contentId,
                     watchedDuration,
                     isCompleted,
@@ -143,7 +143,7 @@ class CourseController implements ICourseController {
             courseProgress.totalCompletedPercent = Math.round((completedVideos / totalVideos) * 100);
             // Set completedAt if all videos are completed
             courseProgress.completedAt = (completedVideos === totalVideos && totalVideos > 0) ? currentDate : undefined;
-            const updatedProgress = await this.courseService.updateProgress(courseProgress);
+            const updatedProgress = await this._courseService.updateProgress(courseProgress);
             res.status(STATUS_CODES.OK).json({ status: true, message: "Progress updated successfully", progress: updatedProgress });
         } catch (error) {
             console.error("Error updating course progress:", error);
