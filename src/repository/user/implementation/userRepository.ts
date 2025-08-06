@@ -83,7 +83,7 @@ class userRepository extends BaseRepository<IUser> implements IUserRepository {
     }
 
     async checkSubscription(userId: string): Promise<IUserSubscription | null> {
-        const subscription = await UserSubscription.findOne({ user: userId, isActive: true, paymentStatus: 'paid', endDate: { $gt: new Date() }, });
+        const subscription = await UserSubscription.findOne({ user: userId, isActive: true, paymentStatus: 'paid', endDate: { $gt: new Date() }, }).populate("subscriptionPlan");
         return subscription;
     }
 

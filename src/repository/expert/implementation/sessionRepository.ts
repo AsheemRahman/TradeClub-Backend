@@ -67,7 +67,7 @@ class SessionRepository extends BaseRepository<IExpertAvailability> implements I
         return Session.find(query)
             .populate('userId', 'fullName email profilePicture')
             .populate('expertId', 'fullName')
-            .populate('availabilityId', 'startTime endTime')
+            .populate('availabilityId', 'startTime endTime date')
             .sort({ 'availabilityId.startTime': -1 })
             .limit(limit)
             .skip((page - 1) * limit);
