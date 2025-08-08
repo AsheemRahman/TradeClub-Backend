@@ -9,6 +9,9 @@ import mongoDB from "./config/dbConfig";
 import userRouter from "./routes/user/userRoute";
 import expertRouter from "./routes/expert/expertRoute";
 import adminRouter from "./routes/admin/adminRouter";
+import { createServer } from "http";
+import { Server } from "socket.io";
+import chatSocketHandler from "./config/socketConfig";
 
 
 dotenv.config();
@@ -48,8 +51,24 @@ app.use("/api/expert", expertRouter);
 app.use("/api/admin", adminRouter);
 
 
+
+//----------------------- Socket.IO Server -----------------------
+
+const server = createServer(app);
+
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"],
+        credentials: true,
+    },
+});
+
+// Attach socket handler
+chatSocketHandler(io);
+
 //----------------------- Server listening -----------------------
 
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
