@@ -4,14 +4,17 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+
 import morganMiddleware from "./middleware/morganMiddleware";
 import mongoDB from "./config/dbConfig";
+
 import userRouter from "./routes/user/userRoute";
 import expertRouter from "./routes/expert/expertRoute";
 import adminRouter from "./routes/admin/adminRouter";
+import chatRouter from "./routes/chat/chatRouter";
+
 import { createServer } from "http";
-import { Server } from "socket.io";
-import chatSocketHandler from "./config/socketConfig";
+import configureSocket from "./config/socketConfig";
 
 
 dotenv.config();
@@ -49,23 +52,19 @@ mongoDB();
 app.use("/api/user", userRouter);
 app.use("/api/expert", expertRouter);
 app.use("/api/admin", adminRouter);
-
+app.use("/api/chat",chatRouter);
 
 
 //----------------------- Socket.IO Server -----------------------
 
 const server = createServer(app);
 
-const io = new Server(server, {
-    cors: {
-        origin: "http://localhost:3000",
-        methods: ["GET", "POST"],
-        credentials: true,
-    },
-});
+const io = configureSocket(server)
 
-// Attach socket handler
-chatSocketHandler(io);
+//-------------------- Attach socket handler --------------------
+
+// chatSocketHandler(io);
+
 
 //----------------------- Server listening -----------------------
 

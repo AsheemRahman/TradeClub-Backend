@@ -1,38 +1,74 @@
 import { Server } from "socket.io";
-import Chat from "../model/shared/chatSchema";
+import { Server as HttpServer } from "http";
 
-const onlineUsers = new Map();
+const userSocketMap: { [key: string]: string } = {};
 
-export default function chatSocketHandler(io: Server) {
+let io: Server | null = null;
+
+export const getReceiverSocketId = (receiverId: string) => {
+    return userSocketMap[receiverId];
+};
+
+export const getIO = () => io;
+
+const configureSocket = (server: HttpServer) => {
+    io = new Server(server, {
+        cors: { origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"] },
+    });
+
     io.on("connection", (socket) => {
-        console.log("Socket connected:", socket.id);
+        console.log("New client connected:", socket.id, "User ID:", socket.handshake.query.userId);
+        console.log("A user connected", socket.id);
 
-        // User joins socket
-        socket.on("join", (userId: string) => {
-            onlineUsers.set(userId, socket.id);
-            console.log(`${userId} joined`);
+        const userId = Array.isArray(socket.handshake.query.userId)
+            ? socket.handshake.query.userId[0]
+            : socket.handshake.query.userId;
+
+        if (userId) {
+            userSocketMap[userId] = socket.id;
+            io?.emit("getOnlineUser", Object.keys(userSocketMap));
+        }
+
+        console.log("online users", userSocketMap);
+
+        // Join a session room
+        socket.on("join-session", ({ sessionId, userId, role }) => {
+            socket.join(sessionId);
+            console.log(`${role} ${userId} joined session ${sessionId}`);
+            socket.to(sessionId).emit("user-joined", { userId, role });
         });
 
-        // Send message
-        socket.on("sendMessage", async ({ senderId, receiverId, content }) => {
-            const chat = await Chat.findOneAndUpdate(
-                { participants: { $all: [senderId, receiverId] } },
-                { $push: { messages: { sender: senderId, receiver: receiverId, content } } },
-                { upsert: true, new: true }
-            );
+        // Handle WebRTC signaling messages
+        socket.on("offer", ({ sessionId, offer, fromUserId }) => {
+            console.log(`Offer from ${fromUserId} in session ${sessionId}`);
+            socket.to(sessionId).emit("offer", { offer, fromUserId });
+        });
 
-            // Emit message to receiver if online
-            const receiverSocket = onlineUsers.get(receiverId);
-            if (receiverSocket) {
-                io.to(receiverSocket).emit("receiveMessage", chat.messages.at(-1));
-            }
+        socket.on("answer", ({ sessionId, answer, fromUserId }) => {
+            console.log(`Answer from ${fromUserId} in session ${sessionId}`);
+            socket.to(sessionId).emit("answer", { answer });
+        });
+
+        socket.on("ice-candidate", ({ sessionId, candidate, fromUserId }) => {
+            console.log(`ICE candidate from ${fromUserId} in session ${sessionId}`);
+            socket.to(sessionId).emit("ice-candidate", { candidate });
+        });
+
+        // Handle session end
+        socket.on("end-session", ({ sessionId }) => {
+            console.log(`Session ${sessionId} ended`);
+            socket.to(sessionId).emit("session-ended");
+            socket.leave(sessionId);
         });
 
         socket.on("disconnect", () => {
-            console.log("Socket disconnected:", socket.id);
-            for (const [userId, socketId] of onlineUsers.entries()) {
-                if (socketId === socket.id) onlineUsers.delete(userId);
+            console.log("User disconnected", socket.id);
+            if (userId) {
+                delete userSocketMap[userId];
+                io?.emit("getOnlineUser", Object.keys(userSocketMap));
             }
         });
     });
-}
+};
+
+export default configureSocket;
