@@ -37,12 +37,12 @@ class MessageService implements IMessageService {
 
     async markMessagesAsRead(receiverId: string, senderId: string): Promise<boolean | null> {
         try {
-          const response = await this._messageRepository.markMessagesAsRead(receiverId, senderId);
-          return response;
+            const response = await this._messageRepository.markMessagesAsRead(receiverId, senderId);
+            return response;
         } catch (error) {
-          console.error('Error in markMessagesAsRead service:', error);
-          return null;
+            console.error('Error in markMessagesAsRead service:', error);
+            return null;
         }
-      }
+    }
 }
 export default MessageService

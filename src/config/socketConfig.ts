@@ -12,9 +12,7 @@ export const getReceiverSocketId = (receiverId: string) => {
 export const getIO = () => io;
 
 const configureSocket = (server: HttpServer) => {
-    io = new Server(server, {
-        cors: { origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"] },
-    });
+    io = new Server(server, { cors: { origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"] },});
 
     io.on("connection", (socket) => {
         console.log("New client connected:", socket.id, "User ID:", socket.handshake.query.userId);

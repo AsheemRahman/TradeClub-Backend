@@ -52,18 +52,13 @@ mongoDB();
 app.use("/api/user", userRouter);
 app.use("/api/expert", expertRouter);
 app.use("/api/admin", adminRouter);
-app.use("/api/chat",chatRouter);
+app.use("/api/chat", chatRouter);
 
 
 //----------------------- Socket.IO Server -----------------------
 
 const server = createServer(app);
-
 const io = configureSocket(server)
-
-//-------------------- Attach socket handler --------------------
-
-// chatSocketHandler(io);
 
 
 //----------------------- Server listening -----------------------
