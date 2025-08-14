@@ -103,6 +103,11 @@ class UserService implements IUserService {
         const [sessions, total] = await Promise.all([this._userRepository.findSessions(filters, skip, limit), this._userRepository.countSessions(filters),]);
         return { sessions, total, limit, page, };
     }
+
+    async getSessionById(sessionId: string): Promise<ISession | null> {
+        const session = await this._userRepository.getSessionById(sessionId);
+        return session
+    };
 }
 
 

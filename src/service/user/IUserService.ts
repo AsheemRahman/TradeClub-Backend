@@ -1,6 +1,7 @@
 import { ISubscriptionPlan } from '../../model/admin/subscriptionSchema';
 import { IExpertAvailability } from '../../model/expert/AvailabilitySchema';
 import { IExpert } from '../../model/expert/expertSchema';
+import { ISession } from '../../model/expert/sessionSchema';
 import { OTPType } from '../../model/user/otp';
 import { IUser } from '../../model/user/userSchema';
 import { IUserSubscription } from '../../model/user/userSubscriptionSchema';
@@ -26,6 +27,7 @@ interface IUserService {
     checkSubscription(userId: string): Promise<IUserSubscription | null>;
 
     getSessions(userId: string, page: number, limit: number, status: string): Promise<ISessionsResponse>;
+    getSessionById(sessionId: string): Promise<ISession | null>;
 }
 
 export default IUserService;

@@ -95,6 +95,7 @@ router.get('/expert/:id/availability', validate("user"), (req, res) => userContr
 
 router.post('/slot-booking', validate("user"), (req, res) => orderController.slotBooking(req, res));
 router.get('/sessions', validate("user"), (req, res) => userControllerInstance.getSessions(req, res));
+router.get('/session/:id', (req, res) => userControllerInstance.getSessionById(req, res));
 
 
 //------------------------------------ Chat -------------------------------------

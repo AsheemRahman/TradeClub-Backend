@@ -17,7 +17,7 @@ interface IUserController {
 
     fetchPlans(req: Request, res: Response): Promise<void>;
     getSessions(req: Request, res: Response): Promise<void>;
-    
+    getSessionById(req: Request, res: Response): Promise<void>;
 
     getAllExpert(req: Request, res: Response): Promise<void>;
     getExpertById(req: Request, res: Response): Promise<void>;

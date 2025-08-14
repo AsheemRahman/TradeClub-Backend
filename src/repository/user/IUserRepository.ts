@@ -30,6 +30,7 @@ interface IUserRepository {
 
     findSessions(filters: any, skip: number, limit: number): Promise<ISession[] | []>;
     countSessions(filters: any): Promise<number>;
+    getSessionById(sessionId: string): Promise<ISession | null>;
 }
 
 

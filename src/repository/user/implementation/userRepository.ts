@@ -94,6 +94,10 @@ class userRepository extends BaseRepository<IUser> implements IUserRepository {
     async countSessions(filters: any): Promise<number> {
         return Session.countDocuments(filters);
     }
+
+    async getSessionById(sessionId: string): Promise<ISession | null> {
+        return Session.findById(sessionId)
+    }
 }
 
 export default userRepository;
