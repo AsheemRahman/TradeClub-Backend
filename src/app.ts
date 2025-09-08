@@ -1,6 +1,6 @@
 //------------------ required modules -------------------------
 
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -15,6 +15,8 @@ import chatRouter from "./routes/chat/chatRouter";
 
 import { createServer } from "http";
 import configureSocket from "./config/socketConfig";
+import { STATUS_CODES } from "./constants/statusCode";
+import { ERROR_MESSAGES } from "./constants/message";
 
 
 dotenv.config();
@@ -23,11 +25,11 @@ dotenv.config();
 const port = process.env.PORT || 5000;
 const app = express();
 
-//------------------ requiring modules -------------------------
+//-------------------------- Cors -------------------------------
 
 app.use(
     cors({
-        origin: ["http://localhost:3000"],
+        origin: process.env.CLIENT_URL,
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true,
     })
@@ -59,6 +61,15 @@ app.use("/api/chat", chatRouter);
 
 const server = createServer(app);
 const io = configureSocket(server)
+
+
+//------------------ Error Handling Middleware ------------------
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.log("Error handling middleware's error", err);
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
+    next()
+});
 
 
 //----------------------- Server listening -----------------------
