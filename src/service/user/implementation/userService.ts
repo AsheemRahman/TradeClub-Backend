@@ -55,17 +55,17 @@ class UserService implements IUserService {
         return resendOTP;
     };
 
-    async getUserById(id: string): Promise<IUser | null> {
-        const user = await this._userRepository.getUserById(id);
+    async getUserById(userId: string): Promise<IUser | null> {
+        const user = await this._userRepository.getUserById(userId);
         return user;
     };
 
-    async updateUserById(id: string, updateData: Partial<IUser>): Promise<IUser | null> {
+    async updateUserById(userId: string, updateData: Partial<IUser>): Promise<IUser | null> {
         if (updateData.password) {
             const hashedPassword = await PasswordUtils.passwordHash(updateData.password);
             updateData.password = hashedPassword;
         }
-        const updatedUser = await this._userRepository.updateUserById(id, updateData);
+        const updatedUser = await this._userRepository.updateUserById(userId, updateData);
         return updatedUser;
     };
 
@@ -79,13 +79,13 @@ class UserService implements IUserService {
         return experts;
     }
 
-    async getExpertById(id: string): Promise<IExpert | null> {
-        const expert = await this._userRepository.getExpertById(id);
+    async getExpertById(ExpertId: string): Promise<IExpert | null> {
+        const expert = await this._userRepository.getExpertById(ExpertId);
         return expert;
     }
 
-    async getAvailabilityByExpert(id: string, startDate: string, endDate: string): Promise<IExpertAvailability[] | null> {
-        const availability = await this._userRepository.getAvailabilityByExpert(id, startDate, endDate);
+    async getAvailabilityByExpert(availabilityId: string, startDate: string, endDate: string): Promise<IExpertAvailability[] | null> {
+        const availability = await this._userRepository.getAvailabilityByExpert(availabilityId, startDate, endDate);
         return availability;
     }
 

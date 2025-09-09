@@ -23,13 +23,13 @@ class AdminService implements IAdminService {
         return { users: users ?? null, total: totalUsers, };
     }
 
-    async getUserById(id: string): Promise<IUser | null> {
-        const user = await this._adminRepository.getUserById(id);
+    async getUserById(userId: string): Promise<IUser | null> {
+        const user = await this._adminRepository.getUserById(userId);
         return user;
     }
 
-    async userUpdateStatus(id: string, status: string): Promise<IUser | null> {
-        const user = await this._adminRepository.userUpdateStatus(id, status);
+    async userUpdateStatus(userId: string, status: string): Promise<IUser | null> {
+        const user = await this._adminRepository.userUpdateStatus(userId, status);
         return user;
     }
 
@@ -41,23 +41,23 @@ class AdminService implements IAdminService {
         return { experts: experts ?? null, total: totalExperts, };
     }
 
-    async expertUpdateStatus(id: string, status: string): Promise<IExpert | null> {
-        const expert = await this._adminRepository.expertUpdateStatus(id, status);
+    async expertUpdateStatus(expertId: string, status: string): Promise<IExpert | null> {
+        const expert = await this._adminRepository.expertUpdateStatus(expertId, status);
         return expert;
     }
 
-    async getExpertById(id: string): Promise<IExpert | null> {
-        const expert = await this._adminRepository.getExpertById(id);
+    async getExpertById(expertId: string): Promise<IExpert | null> {
+        const expert = await this._adminRepository.getExpertById(expertId);
         return expert;
     }
 
-    async approveExpert(id: string): Promise<IExpert | null> {
-        const expert = await this._adminRepository.approveExpert(id);
+    async approveExpert(expertId: string): Promise<IExpert | null> {
+        const expert = await this._adminRepository.approveExpert(expertId);
         return expert;
     }
 
-    async declineExpert(id: string): Promise<IExpert | null> {
-        const expert = await this._adminRepository.declineExpert(id);
+    async declineExpert(expertId: string): Promise<IExpert | null> {
+        const expert = await this._adminRepository.declineExpert(expertId);
         return expert;
     }
 

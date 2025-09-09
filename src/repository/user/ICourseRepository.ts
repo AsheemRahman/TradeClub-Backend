@@ -6,7 +6,7 @@ import { ICourseProgress, IVideoProgress } from "../../model/user/progressSchema
 interface ICourseRepository {
     getCourse(filters: { search: string;category?: string;minPrice: number;maxPrice: number;sort: string;page: number;limit: number;}): Promise<{ courses: ICourse[]; totalPages: number; totalCourses: number }>;
     getCategory(): Promise<ICategory[] | null>;
-    getCourseById(id: string): Promise<ICourse | null>;
+    getCourseById(ourseId: string): Promise<ICourse | null>;
     updateCourse(courseId: string, purchasedUsers: string): Promise<ICourse | null>;
     getCourseByUser(userId: string): Promise<ICourse[] | null>;
 

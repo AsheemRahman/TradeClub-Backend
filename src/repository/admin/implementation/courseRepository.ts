@@ -12,8 +12,8 @@ class CourseRepository implements ICourseRepository {
         return category;
     }
 
-    async getCategoryById(id: string): Promise<ICategory | null> {
-        const category = await Category.findById(id);
+    async getCategoryById(categoryId: string): Promise<ICategory | null> {
+        const category = await Category.findById(categoryId);
         return category;
     }
 
@@ -22,25 +22,25 @@ class CourseRepository implements ICourseRepository {
         return newCategory;
     }
 
-    async editCategory(id: string, categoryName: string): Promise<ICategory | null> {
-        const newCategory = await Category.findByIdAndUpdate(id, { categoryName }, { new: true });
+    async editCategory(categoryId: string, categoryName: string): Promise<ICategory | null> {
+        const newCategory = await Category.findByIdAndUpdate(categoryId, { categoryName }, { new: true });
         return newCategory;
     }
 
-    async deleteCategory(id: string): Promise<ICategory | null> {
-        const newCategory = await Category.findByIdAndDelete(id);
+    async deleteCategory(categoryId: string): Promise<ICategory | null> {
+        const newCategory = await Category.findByIdAndDelete(categoryId);
         return newCategory;
     }
 
-    async categoryStatus(id: string, status: boolean): Promise<ICategory | null> {
-        const category = await Category.findByIdAndUpdate(id, { isActive: status }, { new: true });
+    async categoryStatus(categoryId: string, status: boolean): Promise<ICategory | null> {
+        const category = await Category.findByIdAndUpdate(categoryId, { isActive: status }, { new: true });
         return category;
     }
 
     //------------------------- Course -------------------------
 
-    async getCourseById(id: string): Promise<ICourse | null> {
-        const courses = await Course.findById(id);
+    async getCourseById(courseId: string): Promise<ICourse | null> {
+        const courses = await Course.findById(courseId);
         return courses;
     }
 
@@ -54,18 +54,18 @@ class CourseRepository implements ICourseRepository {
         return newCourses;
     }
 
-    async editCourse(id: string, courseData: ICourse): Promise<ICourse | null> {
-        const newCourses = await Course.findByIdAndUpdate(id, { ...courseData }, { new: true });
+    async editCourse(courseId: string, courseData: ICourse): Promise<ICourse | null> {
+        const newCourses = await Course.findByIdAndUpdate(courseId, { ...courseData }, { new: true });
         return newCourses;
     }
 
-    async deleteCourse(id: string): Promise<ICourse | null> {
-        const course = await Course.findByIdAndDelete(id);
+    async deleteCourse(courseId: string): Promise<ICourse | null> {
+        const course = await Course.findByIdAndDelete(courseId);
         return course;
     }
 
-    async togglePublish(id: string, isPublished: boolean): Promise<ICourse | null> {
-        const course = await Course.findByIdAndUpdate(id, { isPublished }, { new: true });
+    async togglePublish(courseId: string, isPublished: boolean): Promise<ICourse | null> {
+        const course = await Course.findByIdAndUpdate(courseId, { isPublished }, { new: true });
         return course;
     }
 }

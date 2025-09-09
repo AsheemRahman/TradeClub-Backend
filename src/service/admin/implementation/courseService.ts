@@ -20,8 +20,8 @@ class CourseService implements ICourseService {
         return Category;
     }
 
-    async getCategoryById(id: string): Promise<ICategory | null> {
-        const Category = await this._courseRepository.getCategoryById(id);
+    async getCategoryById(categoryId: string): Promise<ICategory | null> {
+        const Category = await this._courseRepository.getCategoryById(categoryId);
         return Category;
     }
 
@@ -30,25 +30,25 @@ class CourseService implements ICourseService {
         return Category;
     }
 
-    async editCategory(id: string, categoryName: string): Promise<ICategory | null> {
-        const Category = await this._courseRepository.editCategory(id, categoryName);
+    async editCategory(categoryId: string, categoryName: string): Promise<ICategory | null> {
+        const Category = await this._courseRepository.editCategory(categoryId, categoryName);
         return Category;
     }
 
-    async deleteCategory(id: string): Promise<ICategory | null> {
-        const Category = await this._courseRepository.deleteCategory(id);
+    async deleteCategory(categoryId: string): Promise<ICategory | null> {
+        const Category = await this._courseRepository.deleteCategory(categoryId);
         return Category;
     }
 
-    async categoryStatus(id: string, status: boolean): Promise<ICategory | null> {
-        const category = await this._courseRepository.categoryStatus(id, status);
+    async categoryStatus(categoryId: string, status: boolean): Promise<ICategory | null> {
+        const category = await this._courseRepository.categoryStatus(categoryId, status);
         return category;
     }
 
     //------------------------- Course -------------------------
 
-    async getCourseById(id: string): Promise<ICourse | null> {
-        const Course = await this._courseRepository.getCourseById(id);
+    async getCourseById(courseId: string): Promise<ICourse | null> {
+        const Course = await this._courseRepository.getCourseById(courseId);
         return Course;
     }
 
@@ -62,18 +62,18 @@ class CourseService implements ICourseService {
         return Courses;
     }
 
-    async editCourse(id: string, courseData: ICourse): Promise<ICourse | null> {
-        const Courses = await this._courseRepository.editCourse(id, courseData);
+    async editCourse(courseId: string, courseData: ICourse): Promise<ICourse | null> {
+        const Courses = await this._courseRepository.editCourse(courseId, courseData);
         return Courses;
     }
 
-    async deleteCourse(id: string): Promise<ICourse | null> {
-        const course = await this._courseRepository.deleteCourse(id);
+    async deleteCourse(courseId: string): Promise<ICourse | null> {
+        const course = await this._courseRepository.deleteCourse(courseId);
         return course;
     }
 
-    async togglePublish(id: string, isPublished: boolean): Promise<ICourse | null> {
-        const course = await this._courseRepository.togglePublish(id, isPublished);
+    async togglePublish(courseId: string, isPublished: boolean): Promise<ICourse | null> {
+        const course = await this._courseRepository.togglePublish(courseId, isPublished);
         return course;
     }
 }

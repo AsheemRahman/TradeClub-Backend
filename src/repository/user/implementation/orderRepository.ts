@@ -18,8 +18,8 @@ class OrderRepository implements IOrderRepository {
         return orders;
     };
 
-    async checkOrderExisting(id: string): Promise<IOrder | null> {
-        const order = await Order.findOne({ stripeSessionId: id });
+    async checkOrderExisting(orderId: string): Promise<IOrder | null> {
+        const order = await Order.findOne({ stripeSessionId: orderId });
         return order;
     };
 

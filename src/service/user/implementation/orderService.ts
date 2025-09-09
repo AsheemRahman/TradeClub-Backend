@@ -19,8 +19,8 @@ class OrderService implements IOrderService {
         this._courseRepository = courseRepository;
     };
 
-    async getCourseById(id: string): Promise<ICourse | null> {
-        const Course = await this._courseRepository.getCourseById(id);
+    async getCourseById(courseId: string): Promise<ICourse | null> {
+        const Course = await this._courseRepository.getCourseById(courseId);
         return Course;
     }
 
@@ -44,13 +44,13 @@ class OrderService implements IOrderService {
         return newOrder;
     }
 
-    async getOrderById(id: string): Promise<IOrder[] | null> {
-        const Course = await this._orderRepository.getOrderById(id);
+    async getOrderById(orderId: string): Promise<IOrder[] | null> {
+        const Course = await this._orderRepository.getOrderById(orderId);
         return Course;
     }
 
-    async checkOrderExisting(id: string): Promise<IOrder | null> {
-        const order = await this._orderRepository.checkOrderExisting(id);
+    async checkOrderExisting(orderId: string): Promise<IOrder | null> {
+        const order = await this._orderRepository.checkOrderExisting(orderId);
         return order;
     }
 

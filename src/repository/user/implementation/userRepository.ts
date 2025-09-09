@@ -48,13 +48,13 @@ class userRepository extends BaseRepository<IUser> implements IUserRepository {
         return newOTP;
     }
 
-    async getUserById(id: string): Promise<IUser | null> {
-        const user = await User.findOne({ _id: id });
+    async getUserById(userId: string): Promise<IUser | null> {
+        const user = await User.findOne({ _id: userId });
         return user;
     }
 
-    async updateUserById(id: string, updateData: Partial<IUser>): Promise<IUser | null> {
-        const user = await User.findByIdAndUpdate(id, updateData, { new: true });
+    async updateUserById(userId: string, updateData: Partial<IUser>): Promise<IUser | null> {
+        const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
         return user;
     }
 
@@ -68,14 +68,14 @@ class userRepository extends BaseRepository<IUser> implements IUserRepository {
         return experts;
     }
 
-    async getExpertById(id: string): Promise<IExpert | null> {
-        const expert = await Expert.findOne({ _id: id, isActive: true, isVerified: "Approved", });
+    async getExpertById(expertId: string): Promise<IExpert | null> {
+        const expert = await Expert.findOne({ _id: expertId, isActive: true, isVerified: "Approved", });
         return expert;
     }
 
-    async getAvailabilityByExpert(id: string, startDate: string, endDate: string): Promise<IExpertAvailability[] | null> {
+    async getAvailabilityByExpert(expertId: string, startDate: string, endDate: string): Promise<IExpertAvailability[] | null> {
         const expert = await ExpertAvailability.find({
-            expertId: id,
+            expertId: expertId,
             date: { $gte: startDate, $lte: endDate },
             isBooked: false,
         }).sort({ date: 1 });

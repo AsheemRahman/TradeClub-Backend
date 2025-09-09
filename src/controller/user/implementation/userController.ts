@@ -11,8 +11,6 @@ import OtpUtility from "../../../utils/otpUtility";
 import MailUtility from "../../../utils/mailUtility";
 import PasswordUtils from "../../../utils/passwordUtils";
 import { JwtPayload } from "jsonwebtoken";
-import { UserSubscription } from "../../../model/user/userSubscriptionSchema";
-
 
 
 class UserController implements IUserController {

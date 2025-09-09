@@ -24,13 +24,13 @@ class AdminRepository implements IAdminRepository {
         return await User.find().countDocuments();
     };
 
-    async getUserById(id: string): Promise<IUser | null> {
-        const user = await User.findOne({ _id: id });
+    async getUserById(userId: string): Promise<IUser | null> {
+        const user = await User.findOne({ _id: userId });
         return user;
     };
 
-    async userUpdateStatus(id: string, status: string): Promise<IUser | null> {
-        const user = await User.findByIdAndUpdate(id, { isActive: status }, { new: true });
+    async userUpdateStatus(userId: string, status: string): Promise<IUser | null> {
+        const user = await User.findByIdAndUpdate(userId, { isActive: status }, { new: true });
         return user;
     };
 
@@ -44,8 +44,8 @@ class AdminRepository implements IAdminRepository {
         return await Expert.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit);
     };
 
-    async getExpertById(id: string): Promise<IExpert | null> {
-        const user = await Expert.findOne({ _id: id });
+    async getExpertById(expertId: string): Promise<IExpert | null> {
+        const user = await Expert.findOne({ _id: expertId });
         return user;
     };
 
@@ -53,18 +53,18 @@ class AdminRepository implements IAdminRepository {
         return await Expert.find().countDocuments();
     };
 
-    async expertUpdateStatus(id: string, status: string): Promise<IExpert | null> {
-        const expert = await Expert.findByIdAndUpdate(id, { isActive: status }, { new: true });
+    async expertUpdateStatus(expertId: string, status: string): Promise<IExpert | null> {
+        const expert = await Expert.findByIdAndUpdate(expertId, { isActive: status }, { new: true });
         return expert;
     };
 
-    async approveExpert(id: string): Promise<IExpert | null> {
-        const expert = await Expert.findByIdAndUpdate(id, { isVerified: "Approved" }, { new: true });
+    async approveExpert(expertId: string): Promise<IExpert | null> {
+        const expert = await Expert.findByIdAndUpdate(expertId, { isVerified: "Approved" }, { new: true });
         return expert;
     };
 
-    async declineExpert(id: string): Promise<IExpert | null> {
-        const expert = await Expert.findByIdAndUpdate(id, { isVerified: "Declined" }, { new: true });
+    async declineExpert(expertId: string): Promise<IExpert | null> {
+        const expert = await Expert.findByIdAndUpdate(expertId, { isVerified: "Declined" }, { new: true });
         return expert;
     };
 

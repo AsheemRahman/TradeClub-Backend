@@ -17,14 +17,14 @@ interface IUserRepository {
     findOtp(email: string): Promise<OTPType | null>;
     storeResendOtp(email: string, otp: number): Promise<OTPType | null>;
 
-    getUserById(id: string): Promise<IUser | null>;
-    updateUserById(id: string, updateData: Partial<IUser>): Promise<IUser | null>;
+    getUserById(userId: string): Promise<IUser | null>;
+    updateUserById(userId: string, updateData: Partial<IUser>): Promise<IUser | null>;
 
     fetchPlans(): Promise<ISubscriptionPlan[] | null>;
 
     getAllExpert(): Promise<IExpert[] | null>;
-    getExpertById(id: string): Promise<IExpert | null>;
-    getAvailabilityByExpert(id: string, startDate: string, endDate: string): Promise<IExpertAvailability[] | null>;
+    getExpertById(expertId: string): Promise<IExpert | null>;
+    getAvailabilityByExpert(expertId: string, startDate: string, endDate: string): Promise<IExpertAvailability[] | null>;
 
     checkSubscription(userId: string): Promise<IUserSubscription | null>;
 

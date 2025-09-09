@@ -20,8 +20,8 @@ class SubscriptionService implements ISubscriptionService {
         return planData;
     }
 
-    async getPlanById(id: string): Promise<ISubscriptionPlan | null> {
-        const plan = await this._subscriptionRepository.getPlanById(id);
+    async getPlanById(planId: string): Promise<ISubscriptionPlan | null> {
+        const plan = await this._subscriptionRepository.getPlanById(planId);
         return plan;
     }
 
@@ -30,18 +30,18 @@ class SubscriptionService implements ISubscriptionService {
         return Data;
     }
 
-    async updatePlan(id: string, planData: ISubscriptionPlan): Promise<ISubscriptionPlan | null> {
-        const Data = await this._subscriptionRepository.updatePlan(id, planData);
+    async updatePlan(planId: string, planData: ISubscriptionPlan): Promise<ISubscriptionPlan | null> {
+        const Data = await this._subscriptionRepository.updatePlan(planId, planData);
         return Data;
     }
 
-    async deletePlan(id: string): Promise<ISubscriptionPlan | null> {
-        const plan = await this._subscriptionRepository.deletePlan(id);
+    async deletePlan(planId: string): Promise<ISubscriptionPlan | null> {
+        const plan = await this._subscriptionRepository.deletePlan(planId);
         return plan;
     }
 
-    async planStatus(id: string, status: boolean): Promise<ISubscriptionPlan | null> {
-        const plan = await this._subscriptionRepository.planStatus(id, status);
+    async planStatus(planId: string, status: boolean): Promise<ISubscriptionPlan | null> {
+        const plan = await this._subscriptionRepository.planStatus(planId, status);
         return plan;
     }
 
@@ -52,8 +52,8 @@ class SubscriptionService implements ISubscriptionService {
         return coupons;
     }
 
-    async getCouponById(id: string): Promise<ICoupon | null> {
-        const couponData = await this._subscriptionRepository.getCouponById(id);
+    async getCouponById(couponId: string): Promise<ICoupon | null> {
+        const couponData = await this._subscriptionRepository.getCouponById(couponId);
         return couponData;
     }
 
@@ -62,18 +62,18 @@ class SubscriptionService implements ISubscriptionService {
         return newCoupon;
     }
 
-    async updateCoupon(id: string, couponData: Partial<ICoupon>): Promise<ICoupon | null> {
-        const coupon = await this._subscriptionRepository.updateCoupon(id, couponData);
+    async updateCoupon(couponId: string, couponData: Partial<ICoupon>): Promise<ICoupon | null> {
+        const coupon = await this._subscriptionRepository.updateCoupon(couponId, couponData);
         return coupon;
     }
 
-    async deleteCoupon(id: string): Promise<ICoupon | null> {
-        const coupon = await this._subscriptionRepository.deleteCoupon(id);
+    async deleteCoupon(couponId: string): Promise<ICoupon | null> {
+        const coupon = await this._subscriptionRepository.deleteCoupon(couponId);
         return coupon;
     }
 
-    async CouponStatus(id: string, status: boolean): Promise<ICoupon | null> {
-        const coupon = await this._subscriptionRepository.couponStatus(id, status);
+    async CouponStatus(couponId: string, status: boolean): Promise<ICoupon | null> {
+        const coupon = await this._subscriptionRepository.couponStatus(couponId, status);
         return coupon;
     }
 }

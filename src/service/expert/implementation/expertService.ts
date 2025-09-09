@@ -55,18 +55,18 @@ class ExpertService implements IExpertService {
         return expertDetail
     }
 
-    async getExpertById(id: string): Promise<IExpert | null> {
-        const user = await this._expertRepository.getExpertById(id);
+    async getExpertById(expertId: string): Promise<IExpert | null> {
+        const user = await this._expertRepository.getExpertById(expertId);
         return user;
     };
 
-    async updateExpertById(id: string, updateData: Partial<IExpert>): Promise<IExpert | null> {
-        const updatedExpert = await this._expertRepository.updateExpertById(id, updateData);
+    async updateExpertById(expertId: string, updateData: Partial<IExpert>): Promise<IExpert | null> {
+        const updatedExpert = await this._expertRepository.updateExpertById(expertId, updateData);
         return updatedExpert;
     };
 
-    async getWalletById(id: string): Promise<IExpertWallet | null> {
-        const wallet = await this._expertRepository.getWalletById(id);
+    async getWalletById(expertId: string): Promise<IExpertWallet | null> {
+        const wallet = await this._expertRepository.getWalletById(expertId);
         return wallet;
     };
 }

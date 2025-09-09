@@ -7,8 +7,8 @@ import { IAnalyticsResult } from "../../types/IExpert";
 interface ISessionRepository {
     getAllByExpertId(expertId: string): Promise<IExpertAvailability[] | null>;
     addSession(sessionData: Partial<IExpertAvailability>): Promise<IExpertAvailability>;
-    updateSession(id: string, updatedData: Partial<IExpertAvailability>): Promise<IExpertAvailability | null>;
-    deleteSession(id: string): Promise<IExpertAvailability | null>;
+    updateSession(sessionId: string, updatedData: Partial<IExpertAvailability>): Promise<IExpertAvailability | null>;
+    deleteSession(sessionId: string): Promise<IExpertAvailability | null>;
 
     countSessionsByExpert(expertId: string): Promise<number>;
     countCompletedSessions(expertId: string): Promise<number>;

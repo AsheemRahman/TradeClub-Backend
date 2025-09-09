@@ -21,12 +21,12 @@ class SessionService implements ISessionService {
         return await this._sessionRepository.addSession(sessionData);
     };
 
-    async editSlot(id: string, sessionData: Partial<IExpertAvailability>): Promise<IExpertAvailability | null> {
-        return await this._sessionRepository.updateSession(id, sessionData);
+    async editSlot(slotId: string, sessionData: Partial<IExpertAvailability>): Promise<IExpertAvailability | null> {
+        return await this._sessionRepository.updateSession(slotId, sessionData);
     };
 
-    async deleteSlot(id: string): Promise<IExpertAvailability | null> {
-        return await this._sessionRepository.deleteSession(id);
+    async deleteSlot(slotId: string): Promise<IExpertAvailability | null> {
+        return await this._sessionRepository.deleteSession(slotId);
     };
 
     async getDashboardStats(expertId: string): Promise<IDashboardStats> {
