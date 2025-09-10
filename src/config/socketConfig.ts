@@ -1,5 +1,6 @@
 import { Server } from "socket.io";
 import { Server as HttpServer } from "http";
+import { User } from "../model/user/userSchema";
 
 const userSocketMap: { [key: string]: string } = {};
 
@@ -12,7 +13,7 @@ export const getReceiverSocketId = (receiverId: string) => {
 export const getIO = () => io;
 
 const configureSocket = (server: HttpServer) => {
-    io = new Server(server, { cors: { origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"] },});
+    io = new Server(server, { cors: { origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"] } });
 
     io.on("connection", (socket) => {
         console.log("New client connected:", socket.id, "User ID:", socket.handshake.query.userId);
@@ -59,11 +60,31 @@ const configureSocket = (server: HttpServer) => {
             socket.leave(sessionId);
         });
 
-        socket.on("disconnect", () => {
+        socket.on("typing", ({ from, to }) => {
+            const receiverSocketId = userSocketMap[to];
+            if (receiverSocketId) {
+                io?.to(receiverSocketId).emit("typing", { from });
+            }
+        });
+
+        socket.on("stop_typing", ({ from, to }) => {
+            const receiverSocketId = userSocketMap[to];
+            if (receiverSocketId) {
+                io?.to(receiverSocketId).emit("stop_typing", { from });
+            }
+        });
+
+        socket.on("disconnect", async () => {
             console.log("User disconnected", socket.id);
             if (userId) {
                 delete userSocketMap[userId];
                 io?.emit("getOnlineUser", Object.keys(userSocketMap));
+                try {
+                    await User.findByIdAndUpdate(userId, { lastSeen: new Date(), });
+                    io?.emit("userLastSeen", { userId, lastSeen: new Date() });
+                } catch (err) {
+                    console.error("Error updating lastSeen:", err);
+                }
             }
         });
     });

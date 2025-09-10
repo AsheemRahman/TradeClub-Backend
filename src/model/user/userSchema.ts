@@ -7,6 +7,7 @@ interface IUser extends Document {
     phoneNumber?: string;
     isActive?:boolean;
     profilePicture?: string;
+    lastSeen?: Date;
 }
 
 const userSchema = new Schema<IUser>({
@@ -31,6 +32,10 @@ const userSchema = new Schema<IUser>({
     },
     profilePicture: {
         type: String,
+    },
+    lastSeen: {
+        type: Date,
+        default: null,
     },
 }, { timestamps: true });
 
