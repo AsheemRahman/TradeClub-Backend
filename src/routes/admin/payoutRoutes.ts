@@ -18,6 +18,8 @@ const router = Router();
 
 // ----------------------------------- Payout -----------------------------------
 
+router.post('/pending', validate("admin"), payoutController.getPendingPayouts.bind(payoutController))
+router.post('/last-payout-date', validate("admin"), payoutController.getLastPayoutDate.bind(payoutController))
 router.post('/run-payouts', validate("admin"), payoutController.runMonthlyPayouts.bind(payoutController))
 
 

@@ -12,6 +12,9 @@ interface IEarningRepository {
     findPendingByExpert(expertId: string): Promise<IExpertEarning[] | null>;
     aggregatePending(): Promise<IPendingAggregate[]>;
     markAsPaid(expertId: string): Promise<void>;
+
+    getPendingPayouts(): Promise<IExpertEarning[]>;
+    getLastPayoutDate(): Promise<Date | null>;
 }
 
 

@@ -108,10 +108,7 @@ class OrderService implements IOrderService {
         const session = await this._orderRepository.updateSessionStatus(sessionId, status);
         if (!session) return null;
         if (status === 'completed' && session.expertId) {
-
-            const expertId = session.expertId as unknown as string;
             const sessionObjectId = session._id as unknown as string;
-
             await this._earningRepository.createEarning({
                 expertId: session?.expertId,
                 sessionId:  new mongoose.Types.ObjectId(sessionObjectId),
