@@ -18,7 +18,7 @@ class PayoutController implements IPayoutController {
             await this._payoutService.processMonthlyPayouts();
             res.status(STATUS_CODES.OK).json({ message: "Monthly payouts processed successfully" });
         } catch (error) {
-            console.error("Failed to fetch Subscription plan", error);
+            console.error("Failed Monthly payouts", error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed Monthly payouts" });
         }
     };

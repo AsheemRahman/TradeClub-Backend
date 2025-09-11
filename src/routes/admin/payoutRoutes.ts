@@ -18,7 +18,7 @@ const router = Router();
 
 // ----------------------------------- Payout -----------------------------------
 
-router.post('/run-payouts', validate("admin"), payoutController.runMonthlyPayouts)
+router.post('/run-payouts', validate("admin"), payoutController.runMonthlyPayouts.bind(payoutController))
 
 
 

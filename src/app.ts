@@ -55,7 +55,7 @@ mongoDB();
 app.use("/api/user", userRouter);
 app.use("/api/expert", expertRouter);
 app.use("/api/admin", adminRouter);
-app.use("/api/admin/payout", payoutRouter);
+app.use("/api/admin/payouts", payoutRouter);
 app.use("/api/chat", chatRouter);
 
 
