@@ -19,6 +19,11 @@ class userRepository extends BaseRepository<IUser> implements IUserRepository {
         return getUser;
     }
 
+    async findManyUser(): Promise<IUser[] | []> {
+        const users = await User.find({ isActive: true }, { select: '_id' });
+        return users;
+    }
+
     async registerUser(userData: IUserType): Promise<IUser | null> {
         const newUser = await User.create(userData);
         return newUser;

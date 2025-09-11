@@ -13,6 +13,7 @@ import expertRouter from "./routes/expert/expertRoute";
 import adminRouter from "./routes/admin/adminRouter";
 import chatRouter from "./routes/chat/chatRouter";
 import payoutRouter from "./routes/admin/payoutRoutes";
+import notificationRoutes from "./routes/user/notificationRoute";
 
 import { createServer } from "http";
 import configureSocket from "./config/socketConfig";
@@ -57,6 +58,7 @@ app.use("/api/expert", expertRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/admin/payouts", payoutRouter);
 app.use("/api/chat", chatRouter);
+app.use('/api/notifications', notificationRoutes);
 
 
 //----------------------- Socket.IO Server -----------------------

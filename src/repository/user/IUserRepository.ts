@@ -10,6 +10,7 @@ import { IUserType } from "../../types/IUser";
 
 interface IUserRepository {
     findUser(email: string): Promise<IUser | null>;
+    findManyUser(): Promise<IUser[] | []>;
     registerUser(userData: IUserType): Promise<IUser | null>;
     resetPassword(email: string, hashedPassword: string): Promise<IUser | null>;
 
