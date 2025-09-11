@@ -16,6 +16,7 @@ import OrderRepository from '../../repository/user/implementation/orderRepositor
 import OrderService from '../../service/user/implementation/orderService';
 
 import { validate } from '../../middleware/Verify';
+import EarningRepository from '../../repository/expert/implementation/earningRepository';
 const router = Router();
 
 const userRepositoryInstance = new UserRepository();
@@ -26,8 +27,10 @@ const courseRepositoryInstance = new CourseRepository();
 const courseServiceInstance = new CourseService(courseRepositoryInstance);
 const userCourseController: ICourseController = new CourseController(courseServiceInstance);
 
+const earningRepository = new EarningRepository()
+
 const orderRepository = new OrderRepository();
-const orderService = new OrderService(orderRepository, courseRepositoryInstance);
+const orderService = new OrderService(orderRepository, courseRepositoryInstance, earningRepository);
 const orderController: IOrderController = new OrderController(orderService);
 
 

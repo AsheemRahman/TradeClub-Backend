@@ -12,6 +12,7 @@ import userRouter from "./routes/user/userRoute";
 import expertRouter from "./routes/expert/expertRoute";
 import adminRouter from "./routes/admin/adminRouter";
 import chatRouter from "./routes/chat/chatRouter";
+import payoutRouter from "./routes/admin/payoutRoutes";
 
 import { createServer } from "http";
 import configureSocket from "./config/socketConfig";
@@ -54,6 +55,7 @@ mongoDB();
 app.use("/api/user", userRouter);
 app.use("/api/expert", expertRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/admin/payout", payoutRouter);
 app.use("/api/chat", chatRouter);
 
 

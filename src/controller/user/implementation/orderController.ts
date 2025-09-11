@@ -4,7 +4,7 @@ import { ERROR_MESSAGES } from "../../../constants/message"
 
 import IOrderController from "../IOrderController";
 import IOrderService from "../../../service/user/IOrderService";
-import { IUserSubscription, UserSubscription } from "../../../model/user/userSubscriptionSchema";
+import { IUserSubscription } from "../../../model/user/userSubscriptionSchema";
 
 import Stripe from "stripe";
 import mongoose, { Types } from "mongoose";
