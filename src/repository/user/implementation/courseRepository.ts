@@ -40,8 +40,8 @@ class CourseRepository implements ICourseRepository {
         return { courses, totalPages, totalCourses };
     }
 
-    async getCourseById(id: string): Promise<ICourse | null> {
-        const courses = await Course.findById(id);
+    async getCourseById(courseId: string): Promise<ICourse | null> {
+        const courses = await Course.findById(courseId);
         return courses;
     };
 

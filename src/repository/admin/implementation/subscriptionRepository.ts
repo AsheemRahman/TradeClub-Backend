@@ -12,8 +12,8 @@ class SubscriptionRepository implements ISubscriptionRepository {
         return plans;
     }
 
-    async getPlanById(id: string): Promise<ISubscriptionPlan | null> {
-        const plan = await SubscriptionPlan.findById(id);
+    async getPlanById(planId: string): Promise<ISubscriptionPlan | null> {
+        const plan = await SubscriptionPlan.findById(planId);
         return plan;
     }
 
@@ -22,18 +22,18 @@ class SubscriptionRepository implements ISubscriptionRepository {
         return newPlan;
     }
 
-    async updatePlan(id: string, planData: ISubscriptionPlan): Promise<ISubscriptionPlan | null> {
-        const updatePlan = await SubscriptionPlan.findByIdAndUpdate(id, { ...planData }, { new: true });
+    async updatePlan(planId: string, planData: ISubscriptionPlan): Promise<ISubscriptionPlan | null> {
+        const updatePlan = await SubscriptionPlan.findByIdAndUpdate(planId, { ...planData }, { new: true });
         return updatePlan;
     }
 
-    async deletePlan(id: string): Promise<ISubscriptionPlan | null> {
-        const plan = await SubscriptionPlan.findByIdAndDelete(id);
+    async deletePlan(planId: string): Promise<ISubscriptionPlan | null> {
+        const plan = await SubscriptionPlan.findByIdAndDelete(planId);
         return plan;
     }
 
-    async planStatus(id: string, status: boolean): Promise<ISubscriptionPlan | null> {
-        const plan = await SubscriptionPlan.findByIdAndUpdate(id, { isActive: status }, { new: true });
+    async planStatus(planId: string, status: boolean): Promise<ISubscriptionPlan | null> {
+        const plan = await SubscriptionPlan.findByIdAndUpdate(planId, { isActive: status }, { new: true });
         return plan;
     }
 
@@ -44,8 +44,8 @@ class SubscriptionRepository implements ISubscriptionRepository {
         return coupons;
     }
 
-    async getCouponById(id: string): Promise<ICoupon | null> {
-        const coupon = await Coupon.findById(id);
+    async getCouponById(couponId: string): Promise<ICoupon | null> {
+        const coupon = await Coupon.findById(couponId);
         return coupon;
     }
 
@@ -54,18 +54,18 @@ class SubscriptionRepository implements ISubscriptionRepository {
         return newCoupon;
     }
 
-    async updateCoupon(id: string, couponData: Partial<ICoupon>): Promise<ICoupon | null> {
-        const updatePlan = await Coupon.findByIdAndUpdate(id, { ...couponData }, { new: true });
+    async updateCoupon(couponId: string, couponData: Partial<ICoupon>): Promise<ICoupon | null> {
+        const updatePlan = await Coupon.findByIdAndUpdate(couponId, { ...couponData }, { new: true });
         return updatePlan;
     }
 
-    async deleteCoupon(id: string): Promise<ICoupon | null> {
-        const coupon = await Coupon.findByIdAndDelete(id);
+    async deleteCoupon(couponId: string): Promise<ICoupon | null> {
+        const coupon = await Coupon.findByIdAndDelete(couponId);
         return coupon;
     }
 
-    async couponStatus(id: string, status: boolean): Promise<ICoupon | null> {
-        const coupon = await Coupon.findByIdAndUpdate(id, { isActive: status }, { new: true });
+    async couponStatus(couponId: string, status: boolean): Promise<ICoupon | null> {
+        const coupon = await Coupon.findByIdAndUpdate(couponId, { isActive: status }, { new: true });
         return coupon;
     }
 }

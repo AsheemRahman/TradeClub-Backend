@@ -5,8 +5,8 @@ import { IDashboardStats, IGetSessionsResponse, ISessionAnalytics, ISessionFilte
 interface ISessionService {
     getSlots(expertId: string): Promise<IExpertAvailability[] | null>;
     addSlot(sessionData: Partial<IExpertAvailability>): Promise<IExpertAvailability | null>;
-    editSlot(id: string, sessionData: Partial<IExpertAvailability>): Promise<IExpertAvailability | null>;
-    deleteSlot(id: string): Promise<IExpertAvailability | null>;
+    editSlot(slotId: string, sessionData: Partial<IExpertAvailability>): Promise<IExpertAvailability | null>;
+    deleteSlot(slotId: string): Promise<IExpertAvailability | null>;
 
     getDashboardStats(expertId: string): Promise<IDashboardStats>;
     getSessionAnalytics(expertId: string, period: '7d' | '30d' | '90d'): Promise<ISessionAnalytics[]>;

@@ -4,23 +4,27 @@ import { ISession } from "../../../model/expert/sessionSchema";
 import { IOrder } from "../../../model/user/orderSchema";
 import { ICourseProgress } from "../../../model/user/progressSchema";
 import { IUserSubscription } from "../../../model/user/userSubscriptionSchema";
+import IEarningRepository from "../../../repository/expert/IEarningRepository";
 import ICourseRepository from "../../../repository/user/ICourseRepository";
 import IOrderRepository from "../../../repository/user/IOrderRepository";
 import { CreateSessionDTO, IOrderInput } from "../../../types/IUser";
 import IOrderService from "../IOrderService";
+import mongoose from 'mongoose';
 
 
 class OrderService implements IOrderService {
     private _orderRepository: IOrderRepository;
     private _courseRepository: ICourseRepository;
+    private _earningRepository: IEarningRepository;
 
-    constructor(orderRepository: IOrderRepository, courseRepository: ICourseRepository) {
+    constructor(orderRepository: IOrderRepository, courseRepository: ICourseRepository, earingRepository: IEarningRepository) {
         this._orderRepository = orderRepository;
         this._courseRepository = courseRepository;
+        this._earningRepository = earingRepository;
     };
 
-    async getCourseById(id: string): Promise<ICourse | null> {
-        const Course = await this._courseRepository.getCourseById(id);
+    async getCourseById(courseId: string): Promise<ICourse | null> {
+        const Course = await this._courseRepository.getCourseById(courseId);
         return Course;
     }
 
@@ -44,13 +48,13 @@ class OrderService implements IOrderService {
         return newOrder;
     }
 
-    async getOrderById(id: string): Promise<IOrder[] | null> {
-        const Course = await this._orderRepository.getOrderById(id);
+    async getOrderById(orderId: string): Promise<IOrder[] | null> {
+        const Course = await this._orderRepository.getOrderById(orderId);
         return Course;
     }
 
-    async checkOrderExisting(id: string): Promise<IOrder | null> {
-        const order = await this._orderRepository.checkOrderExisting(id);
+    async checkOrderExisting(orderId: string): Promise<IOrder | null> {
+        const order = await this._orderRepository.checkOrderExisting(orderId);
         return order;
     }
 
@@ -101,7 +105,18 @@ class OrderService implements IOrderService {
     }
 
     async markSessionStatus(sessionId: string, status: 'completed' | 'missed'): Promise<ISession | null> {
-        return await this._orderRepository.updateSessionStatus(sessionId, status);
+        const session = await this._orderRepository.updateSessionStatus(sessionId, status);
+        if (!session) return null;
+        if (status === 'completed' && session.expertId) {
+            const sessionObjectId = session._id as unknown as string;
+            await this._earningRepository.createEarning({
+                expertId: session?.expertId,
+                sessionId:  new mongoose.Types.ObjectId(sessionObjectId),
+                amount: 100,
+                status: "pending"
+            });
+        }
+        return session
     }
 }
 

@@ -15,10 +15,10 @@ interface IExpertService {
 
     updateDetails(expertDetails: ExpertFormData): Promise<IExpert | null>;
 
-    getExpertById(id: string): Promise<IExpert | null>;
-    updateExpertById(id: string, updateData: Partial<IExpert>): Promise<IExpert | null>;
+    getExpertById(expertId: string): Promise<IExpert | null>;
+    updateExpertById(expertId: string, updateData: Partial<IExpert>): Promise<IExpert | null>;
 
-    getWalletById(id: string): Promise<IExpertWallet | null>;
+    getWalletById(expertId: string): Promise<IExpertWallet | null>;
 }
 
 export default IExpertService;

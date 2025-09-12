@@ -48,18 +48,18 @@ class expertRepository extends BaseRepository<IExpert> implements IExpertReposit
         return updatedExpert;
     }
 
-    async getExpertById(id: string): Promise<IExpert | null> {
-        const user = await Expert.findOne({ _id: id });
+    async getExpertById(expertId: string): Promise<IExpert | null> {
+        const user = await Expert.findOne({ _id: expertId });
         return user;
     }
 
-    async updateExpertById(id: string, updateData: Partial<IExpert>): Promise<IExpert | null> {
-        const user = await Expert.findByIdAndUpdate(id, updateData, { new: true });
+    async updateExpertById(expertId: string, updateData: Partial<IExpert>): Promise<IExpert | null> {
+        const user = await Expert.findByIdAndUpdate(expertId, updateData, { new: true });
         return user;
     }
 
-    async getWalletById(id: string): Promise<IExpertWallet | null> {
-        const user = await ExpertWallet.findOne({ expertId: id });
+    async getWalletById(expertId: string): Promise<IExpertWallet | null> {
+        const user = await ExpertWallet.findOne({ expertId: expertId });
         return user;
     }
 }

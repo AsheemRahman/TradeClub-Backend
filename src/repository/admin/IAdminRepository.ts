@@ -8,15 +8,15 @@ import { GetUsersParams } from "../../types/IAdmin";
 interface IAdminRepository {
     getUsers(params: GetUsersParams): Promise<IUser[] | null>;
     getUserCount(): Promise<number>;
-    getUserById(id: string): Promise<IUser | null>;
-    userUpdateStatus(id: string, status: string): Promise<IUser | null>;
+    getUserById(userId: string): Promise<IUser | null>;
+    userUpdateStatus(userId: string, status: string): Promise<IUser | null>;
 
     getExperts(params: GetUsersParams): Promise<IExpert[] | null>;
-    getExpertById(id: string): Promise<IExpert | null>;
+    getExpertById(expertId: string): Promise<IExpert | null>;
     getExpertCount(): Promise<number>;
-    expertUpdateStatus(id: string, status: string): Promise<IExpert | null>;
-    approveExpert(id: string): Promise<IExpert | null>;
-    declineExpert(id: string): Promise<IExpert | null>;
+    expertUpdateStatus(expertId: string, status: string): Promise<IExpert | null>;
+    approveExpert(expertId: string): Promise<IExpert | null>;
+    declineExpert(expertId: string): Promise<IExpert | null>;
 
     getOrders(): Promise<IOrder[] | null>;
 }

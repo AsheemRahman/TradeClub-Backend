@@ -20,12 +20,12 @@ class SessionRepository extends BaseRepository<IExpertAvailability> implements I
         return await session.save();
     }
 
-    async updateSession(id: string, updatedData: Partial<IExpertAvailability>): Promise<IExpertAvailability | null> {
-        return await ExpertAvailability.findByIdAndUpdate(id, updatedData, { new: true });
+    async updateSession(sessionId: string, updatedData: Partial<IExpertAvailability>): Promise<IExpertAvailability | null> {
+        return await ExpertAvailability.findByIdAndUpdate(sessionId, updatedData, { new: true });
     }
 
-    async deleteSession(id: string): Promise<IExpertAvailability | null> {
-        return await ExpertAvailability.findByIdAndDelete(id);
+    async deleteSession(sessionId: string): Promise<IExpertAvailability | null> {
+        return await ExpertAvailability.findByIdAndDelete(sessionId);
     }
 
     //-------------------------------- Dashboard ---------------------------------

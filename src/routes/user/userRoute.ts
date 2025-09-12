@@ -16,19 +16,23 @@ import OrderRepository from '../../repository/user/implementation/orderRepositor
 import OrderService from '../../service/user/implementation/orderService';
 
 import { validate } from '../../middleware/Verify';
+import EarningRepository from '../../repository/expert/implementation/earningRepository';
 const router = Router();
 
-const userRepositoryInstance = new UserRepository();
-const userServiceInstance = new UserService(userRepositoryInstance);
-const userControllerInstance: IUserController = new UserController(userServiceInstance);
 
 const courseRepositoryInstance = new CourseRepository();
 const courseServiceInstance = new CourseService(courseRepositoryInstance);
 const userCourseController: ICourseController = new CourseController(courseServiceInstance);
 
 const orderRepository = new OrderRepository();
-const orderService = new OrderService(orderRepository, courseRepositoryInstance);
+const earningRepository = new EarningRepository()
+const orderService = new OrderService(orderRepository, courseRepositoryInstance, earningRepository);
 const orderController: IOrderController = new OrderController(orderService);
+
+const userRepositoryInstance = new UserRepository();
+const userServiceInstance = new UserService(userRepositoryInstance);
+const userControllerInstance: IUserController = new UserController(userServiceInstance, orderService);
+
 
 
 //------------------------------- register routes -------------------------------
@@ -95,5 +99,12 @@ router.get('/expert/:id/availability', validate("user"), (req, res) => userContr
 
 router.post('/slot-booking', validate("user"), (req, res) => orderController.slotBooking(req, res));
 router.get('/sessions', validate("user"), (req, res) => userControllerInstance.getSessions(req, res));
+router.get('/session/:id', (req, res) => userControllerInstance.getSessionById(req, res));
+router.get('/update-session/:id', (req, res) => userControllerInstance.updateSession(req, res));
+
+
+//------------------------------------ Chat -------------------------------------
+
+
 
 export default router;

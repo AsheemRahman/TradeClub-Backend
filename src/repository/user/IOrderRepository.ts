@@ -7,8 +7,8 @@ import { CreateSessionDTO, IOrderInput } from "../../types/IUser";
 
 interface IOrderRepository {
     createOrder(order: IOrderInput): Promise<IOrder | null>;
-    getOrderById(id: string): Promise<IOrder[] | null>;
-    checkOrderExisting(id: string): Promise<IOrder | null>;
+    getOrderById(orderId: string): Promise<IOrder[] | null>;
+    checkOrderExisting(orderId: string): Promise<IOrder | null>;
     getPurchasedByUser(userId: string, courseIds: string): Promise<IOrder | null>;
 
     getPlanById(planId: string): Promise<ISubscriptionPlan | null>;
