@@ -11,13 +11,16 @@ import OtpUtility from "../../../utils/otpUtility";
 import MailUtility from "../../../utils/mailUtility";
 import PasswordUtils from "../../../utils/passwordUtils";
 import { JwtPayload } from "jsonwebtoken";
+import IOrderService from "../../../service/user/IOrderService";
 
 
 class UserController implements IUserController {
     private _userService: IUserService;
+    private _orderService: IOrderService;
 
-    constructor(userService: IUserService) {
+    constructor(userService: IUserService,orderService:IOrderService) {
         this._userService = userService;
+        this._orderService = orderService;
     }
 
     async registerPost(req: Request, res: Response): Promise<void> {
@@ -463,6 +466,22 @@ class UserController implements IUserController {
         } catch (error) {
             console.error('retrieve sessions error:', error);
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Failed to retrieve sessions', });
+        }
+    }
+
+    async updateSession(req: Request, res: Response): Promise<void> {
+        try {
+            const sessionId = req.params.id
+            const status = req.body.status
+            if (!sessionId || !status) {
+                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND });
+                return;
+            }
+            const session = await this._orderService.markSessionStatus(sessionId,status);
+            res.status(STATUS_CODES.OK).json({ status: true, message: 'Sessions status change successfully', session });
+        } catch (error) {
+            console.error('Sessions status change error:', error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Failed to change sessions status ', });
         }
     }
 };
