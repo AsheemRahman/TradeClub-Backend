@@ -70,7 +70,7 @@ class ExpertController implements IExpertController {
             }
             const currentExpert = await this._expertService.findExpertByEmail(email);
             if (!currentExpert) {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.Expert_NOT_FOUND });
+                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.EXPERT_NOT_FOUND });
                 return;
             }
             res.status(STATUS_CODES.OK).json({ status: true, message: "OTP verified successfully" });

@@ -30,27 +30,27 @@ class SessionService implements ISessionService {
     };
 
     async getDashboardStats(expertId: string): Promise<IDashboardStats> {
-        const totalStudents = (await this._sessionRepository.getDistinctStudents(expertId)).length;
-        const totalSessions = await this._sessionRepository.countSessionsByExpert(expertId);
-        // const averageRating = await this._sessionRepository.getAverageRating(expertId);
-        // const pendingMessages = await this._sessionRepository.countPendingMessages(expertId);
-        const upcomingSessions = await this._sessionRepository.getUpcomingSessions(expertId);
-        const completedSessions = await this._sessionRepository.countCompletedSessions(expertId);
-        const completionRate = totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 0;
         const lastMonth = new Date();
         lastMonth.setDate(lastMonth.getDate() - 30);
-        const recentStudents = (await this._sessionRepository.getRecentStudents(expertId, lastMonth))?.length;
-        const monthlyGrowth = totalStudents > 0 ? Math.round((recentStudents / totalStudents) * 100) : 0;
+        const [distinctStudents, totalSessions, upcomingSessions, completedSessions, recentStudents] = await Promise.all([
+            this._sessionRepository.getDistinctStudents(expertId),
+            this._sessionRepository.countSessionsByExpert(expertId),
+            this._sessionRepository.getUpcomingSessions(expertId),
+            this._sessionRepository.countCompletedSessions(expertId),
+            this._sessionRepository.getRecentStudents(expertId, lastMonth)
+        ]);
+        const totalStudents = distinctStudents.length;
+        const completionRate = totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 0;
+        const monthlyGrowth = totalStudents > 0 ? Math.round(((recentStudents?.length ?? 0) / totalStudents) * 100) : 0;
         return {
             totalStudents,
             totalSessions,
-            // averageRating,
-            // pendingMessages,
             upcomingSessions,
             completionRate,
             monthlyGrowth,
         };
     }
+
 
     async getSessionAnalytics(expertId: string, period: '7d' | '30d' | '90d'): Promise<ISessionAnalytics[]> {
         const days = period === '7d' ? 7 : period === '90d' ? 90 : 30;
@@ -64,7 +64,7 @@ class SessionService implements ISessionService {
         }));
     }
 
-    async getSessions( expertId: string, page: number, limit: number, filters: ISessionFilters): Promise<IGetSessionsResponse> {
+    async getSessions(expertId: string, page: number, limit: number, filters: ISessionFilters): Promise<IGetSessionsResponse> {
         const { status, date, startDate, endDate, search } = filters;
         const query: any = { expertId };
         if (status && status !== 'all') query.status = status;
