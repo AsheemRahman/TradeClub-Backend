@@ -68,8 +68,22 @@ class AdminRepository implements IAdminRepository {
         return expert;
     };
 
-    async getOrders(): Promise<IOrder[] | null> {
-        const expert = await Order.find()
+    async getOrders(params: { page: number; limit: number; status: string; type: string; search: string; sortBy: string; sortOrder: string; }): Promise<{ orders: IOrder[]; total: number }> {
+        const { page, limit, status, type, search, sortBy, sortOrder } = params;
+        const query: any = {};
+        if (status !== "all") query.paymentStatus = status;
+        if (type !== "all") query.type = type;
+        if (search) {
+            query.$or = [{ _id: { $regex: search, $options: "i" } }, { type: { $regex: search, $options: "i" } },];
+        }
+        const sortOptions: Record<string, 1 | -1> = { [sortBy]: sortOrder === "asc" ? 1 : -1, };
+        const total = await Order.countDocuments(query);
+        const orders = await Order.find(query).sort(sortOptions).skip((page - 1) * limit).limit(limit).populate('userId', 'fullName email').populate('itemId')
+        return { orders, total };
+    }
+
+    async getPaidOrders(): Promise<IOrder[] | []> {
+        const expert = await Order.find({ paymentStatus: "paid" })
         return expert;
     };
 }

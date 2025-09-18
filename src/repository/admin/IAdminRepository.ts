@@ -18,7 +18,8 @@ interface IAdminRepository {
     approveExpert(expertId: string): Promise<IExpert | null>;
     declineExpert(expertId: string): Promise<IExpert | null>;
 
-    getOrders(): Promise<IOrder[] | null>;
+    getOrders(params: { page: number; limit: number; status: string; type: string; search: string; sortBy: string; sortOrder: string; }): Promise<{ orders: IOrder[]; total: number }>;
+    getPaidOrders(): Promise<IOrder[] | []>;
 }
 
 export default IAdminRepository;

@@ -300,22 +300,45 @@ class AdminController implements IAdminController {
 
     async getOrders(req: Request, res: Response): Promise<void> {
         try {
-            const orders = await this._adminService.getOrders()
-            if (!orders) {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: true, orders: [] })
-                return
-            }
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Order Fetched Successfully", orders })
+            const { page = "1", limit = "10", status = "all", type = "all", search = "", sortBy = "createdAt", sortOrder = "desc", } = req.query
+            const pageNum = parseInt(page as string, 10);
+            const limitNum = parseInt(limit as string, 10);
+            const { orders, total } = await this._adminService.getOrders({
+                page: pageNum,
+                limit: limitNum,
+                status: status as string,
+                type: type as string,
+                search: search as string,
+                sortBy: sortBy as string,
+                sortOrder: sortOrder as string,
+            });
+            // Compute stats
+            const stats = {
+                total: total,
+                paid: orders.filter(o => o.paymentStatus === 'paid').length,
+                pending: orders.filter(o => o.paymentStatus === 'pending').length,
+                failed: orders.filter(o => o.paymentStatus === 'failed').length,
+                totalRevenue: orders.filter(o => o.paymentStatus === 'paid').reduce((acc, o) => acc + o.amount, 0),
+            };
+            res.status(STATUS_CODES.OK).json({
+                status: true,
+                message: "Orders fetched successfully",
+                orders,
+                stats,
+                total,
+                page: pageNum,
+                totalPages: Math.ceil(total / limitNum),
+            });
         } catch (error) {
-            console.error("Expert decline is failed", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, error: "Expert decline is failed", });
+            console.error("Fetching orders failed:", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, error: "Fetching orders failed", });
         }
-    };
+    }
 
     async getRevenue(req: Request, res: Response): Promise<void> {
         try {
             // Fetch only paid orders
-            const orders = await this._adminService.getOrders();
+            const orders = await this._adminService.getPaidOrders();
             if (!orders || orders.length === 0) {
                 res.status(STATUS_CODES.OK).json({ status: true, revenue: [] });
                 return;
@@ -338,10 +361,7 @@ class AdminController implements IAdminController {
             res.status(STATUS_CODES.OK).json({ status: true, message: "Revenue data fetched successfully", revenue: revenueData, });
         } catch (error) {
             console.error("Revenue fetching failed", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-                status: false,
-                error: "Failed to fetch revenue data",
-            });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, error: "Failed to fetch revenue data", });
         }
     }
 }

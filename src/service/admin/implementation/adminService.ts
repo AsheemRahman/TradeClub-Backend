@@ -61,8 +61,20 @@ class AdminService implements IAdminService {
         return expert;
     }
 
-    async getOrders(): Promise<IOrder[] | null> {
-        const order = await this._adminRepository.getOrders();
+    async getOrders(params: {
+        page: number;
+        limit: number;
+        status: string;
+        type: string;
+        search: string;
+        sortBy: string;
+        sortOrder: string;
+    }): Promise<{ orders: IOrder[]; total: number }> {
+        return this._adminRepository.getOrders(params);
+    }
+
+    async getPaidOrders(): Promise<IOrder[] | []> {
+        const order = await this._adminRepository.getPaidOrders();
         return order;
     }
 }
