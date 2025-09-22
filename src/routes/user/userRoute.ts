@@ -15,8 +15,13 @@ import OrderController from '../../controller/user/implementation/orderControlle
 import OrderRepository from '../../repository/user/implementation/orderRepository';
 import OrderService from '../../service/user/implementation/orderService';
 
-import { validate } from '../../middleware/Verify';
 import EarningRepository from '../../repository/expert/implementation/earningRepository';
+import ReviewRepository from '../../repository/user/implementation/reviewRepository';
+import ReviewService from '../../service/user/implementation/reviewService';
+import ReviewController from '../../controller/user/implementation/reviewController';
+import IReviewController from '../../controller/user/IReviewController';
+
+import { validate } from '../../middleware/Verify';
 const router = Router();
 
 
@@ -33,7 +38,9 @@ const userRepositoryInstance = new UserRepository();
 const userServiceInstance = new UserService(userRepositoryInstance);
 const userControllerInstance: IUserController = new UserController(userServiceInstance, orderService);
 
-
+const reviewRepository = new ReviewRepository();
+const reviewService = new ReviewService(reviewRepository);
+const reviewController: IReviewController = new ReviewController(reviewService);
 
 //------------------------------- register routes -------------------------------
 
@@ -103,8 +110,9 @@ router.get('/session/:id', (req, res) => userControllerInstance.getSessionById(r
 router.get('/update-session/:id', (req, res) => userControllerInstance.updateSession(req, res));
 
 
-//------------------------------------ Chat -------------------------------------
+//------------------------------------ Review -------------------------------------
 
-
+router.get('/:courseId/reviews', (req, res) => reviewController.getCourseReviews(req, res));
+router.post('/:courseId/review', validate("user"), (req, res) =>  reviewController.submitReview(req, res));
 
 export default router;
