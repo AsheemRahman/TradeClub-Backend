@@ -190,7 +190,7 @@ class NotificationService {
     async cleanupOldNotifications(daysToKeep = 30): Promise<number> {
         try {
             const result = await this._notificationRepository.cleanupOldNotifications(daysToKeep);
-            console.log(`Cleaned up ${result.deletedCount} old notifications`);
+            console.error(`Cleaned up ${result.deletedCount} old notifications`);
             return result.deletedCount;
         } catch (error: any) {
             throw new Error(`Error cleaning up notifications: ${error.message}`);

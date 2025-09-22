@@ -41,7 +41,7 @@ class PayoutService implements IPayoutService {
                     description: `Monthly payout for Expert ${expertId}`
                 });
                 await this._earningRepository.markAsPaid(expertId);
-                console.log(`✅ Paid ₹${total} to ${expertData.fullName}`);
+                console.error(`✅ Paid ₹${total} to ${expertData.fullName}`);
             } catch (err) {
                 console.error("Stripe payout error:", err);
             }

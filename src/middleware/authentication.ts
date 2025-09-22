@@ -14,7 +14,7 @@ const authenticationMiddleware = () => {
 
             jwt.verify(accessToken, JWT_KEY, async (err: unknown, data: JwtPayload | string | undefined) => {
                 if (err) {
-                    console.log("Token error:", accessToken, err);
+                    console.error("Token error:", accessToken, err);
                     return res.status(403).json({ message: "Invalid or expired token, please log in again." });
                 }
 
@@ -25,7 +25,7 @@ const authenticationMiddleware = () => {
                 const { role, userId } = data as { role: string, userId: string }
 
                 // Optional logging (still keeping role if needed elsewhere)
-                console.log("Token validated. User ID:", userId, "Role:", role);
+                console.error("Token validated. User ID:", userId, "Role:", role);
 
                 req.userId = userId;
                 req.role = role;
@@ -33,7 +33,7 @@ const authenticationMiddleware = () => {
             });
 
         } catch (error) {
-            console.log("Middleware error:", error);
+            console.error("Middleware error:", error);
             res.status(500).json({ message: "Internal server error" });
         }
     };

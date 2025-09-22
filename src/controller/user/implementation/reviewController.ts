@@ -17,7 +17,7 @@ class ReviewController implements IReviewController {
             const reviews = await this._reviewService.getReviews(courseId);
             res.status(STATUS_CODES.OK).json({ status: true, reviews });
         } catch (error) {
-            console.log("Error in get course review", error)
+            console.error("Error in get course review", error)
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
         }
     }
@@ -34,7 +34,7 @@ class ReviewController implements IReviewController {
             const review = await this._reviewService.submitReview(userId, courseId, rating, comment);
             res.status(STATUS_CODES.OK).json({ status: true, message: "Review created succesfully", review });
         } catch (error) {
-            console.log("error while create review", error)
+            console.error("error while create review", error)
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
         }
     }
@@ -51,7 +51,7 @@ class ReviewController implements IReviewController {
             const review = await this._reviewService.updateReview(userId, courseId, rating, comment);
             res.status(STATUS_CODES.OK).json({ status: true, message: "Review updated succesfully", review });
         } catch (error) {
-            console.log("error while update review", error)
+            console.error("error while update review", error)
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
         }
     }
