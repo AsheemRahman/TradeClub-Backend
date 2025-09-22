@@ -174,7 +174,7 @@ class NotificationService {
     }
 
     private async broadcastToUser(userId: string | mongoose.Types.ObjectId, notification: INotification): Promise<void> {
-        const io = require('../utils/socket').getIO();
+        const io = require('../../../config/socketConfig').getIO();
         if (io) {
             io.to(`user_${userId}`).emit('notification', {
                 id: notification._id,

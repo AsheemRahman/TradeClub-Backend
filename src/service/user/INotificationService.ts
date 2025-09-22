@@ -27,10 +27,9 @@ interface INotificationService {
     createBulkNotifications(userIds: (string | mongoose.Types.ObjectId)[], title: string, message: string, options: NotificationOptions): Promise<INotification[]>
     markAsRead(notificationId: string | mongoose.Types.ObjectId, userId: string | mongoose.Types.ObjectId): Promise<INotification>
     markAllAsRead(userId: string | mongoose.Types.ObjectId): Promise<{ modifiedCount: number }>
-notifyNewCourseEnrollment(userId: string | mongoose.Types.ObjectId, courseName: string): Promise<INotification>
-notifyConsultationScheduled(userId: string | mongoose.Types.ObjectId, consultationDate: string, consultationId: string | mongoose.Types.ObjectId): Promise<INotification>
-notifySubscriptionExpiring(userId: string | mongoose.Types.ObjectId, expiryDate: string): Promise<INotification>
-
+    notifyNewCourseEnrollment(userId: string | mongoose.Types.ObjectId, courseName: string): Promise<INotification>
+    notifyConsultationScheduled(userId: string | mongoose.Types.ObjectId, consultationDate: string, consultationId: string | mongoose.Types.ObjectId): Promise<INotification>
+    notifySubscriptionExpiring(userId: string | mongoose.Types.ObjectId, expiryDate: string): Promise<INotification>
 
     notifyNewCourseAvailable(courseName: string, courseId: string | mongoose.Types.ObjectId): Promise<INotification[]>
     cleanupOldNotifications(daysToKeep: number): Promise<number>

@@ -22,5 +22,10 @@ router.post('/', validate("user"), (req, res) => notificationController.createNo
 router.patch('/:id/read', validate("user"), (req, res) => notificationController.markAsRead(req, res));
 router.patch('/mark-all-read', validate("user"), (req, res) => notificationController.markAllAsRead(req, res));
 
+router.post("/enrollment", validate("user"), (req, res) => notificationController.notifyNewCourseEnrollment(req, res));
+router.post("/consultation", (req, res) => notificationController.notifyConsultationScheduled(req, res));
+router.post("/subscription", (req, res) => notificationController.notifySubscriptionExpiring(req, res));
+router.post("/new-course", (req, res) => notificationController.notifyNewCourseAvailable(req, res));
+
 
 export default router;
