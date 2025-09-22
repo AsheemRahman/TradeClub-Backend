@@ -114,5 +114,6 @@ router.get('/update-session/:id', (req, res) => userControllerInstance.updateSes
 
 router.get('/:courseId/reviews', (req, res) => reviewController.getCourseReviews(req, res));
 router.post('/:courseId/review', validate("user"), (req, res) =>  reviewController.submitReview(req, res));
+router.post('/:courseId/update-review', validate("user"), (req, res) =>  reviewController.updateReview(req, res));
 
 export default router;

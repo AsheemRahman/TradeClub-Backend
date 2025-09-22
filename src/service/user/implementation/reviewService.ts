@@ -31,6 +31,12 @@ class ReviewService implements IReviewService {
         const review = await this._reviewRepository.addReview(userId, courseId, rating, comment);
         return review;
     }
+
+    
+    async updateReview(userId: string, courseId: string, rating: number, comment: string): Promise<IReview | null> {
+        const review = await this._reviewRepository.updateReview(userId, courseId, rating, comment);
+        return review;
+    }
 }
 
 

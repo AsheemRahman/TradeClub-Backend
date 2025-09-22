@@ -18,7 +18,7 @@ class ChatController implements IChatController {
             const response = await this._chatService.getChats(userId as string, role as string);
             res.status(STATUS_CODES.OK).json({ success: true, message: "Chat retrieved successfully", data: response })
         } catch (error) {
-            console.log("error in the controller", error)
+            console.error("error in the controller", error)
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, data: null })
         }
     }

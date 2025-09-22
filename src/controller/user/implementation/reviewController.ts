@@ -11,7 +11,6 @@ class ReviewController implements IReviewController {
         this._reviewService = reviewService;
     }
 
-
     async getCourseReviews(req: Request, res: Response): Promise<void> {
         try {
             const { courseId } = req.params;
@@ -23,7 +22,6 @@ class ReviewController implements IReviewController {
         }
     }
 
-
     async submitReview(req: Request, res: Response): Promise<void> {
         try {
             const { courseId } = req.params;
@@ -34,9 +32,26 @@ class ReviewController implements IReviewController {
                 return
             }
             const review = await this._reviewService.submitReview(userId, courseId, rating, comment);
-            console.log("review creation", review)
-            res.status(STATUS_CODES.OK).json({ status: true,message:"Review created succesfully", review });
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Review created succesfully", review });
         } catch (error) {
+            console.log("error while create review", error)
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
+        }
+    }
+
+    async updateReview(req: Request, res: Response): Promise<void> {
+        try {
+            const { courseId } = req.params;
+            const { rating, comment } = req.body;
+            const userId = req.userId;
+            if (!userId) {
+                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
+                return
+            }
+            const review = await this._reviewService.updateReview(userId, courseId, rating, comment);
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Review updated succesfully", review });
+        } catch (error) {
+            console.log("error while update review", error)
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
         }
     }
