@@ -22,6 +22,7 @@ import ReviewController from '../../controller/user/implementation/reviewControl
 import IReviewController from '../../controller/user/IReviewController';
 
 import { validate } from '../../middleware/Verify';
+import { ROLE } from '../../constants/role';
 const router = Router();
 
 
@@ -65,8 +66,8 @@ router.post('/refresh-token', (req, res) => userControllerInstance.refreshToken(
 
 //------------------------------------ profile ----------------------------------
 
-router.get('/get-profile', validate("user"), (req, res) => userControllerInstance.getProfile(req, res));
-router.post('/update-profile', validate("user"), (req, res) => userControllerInstance.updateProfile(req, res));
+router.get('/get-profile', validate(ROLE.USER), (req, res) => userControllerInstance.getProfile(req, res));
+router.post('/update-profile', validate(ROLE.USER), (req, res) => userControllerInstance.updateProfile(req, res));
 
 
 //------------------------------------ Course -----------------------------------
@@ -74,38 +75,38 @@ router.post('/update-profile', validate("user"), (req, res) => userControllerIns
 router.get('/courses', userCourseController.getCourse.bind(userCourseController));
 router.get('/category', userCourseController.getCategory.bind(userCourseController));
 router.get('/course/:id', userCourseController.getCoursebyId.bind(userCourseController));
-router.get('/check-enrolled/:id', validate("user"), userCourseController.checkEnrolled.bind(userCourseController));
-router.get('/course/:courseId/progress', validate("user"), userCourseController.getProgress.bind(userCourseController));
-router.post('/course/:courseId/progress', validate("user"), userCourseController.updateProgress.bind(userCourseController));
+router.get('/check-enrolled/:id', validate(ROLE.USER), userCourseController.checkEnrolled.bind(userCourseController));
+router.get('/course/:courseId/progress', validate(ROLE.USER), userCourseController.getProgress.bind(userCourseController));
+router.post('/course/:courseId/progress', validate(ROLE.USER), userCourseController.updateProgress.bind(userCourseController));
 
 
 //--------------------------------- Subscription --------------------------------
 
 router.get('/fetch-plans', (req, res) => userControllerInstance.fetchPlans(req, res));
-router.post('/subscription-checkout', validate("user"), (req, res) => orderController.subscriptionCheckout(req, res));
-router.get('/check-subscription', validate("user"), (req, res) => userControllerInstance.checkSubscription(req, res));
+router.post('/subscription-checkout', validate(ROLE.USER), (req, res) => orderController.subscriptionCheckout(req, res));
+router.get('/check-subscription', validate(ROLE.USER), (req, res) => userControllerInstance.checkSubscription(req, res));
 
 
 //------------------------------------ Order ------------------------------------
 
-router.post('/create-checkout-session', validate("user"), (req, res) => orderController.createCheckoutSession(req, res));
-router.post('/create-order', validate("user"), (req, res) => orderController.createOrder(req, res));
-router.post('/order-failed', validate("user"), (req, res) => orderController.failedOrder(req, res));
-router.get('/purchase-history', validate("user"), (req, res) => orderController.getPurchaseHistory(req, res));
-router.get('/purchased-courses', validate("user"), (req, res) => orderController.getPurchasedCourse(req, res));
+router.post('/create-checkout-session', validate(ROLE.USER), (req, res) => orderController.createCheckoutSession(req, res));
+router.post('/create-order', validate(ROLE.USER), (req, res) => orderController.createOrder(req, res));
+router.post('/order-failed', validate(ROLE.USER), (req, res) => orderController.failedOrder(req, res));
+router.get('/purchase-history', validate(ROLE.USER), (req, res) => orderController.getPurchaseHistory(req, res));
+router.get('/purchased-courses', validate(ROLE.USER), (req, res) => orderController.getPurchasedCourse(req, res));
 
 
 //-------------------------------- Consultation ---------------------------------
 
-router.get('/experts', validate("user"), (req, res) => userControllerInstance.getAllExpert(req, res));
-router.get('/expert/:id', validate("user"), (req, res) => userControllerInstance.getExpertById(req, res));
-router.get('/expert/:id/availability', validate("user"), (req, res) => userControllerInstance.getExpertAvailability(req, res));
+router.get('/experts', validate(ROLE.USER), (req, res) => userControllerInstance.getAllExpert(req, res));
+router.get('/expert/:id', validate(ROLE.USER), (req, res) => userControllerInstance.getExpertById(req, res));
+router.get('/expert/:id/availability', validate(ROLE.USER), (req, res) => userControllerInstance.getExpertAvailability(req, res));
 
 
 //------------------------------------ Slot -------------------------------------
 
-router.post('/slot-booking', validate("user"), (req, res) => orderController.slotBooking(req, res));
-router.get('/sessions', validate("user"), (req, res) => userControllerInstance.getSessions(req, res));
+router.post('/slot-booking', validate(ROLE.USER), (req, res) => orderController.slotBooking(req, res));
+router.get('/sessions', validate(ROLE.USER), (req, res) => userControllerInstance.getSessions(req, res));
 router.get('/session/:id', (req, res) => userControllerInstance.getSessionById(req, res));
 router.get('/update-session/:id', (req, res) => userControllerInstance.updateSession(req, res));
 
@@ -113,7 +114,7 @@ router.get('/update-session/:id', (req, res) => userControllerInstance.updateSes
 //------------------------------------ Review -------------------------------------
 
 router.get('/:courseId/reviews', (req, res) => reviewController.getCourseReviews(req, res));
-router.post('/:courseId/review', validate("user"), (req, res) =>  reviewController.submitReview(req, res));
-router.post('/:courseId/update-review', validate("user"), (req, res) =>  reviewController.updateReview(req, res));
+router.post('/:courseId/review', validate(ROLE.USER), (req, res) =>  reviewController.submitReview(req, res));
+router.post('/:courseId/update-review', validate(ROLE.USER), (req, res) =>  reviewController.updateReview(req, res));
 
 export default router;

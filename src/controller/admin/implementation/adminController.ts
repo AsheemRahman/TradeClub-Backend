@@ -9,6 +9,7 @@ import IAdminController from "../IAdminController";
 import IAdminService from "../../../service/admin/IAdminService";
 import MailUtility from "../../../utils/mailUtility";
 import { JwtPayload } from "jsonwebtoken";
+import { ROLE } from "../../../constants/role";
 
 
 dotenv.config();
@@ -32,7 +33,7 @@ class AdminController implements IAdminController {
                 res.status(STATUS_CODES.FORBIDDEN).json({ success: false, message: "Login failed. Please check your credentials." });
                 return
             }
-            const payload: TokenPayload = { userId: email, role: "admin" };
+            const payload: TokenPayload = { userId: email, role: ROLE.ADMIN };
             const accessToken = JwtUtility.generateAccessToken(payload);
             const refreshToken = JwtUtility.generateRefreshToken(payload);
             res.cookie("admin-accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
@@ -41,7 +42,7 @@ class AdminController implements IAdminController {
                 success: true, message: "login successful",
                 data: {
                     accessToken,
-                    user: { id: email, role: "admin" },
+                    user: { id: email, role: ROLE.ADMIN },
                 },
             });
 

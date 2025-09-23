@@ -6,6 +6,7 @@ import NotificationService from '../../service/user/implementation/notificationS
 import userRepository from '../../repository/user/implementation/userRepository';
 import NotificationController from '../../controller/user/implementation/notificationController';
 import INotificationController from '../../controller/user/INotificationController';
+import { ROLE } from '../../constants/role';
 
 const router = Router();
 
@@ -17,12 +18,12 @@ const notificationController: INotificationController = new NotificationControll
 
 //------------------------------------ Notification ----------------------------------
 
-router.get('/', validate("user"), (req, res) => notificationController.getNotifications(req, res));
-router.post('/', validate("user"), (req, res) => notificationController.createNotification(req, res));
-router.patch('/:id/read', validate("user"), (req, res) => notificationController.markAsRead(req, res));
-router.patch('/mark-all-read', validate("user"), (req, res) => notificationController.markAllAsRead(req, res));
+router.get('/', validate(ROLE.USER), (req, res) => notificationController.getNotifications(req, res));
+router.post('/', (req, res) => notificationController.createNotification(req, res));
+router.patch('/:id/read', validate(ROLE.USER), (req, res) => notificationController.markAsRead(req, res));
+router.patch('/mark-all-read', validate(ROLE.USER), (req, res) => notificationController.markAllAsRead(req, res));
 
-router.post("/enrollment", validate("user"), (req, res) => notificationController.notifyNewCourseEnrollment(req, res));
+router.post("/enrollment", validate(ROLE.USER), (req, res) => notificationController.notifyNewCourseEnrollment(req, res));
 router.post("/consultation", (req, res) => notificationController.notifyConsultationScheduled(req, res));
 router.post("/subscription", (req, res) => notificationController.notifySubscriptionExpiring(req, res));
 router.post("/new-course", (req, res) => notificationController.notifyNewCourseAvailable(req, res));

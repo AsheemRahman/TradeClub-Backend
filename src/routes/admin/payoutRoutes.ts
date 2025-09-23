@@ -6,6 +6,7 @@ import PayoutController from '../../controller/admin/implementation/payoutContro
 import IPayoutController from '../../controller/admin/IPayoutController';
 import EarningRepository from '../../repository/expert/implementation/earningRepository';
 import ExpertRepository from '../../repository/expert/implementation/expertRepository';
+import { ROLE } from '../../constants/role';
 
 const expertRepository = new ExpertRepository();
 const earningRepository = new EarningRepository();
@@ -18,9 +19,9 @@ const router = Router();
 
 // ----------------------------------- Payout -----------------------------------
 
-router.post('/pending', validate("admin"), payoutController.getPendingPayouts.bind(payoutController))
-router.post('/last-payout-date', validate("admin"), payoutController.getLastPayoutDate.bind(payoutController))
-router.post('/run-payouts', validate("admin"), payoutController.runMonthlyPayouts.bind(payoutController))
+router.post('/pending', validate(ROLE.ADMIN), payoutController.getPendingPayouts.bind(payoutController))
+router.post('/last-payout-date', validate(ROLE.ADMIN), payoutController.getLastPayoutDate.bind(payoutController))
+router.post('/run-payouts', validate(ROLE.ADMIN), payoutController.runMonthlyPayouts.bind(payoutController))
 
 
 

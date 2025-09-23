@@ -11,6 +11,7 @@ import OtpUtility from "../../../utils/otpUtility";
 import MailUtility from "../../../utils/mailUtility";
 import PasswordUtils from "../../../utils/passwordUtils";
 import JwtUtility from "../../../utils/JwtUtility";
+import { ROLE } from "../../../constants/role";
 
 
 class ExpertController implements IExpertController {
@@ -131,7 +132,7 @@ class ExpertController implements IExpertController {
             }
             const payload = {
                 userId: (currentExpert._id as string).toString(),
-                role: "expert"
+                role: ROLE.EXPERT
             };
             const accessToken = JwtUtility.generateAccessToken(payload);
             const refreshToken = JwtUtility.generateRefreshToken(payload);
@@ -146,7 +147,7 @@ class ExpertController implements IExpertController {
                         email: currentExpert.email,
                         name: currentExpert.fullName,
                         isVerified: currentExpert.isVerified,
-                        role: "expert"
+                        role: ROLE.EXPERT
                     }
                 }
             });
@@ -175,7 +176,7 @@ class ExpertController implements IExpertController {
                 res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'User is blocked by admin', });
                 return;
             }
-            const payload = { userId: (currentExpert._id as string).toString(), role: "expert" };
+            const payload = { userId: (currentExpert._id as string).toString(), role: ROLE.EXPERT };
             const accessToken = JwtUtility.generateAccessToken(payload);
             const refreshToken = JwtUtility.generateRefreshToken(payload);
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
@@ -188,7 +189,7 @@ class ExpertController implements IExpertController {
                         id: currentExpert._id,
                         email: currentExpert.email,
                         name: currentExpert.fullName,
-                        role: "expert",
+                        role: ROLE.EXPERT,
                         isVerified: currentExpert.isVerified,
                     }
                 }

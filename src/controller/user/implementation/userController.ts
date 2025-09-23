@@ -12,6 +12,7 @@ import MailUtility from "../../../utils/mailUtility";
 import PasswordUtils from "../../../utils/passwordUtils";
 import { JwtPayload } from "jsonwebtoken";
 import IOrderService from "../../../service/user/IOrderService";
+import { ROLE } from "../../../constants/role";
 
 
 class UserController implements IUserController {
@@ -120,7 +121,7 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "Invalid email or password", data: null });
                 return;
             }
-            const payload = { userId: (currentUser._id as string).toString(), role: "user" };
+            const payload = { userId: (currentUser._id as string).toString(), role: ROLE.USER };
             const accessToken = JwtUtility.generateAccessToken(payload);
             const refreshToken = JwtUtility.generateRefreshToken(payload);
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
@@ -133,7 +134,7 @@ class UserController implements IUserController {
                         id: currentUser._id,
                         email: currentUser.email,
                         name: currentUser.fullName,
-                        role: "user"
+                        role: ROLE.USER
                     }
                 }
             });
@@ -191,7 +192,7 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'User is blocked by admin', });
                 return;
             }
-            const payload = { userId: (currentUser._id as string).toString(), role: "user" };
+            const payload = { userId: (currentUser._id as string).toString(), role: ROLE.USER };
             const accessToken = JwtUtility.generateAccessToken(payload);
             const refreshToken = JwtUtility.generateRefreshToken(payload);
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
@@ -204,7 +205,7 @@ class UserController implements IUserController {
                         id: currentUser._id,
                         email: currentUser.email,
                         name: currentUser.fullName,
-                        role: "user"
+                        role: ROLE.USER
                     }
                 }
             });

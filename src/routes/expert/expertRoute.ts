@@ -10,6 +10,7 @@ import SessionRepository from '../../repository/expert/implementation/sessionRep
 import SessionService from '../../service/expert/implementation/sessionService';
 import SessionController from '../../controller/expert/implementation/sessionController';
 import ISessionController from '../../controller/expert/ISessionController';
+import { ROLE } from '../../constants/role';
 
 const router = Router();
 
@@ -39,36 +40,36 @@ router.post('/google-login', (req, res) => expertControllerInstance.googleLogin(
 router.post('/forgot-password', (req, res) => expertControllerInstance.forgotPassword(req, res));
 router.patch('/reset-password', (req, res) => expertControllerInstance.resetPassword(req, res));
 
-router.post('/verification', validate("expert"), (req, res) => expertControllerInstance.expertVerification(req, res));
+router.post('/verification', validate(ROLE.EXPERT), (req, res) => expertControllerInstance.expertVerification(req, res));
 
 
 //------------------------------------ profile ----------------------------------
 
-router.get('/get-expert', validate("expert"), (req, res) => expertControllerInstance.getExpertData(req, res));
-router.post('/update-profile', validate("expert"), (req, res) => expertControllerInstance.updateProfile(req, res));
+router.get('/get-expert', validate(ROLE.EXPERT), (req, res) => expertControllerInstance.getExpertData(req, res));
+router.post('/update-profile', validate(ROLE.EXPERT), (req, res) => expertControllerInstance.updateProfile(req, res));
 
 
 //------------------------------------- Slot ------------------------------------
 
-router.get('/slots', validate("expert"), (req, res) => sessionInstance.getSlots(req, res));
-router.post('/add-slot', validate("expert"), (req, res) => sessionInstance.addSlot(req, res));
-router.patch('/edit-slot', validate("expert"), (req, res) => sessionInstance.editSlot(req, res));
-router.delete('/delete-slot/:id', validate("expert"), (req, res) => sessionInstance.deleteSlot(req, res));
+router.get('/slots', validate(ROLE.EXPERT), (req, res) => sessionInstance.getSlots(req, res));
+router.post('/add-slot', validate(ROLE.EXPERT), (req, res) => sessionInstance.addSlot(req, res));
+router.patch('/edit-slot', validate(ROLE.EXPERT), (req, res) => sessionInstance.editSlot(req, res));
+router.delete('/delete-slot/:id', validate(ROLE.EXPERT), (req, res) => sessionInstance.deleteSlot(req, res));
 
 
 //----------------------------------- Dashboard ---------------------------------
 
-router.get('/dashboard/stats', validate("expert"), (req, res) => sessionInstance.getDashboardStats(req, res));
-router.get('/dashboard/analytics', validate("expert"), (req, res) => sessionInstance.getSessionAnalytics(req, res));
+router.get('/dashboard/stats', validate(ROLE.EXPERT), (req, res) => sessionInstance.getDashboardStats(req, res));
+router.get('/dashboard/analytics', validate(ROLE.EXPERT), (req, res) => sessionInstance.getSessionAnalytics(req, res));
 
 
 //------------------------------------ wallet -----------------------------------
 
-router.get('/wallet', validate("expert"), (req, res) => expertControllerInstance.getWallet(req, res));
+router.get('/wallet', validate(ROLE.EXPERT), (req, res) => expertControllerInstance.getWallet(req, res));
 
 
 //------------------------------------ sessions ----------------------------------
 
-router.get('/sessions', validate("expert"), (req, res) => sessionInstance.getSessions(req, res));
+router.get('/sessions', validate(ROLE.EXPERT), (req, res) => sessionInstance.getSessions(req, res));
 
 export default router;
