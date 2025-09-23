@@ -3,6 +3,7 @@ import { STATUS_CODES } from "../../../constants/statusCode";
 
 import IPayoutController from "../IPayoutController";
 import IPayoutService from "../../../service/admin/IPayoutService";
+import { ERROR_MESSAGES } from "../../../constants/message";
 
 
 class PayoutController implements IPayoutController {
@@ -22,13 +23,14 @@ class PayoutController implements IPayoutController {
             res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed Monthly payouts" });
         }
     };
-
+    
     async getPendingPayouts(req: Request, res: Response): Promise<void>  {
         try {
             const payouts = await this._payoutService.getPendingPayouts();
             res.status(STATUS_CODES.OK).json({status: true, data: payouts });
-        } catch (err: any) {
-            res.status(500).json({status: false, message: err.message });
+        } catch (error) {
+            console.error("get pending payouts", error);
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({status: false, message: "error while get pending payouts"});
         }
     };
 
@@ -36,8 +38,8 @@ class PayoutController implements IPayoutController {
         try {
             const date = await this._payoutService.getLastPayoutDate();
             res.status(STATUS_CODES.OK).json({status: true, data: { lastPayoutDate: date } });
-        } catch (err: any) {
-            res.status(500).json({status: false, message: err.message });
+        } catch (err) {
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
         }
     };
 }

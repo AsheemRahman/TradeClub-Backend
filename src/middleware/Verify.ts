@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import dotenv from "dotenv";
 
 import { STATUS_CODES } from "../constants/statusCode";
@@ -53,10 +53,18 @@ export const validate = (requiredRole?: string) => {
 
             next();
         } catch (error: any) {
-            if (error.name === "TokenExpiredError") {
-                res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "Access token expired, please refresh or log in again." });
+            if (error instanceof TokenExpiredError) {
+                res.status(STATUS_CODES.UNAUTHORIZED).json({
+                    message: "Access token expired, please refresh or log in again."
+                });
+            } else if (error instanceof JsonWebTokenError) {
+                res.status(STATUS_CODES.FORBIDDEN).json({
+                    message: "Invalid or expired token, please log in again."
+                });
             } else {
-                res.status(STATUS_CODES.FORBIDDEN).json({ message: "Invalid or expired token, please log in again." });
+                res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+                    message: "Something went wrong."
+                });
             }
         }
     };

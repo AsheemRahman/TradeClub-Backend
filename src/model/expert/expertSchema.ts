@@ -21,6 +21,7 @@ interface IExpert extends Document {
     Government_Id?: string;
     selfie_Id?: string;
     stripeAccountId?: string;
+    createdAt?:Date;
 }
 
 

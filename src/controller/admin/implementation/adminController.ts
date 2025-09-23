@@ -111,7 +111,7 @@ class AdminController implements IAdminController {
             });
             const users = response?.users || [];
 
-            const formattedUsers = users.map((user: any) => ({
+            const formattedUsers = users.map((user) => ({
                 id: user._id,
                 email: user.email,
                 fullName: user.fullName,
@@ -192,7 +192,7 @@ class AdminController implements IAdminController {
                 limit: limitNumber
             });
             const expert = response?.experts || [];
-            const formattedExperts = expert.map((expert: any) => ({
+            const formattedExperts = expert.map((expert) => ({
                 id: expert._id,
                 email: expert.email,
                 fullName: expert.fullName,

@@ -8,6 +8,7 @@ interface IUser extends Document {
     isActive?:boolean;
     profilePicture?: string;
     lastSeen?: Date;
+    createdAt?:Date;
 }
 
 const userSchema = new Schema<IUser>({

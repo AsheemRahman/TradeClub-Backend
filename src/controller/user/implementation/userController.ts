@@ -349,7 +349,7 @@ class UserController implements IUserController {
         try {
             const response = await this._userService.getAllExpert();
             const expert = response || [];
-            const formattedExperts = expert.map((expert: any) => ({
+            const formattedExperts = expert.map((expert) => ({
                 id: expert._id,
                 fullName: expert.fullName,
                 isActive: expert.isActive,
