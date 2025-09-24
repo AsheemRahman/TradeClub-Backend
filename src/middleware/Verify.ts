@@ -52,7 +52,7 @@ export const validate = (requiredRole?: string) => {
             req.role = data.role;
 
             next();
-        } catch (error: any) {
+        } catch (error) {
             if (error instanceof TokenExpiredError) {
                 res.status(STATUS_CODES.UNAUTHORIZED).json({
                     message: "Access token expired, please refresh or log in again."

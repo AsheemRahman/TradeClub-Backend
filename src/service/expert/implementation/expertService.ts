@@ -22,7 +22,7 @@ class ExpertService implements IExpertService {
         return user;
     }
 
-    async registerExpert(userData: IUserType): Promise<any> {
+    async registerExpert(userData: IUserType): Promise<IExpert | null> {
         if (userData.password) {
             const hashedPassword = await PasswordUtils.passwordHash(userData.password);
             userData.password = hashedPassword;
@@ -30,7 +30,7 @@ class ExpertService implements IExpertService {
         return await this._expertRepository.registerExpert(userData);
     }
 
-    async resetPassword(email: string, password: string): Promise<any> {
+    async resetPassword(email: string, password: string): Promise<IExpert | null> {
         const hashedPassword = await PasswordUtils.passwordHash(password);
         return await this._expertRepository.resetPassword(email, hashedPassword);
     }

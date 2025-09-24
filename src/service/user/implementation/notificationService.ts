@@ -32,81 +32,59 @@ class NotificationService {
         this._userRepository = userRepository;
     }
 
-    async getUserNotifications( userId: string | mongoose.Types.ObjectId, options: NotificationOptions = {}): Promise<PaginatedNotifications> {
-        try {
-            return await this._notificationRepository.getUserNotificationsPaginated(
-                userId,
-                options.page ?? 1,
-                options.limit ?? 10,
-                options.unreadOnly ?? false
-            );
-        } catch (error: any) {
-            throw new Error(`Error fetching user notifications: ${error.message}`);
-        }
+    async getUserNotifications(userId: string | mongoose.Types.ObjectId, options: NotificationOptions = {}): Promise<PaginatedNotifications> {
+        return await this._notificationRepository.getUserNotificationsPaginated(
+            userId,
+            options.page ?? 1,
+            options.limit ?? 10,
+            options.unreadOnly ?? false
+        );
     }
 
     async createNotification(userId: string | mongoose.Types.ObjectId, title: string, message: string, options: NotificationOptions = {}): Promise<INotification> {
-        try {
-            const notificationData = {
-                userId,
-                title,
-                message,
-                type: options.type || 'system',
-                actionUrl: options.actionUrl || null,
-                priority: options.priority || 'medium',
-                metadata: options.metadata || {}
-            };
-            const notification = await this._notificationRepository.create(notificationData as any);
-            await this.broadcastToUser(userId, notification);
-            return notification;
-        } catch (error: any) {
-            throw new Error(`Error creating notification: ${error.message}`);
-        }
+        const notificationData = {
+            userId,
+            title,
+            message,
+            type: options.type || 'system',
+            actionUrl: options.actionUrl || null,
+            priority: options.priority || 'medium',
+            metadata: options.metadata || {}
+        };
+        const notification = await this._notificationRepository.create(notificationData as INotification);
+        await this.broadcastToUser(userId, notification);
+        return notification;
     }
 
     async createBulkNotifications(userIds: (string | mongoose.Types.ObjectId)[], title: string, message: string, options: NotificationOptions = {}): Promise<INotification[]> {
-        try {
-            const notifications = userIds.map(userId => ({
-                userId,
-                title,
-                message,
-                type: options.type || 'system',
-                actionUrl: options.actionUrl || null,
-                priority: options.priority || 'medium',
-                metadata: options.metadata || {}
-            }));
-
-            const createdNotifications = await this._notificationRepository.createBulkNotifications(notifications as any);
-            await Promise.all(
-                createdNotifications.map(notification =>
-                    this.broadcastToUser(notification.userId, notification)
-                )
-            );
-
-            return createdNotifications;
-        } catch (error: any) {
-            throw new Error(`Error creating bulk notifications: ${error.message}`);
-        }
+        const notifications = userIds.map(userId => ({
+            userId,
+            title,
+            message,
+            type: options.type || 'system',
+            actionUrl: options.actionUrl || null,
+            priority: options.priority || 'medium',
+            metadata: options.metadata || {}
+        }));
+        const createdNotifications = await this._notificationRepository.createBulkNotifications(notifications as any);
+        await Promise.all(
+            createdNotifications.map(notification =>
+                this.broadcastToUser(notification.userId, notification)
+            )
+        );
+        return createdNotifications;
     }
 
     async markAsRead(notificationId: string | mongoose.Types.ObjectId, userId: string | mongoose.Types.ObjectId): Promise<INotification> {
-        try {
-            const notification = await this._notificationRepository.markAsRead(notificationId as string, userId as string);
-            if (!notification) {
-                throw new Error('Notification not found or access denied');
-            }
-            return notification;
-        } catch (error: any) {
-            throw new Error(`Error marking notification as read: ${error.message}`);
+        const notification = await this._notificationRepository.markAsRead(notificationId as string, userId as string);
+        if (!notification) {
+            throw new Error('Notification not found or access denied');
         }
+        return notification;
     }
 
     async markAllAsRead(userId: string | mongoose.Types.ObjectId): Promise<{ modifiedCount: number }> {
-        try {
-            return await this._notificationRepository.markAllAsRead(userId);
-        } catch (error: any) {
-            throw new Error(`Error marking all notifications as read: ${error.message}`);
-        }
+        return await this._notificationRepository.markAllAsRead(userId);
     }
 
     // Notification templates
@@ -153,24 +131,19 @@ class NotificationService {
     }
 
     async notifyNewCourseAvailable(courseName: string, courseId: string | mongoose.Types.ObjectId): Promise<INotification[]> {
-        try {
-            const activeUsers = await this._userRepository.findManyUser();
-            const userIds = activeUsers.map(user => user._id);
-
-            return await this.createBulkNotifications(
-                userIds as (string | mongoose.Types.ObjectId)[],
-                'New Course Available!',
-                `Check out our new course: "${courseName}". Enroll now and start learning!`,
-                {
-                    type: 'course',
-                    actionUrl: `/courses/${courseId}`,
-                    priority: 'medium',
-                    metadata: { courseName, courseId }
-                }
-            );
-        } catch (error: any) {
-            throw new Error(`Error notifying new course availability: ${error.message}`);
-        }
+        const activeUsers = await this._userRepository.findManyUser();
+        const userIds = activeUsers.map(user => user._id);
+        return await this.createBulkNotifications(
+            userIds as (string | mongoose.Types.ObjectId)[],
+            'New Course Available!',
+            `Check out our new course: "${courseName}". Enroll now and start learning!`,
+            {
+                type: 'course',
+                actionUrl: `/courses/${courseId}`,
+                priority: 'medium',
+                metadata: { courseName, courseId }
+            }
+        );
     }
 
     private async broadcastToUser(userId: string | mongoose.Types.ObjectId, notification: INotification): Promise<void> {
@@ -188,13 +161,9 @@ class NotificationService {
     }
 
     async cleanupOldNotifications(daysToKeep = 30): Promise<number> {
-        try {
-            const result = await this._notificationRepository.cleanupOldNotifications(daysToKeep);
-            console.error(`Cleaned up ${result.deletedCount} old notifications`);
-            return result.deletedCount;
-        } catch (error: any) {
-            throw new Error(`Error cleaning up notifications: ${error.message}`);
-        }
+        const result = await this._notificationRepository.cleanupOldNotifications(daysToKeep);
+        console.error(`Cleaned up ${result.deletedCount} old notifications`);
+        return result.deletedCount;
     }
 }
 
