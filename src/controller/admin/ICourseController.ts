@@ -1,23 +1,26 @@
-import { Request, Response } from "express"
+import { NextFunction, Request, Response } from "express"
+
+type ControllerMethod = (req: Request, res: Response, next: NextFunction) => Promise<any>;
+
 
 interface ICourseController {
 
     //----------------------- Category -----------------------
 
-    getCategory(req: Request, res: Response): Promise<void>;
-    addCategory(req: Request, res: Response): Promise<void>;
-    deleteCategory(req: Request, res: Response): Promise<void>;
-    editCategory(req: Request, res: Response): Promise<void>;
-    categoryStatus(req: Request, res: Response): Promise<void>;
+    getCategory: ControllerMethod;
+    addCategory: ControllerMethod;
+    deleteCategory: ControllerMethod;
+    editCategory: ControllerMethod;
+    categoryStatus: ControllerMethod;
 
     //------------------------ Course ------------------------
 
-    getCourse(req: Request, res: Response): Promise<void>;
-    getCourseById(req: Request, res: Response): Promise<void>;
-    addCourse(req: Request, res: Response): Promise<void>;
-    editCourse(req: Request, res: Response): Promise<void>;
-    deleteCourse(req: Request, res: Response): Promise<void>;
-    togglePublish(req: Request, res: Response): Promise<void>;
+    getCourse: ControllerMethod;
+    getCourseById: ControllerMethod;
+    addCourse: ControllerMethod;
+    editCourse: ControllerMethod;
+    deleteCourse: ControllerMethod;
+    togglePublish: ControllerMethod;
 }
 
 export default ICourseController;

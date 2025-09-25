@@ -1,16 +1,17 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
+type ControllerMethod = (req: Request, res: Response, next: NextFunction) => Promise<any>;
 
 interface ISessionController {
-    getSlots(req: Request, res: Response): Promise<void>;
-    addSlot(req: Request, res: Response): Promise<void>;
-    editSlot(req: Request, res: Response): Promise<void>;
-    deleteSlot(req: Request, res: Response): Promise<void>;
+    getSlots: ControllerMethod;
+    addSlot: ControllerMethod;
+    editSlot: ControllerMethod;
+    deleteSlot: ControllerMethod;
 
-    getDashboardStats(req: Request, res: Response): Promise<void>;
-    getSessionAnalytics(req: Request, res: Response): Promise<void>;
+    getDashboardStats: ControllerMethod;
+    getSessionAnalytics: ControllerMethod;
 
-    getSessions(req: Request, res: Response): Promise<void>;
+    getSessions: ControllerMethod;
 }
 
 export default ISessionController;

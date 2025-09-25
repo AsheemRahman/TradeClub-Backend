@@ -5,6 +5,7 @@ import { STATUS_CODES } from "../../../constants/statusCode";
 import ICourseController from "../ICourseController";
 import ICourseService from "../../../service/admin/ICourseService";
 import { ICourse } from "../../../model/admin/courseSchema";
+import { asyncHandler } from "../../../utils/asyncHandler";
 
 
 class CourseController implements ICourseController {
@@ -17,130 +18,90 @@ class CourseController implements ICourseController {
 
     //----------------------------- Category -----------------------------
 
-    async getCategory(req: Request, res: Response): Promise<void> {
-        try {
-            const categories = await this._courseService.getCategory();
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Category Fetched Successfully", categories })
-        } catch (error) {
-            console.error("Failed to fetch category", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch category", error: error instanceof Error ? error.message : String(error), });
-        }
-    };
+    getCategory = asyncHandler(async (req: Request, res: Response) => {
+        const categories = await this._courseService.getCategory();
+        res.status(STATUS_CODES.OK).json({ status: true, message: "Category Fetched Successfully", categories })
+    });
 
-    async addCategory(req: Request, res: Response): Promise<void> {
+    addCategory = asyncHandler(async (req: Request, res: Response) => {
         const { categoryName } = req.body;
         if (!categoryName) {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
             return;
         }
-        try {
-            const newCategory = await this._courseService.addCategory(categoryName);
-            res.status(STATUS_CODES.CREATED).json({ status: true, message: "Category Created Successfully", newCategory })
-        } catch (error) {
-            console.error("Category Creation failed", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Category Creation failed", error: error instanceof Error ? error.message : String(error), });
-        }
-    };
+        const newCategory = await this._courseService.addCategory(categoryName);
+        res.status(STATUS_CODES.CREATED).json({ status: true, message: "Category Created Successfully", newCategory })
+    });
 
-    async deleteCategory(req: Request, res: Response): Promise<void> {
+    deleteCategory = asyncHandler(async (req: Request, res: Response) => {
         const { id } = req.params;
         if (!id) {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
             return;
         }
-        try {
-            const newCategory = await this._courseService.deleteCategory(id);
-            res.status(STATUS_CODES.CREATED).json({ status: true, message: "Category Deleted Successfully", newCategory })
-        } catch (error) {
-            console.error("Failed to delete category", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to delete category", error: error instanceof Error ? error.message : String(error), });
-        }
-    };
+        const newCategory = await this._courseService.deleteCategory(id);
+        res.status(STATUS_CODES.CREATED).json({ status: true, message: "Category Deleted Successfully", newCategory })
+    });
 
-    async editCategory(req: Request, res: Response): Promise<void> {
+    editCategory = asyncHandler(async (req: Request, res: Response) => {
         const { id } = req.params;
         const { categoryName } = req.body;
         if (!id || !categoryName) {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
             return;
         }
-        try {
-            const newCategory = await this._courseService.editCategory(id, categoryName);
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Category Edited Successfully", newCategory })
-        } catch (error) {
-            console.error("Failed to Edited category", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to Edited category", error: error instanceof Error ? error.message : String(error), });
-        }
-    };
+        const newCategory = await this._courseService.editCategory(id, categoryName);
+        res.status(STATUS_CODES.OK).json({ status: true, message: "Category Edited Successfully", newCategory })
+    });
 
-    async categoryStatus(req: Request, res: Response): Promise<void> {
-        try {
-            const { id } = req.params;
-            const { status } = req.body;
-            if (!id || status === undefined) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
-                return;
-            }
-            const checkCategory = await this._courseService.getCategoryById(id)
-            if (!checkCategory) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
-                return
-            }
-            await this._courseService.categoryStatus(id, status)
-            res.status(STATUS_CODES.OK).json({ success: true, message: "Category status change successfully", });
-        } catch (error) {
-            console.error("Category status change failed:", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, error: "Category status change failed", });
+    categoryStatus = asyncHandler(async (req: Request, res: Response) => {
+        const { id } = req.params;
+        const { status } = req.body;
+        if (!id || status === undefined) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
+            return;
         }
-    };
+        const checkCategory = await this._courseService.getCategoryById(id)
+        if (!checkCategory) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
+            return
+        }
+        await this._courseService.categoryStatus(id, status)
+        res.status(STATUS_CODES.OK).json({ success: true, message: "Category status change successfully", });
+    });
 
     //----------------------------- Course -----------------------------
 
-    async getCourse(req: Request, res: Response): Promise<void> {
-        try {
-            const courses = await this._courseService.getCourse();
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Courses Fetched Successfully", courses })
-        } catch (error) {
-            console.error("Failed to fetch Courses", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch Courses", error: error instanceof Error ? error.message : String(error), });
-        }
-    };
+    getCourse = asyncHandler(async (req: Request, res: Response) => {
+        const courses = await this._courseService.getCourse();
+        res.status(STATUS_CODES.OK).json({ status: true, message: "Courses Fetched Successfully", courses })
+    });
 
-    async getCourseById(req: Request, res: Response): Promise<void> {
+    getCourseById = asyncHandler(async (req: Request, res: Response) => {
         const { id } = req.params;
         if (!id) {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
             return;
         }
-        try {
-            const course = await this._courseService.getCourseById(id)
-            if (!course) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
-                return
-            }
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Course Fetched Successfully", course })
-        } catch (error) {
-            console.error("Failed to fetch Course", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch Course", error: error instanceof Error ? error.message : String(error), });
+        const course = await this._courseService.getCourseById(id)
+        if (!course) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+            return
         }
-    };
+        res.status(STATUS_CODES.OK).json({ status: true, message: "Course Fetched Successfully", course })
+    });
 
-    async addCourse(req: Request, res: Response): Promise<void> {
-        try {
-            const { title, description, price, imageUrl, category, content, isPublished } = req.body;
-            if (!title || !description || !price || !imageUrl || !category || !content) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT });
-                return;
-            }
-            const course = await this._courseService.addCourse({ title, description, price, imageUrl, category, content, isPublished } as ICourse);
-            res.status(STATUS_CODES.OK).json({ status: true, message: "course created successfully", course });
-        } catch (error) {
-            console.error("Course creation:", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, error: "Course creation Failed", });
+    addCourse = asyncHandler(async (req: Request, res: Response) => {
+        const { title, description, price, imageUrl, category, content, isPublished } = req.body;
+        if (!title || !description || !price || !imageUrl || !category || !content) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT });
+            return;
         }
-    };
+        const course = await this._courseService.addCourse({ title, description, price, imageUrl, category, content, isPublished } as ICourse);
+        res.status(STATUS_CODES.OK).json({ status: true, message: "course created successfully", course });
+    });
 
-    async editCourse(req: Request, res: Response): Promise<void> {
+    editCourse = asyncHandler(async (req: Request, res: Response) => {
         const { id } = req.params;
         if (!id) {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
@@ -151,59 +112,44 @@ class CourseController implements ICourseController {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INVALID_INPUT });
             return;
         }
-        try {
-            const checkCourse = await this._courseService.getCourseById(id)
-            if (!checkCourse) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
-                return
-            }
-            const course = await this._courseService.editCourse(id, { title, description, price, imageUrl, category, content, isPublished } as ICourse);
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Course updated successfully", course });
-        } catch (error) {
-            console.error("Failed to Edited category", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to Edited category", error: error instanceof Error ? error.message : String(error), });
+        const checkCourse = await this._courseService.getCourseById(id)
+        if (!checkCourse) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+            return
         }
-    };
+        const course = await this._courseService.editCourse(id, { title, description, price, imageUrl, category, content, isPublished } as ICourse);
+        res.status(STATUS_CODES.OK).json({ status: true, message: "Course updated successfully", course });
+    });
 
-    async deleteCourse(req: Request, res: Response): Promise<void> {
+    deleteCourse = asyncHandler(async (req: Request, res: Response) => {
         const { id } = req.params;
         if (!id) {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
             return;
         }
-        try {
-            const checkCourse = await this._courseService.getCourseById(id)
-            if (!checkCourse) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
-                return
-            }
-            const course = await this._courseService.deleteCourse(id);
-            res.status(STATUS_CODES.CREATED).json({ status: true, message: "course Deleted Successfully", course })
-        } catch (error) {
-            console.error("Failed to delete course", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, error: error instanceof Error ? error.message : String(error), });
+        const checkCourse = await this._courseService.getCourseById(id)
+        if (!checkCourse) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+            return
         }
-    };
+        const course = await this._courseService.deleteCourse(id);
+        res.status(STATUS_CODES.CREATED).json({ status: true, message: "course Deleted Successfully", course })
+    });
 
-    async togglePublish(req: Request, res: Response): Promise<void> {
-        try {
-            const { id } = req.params;
-            if (!id) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
-                return;
-            }
-            const checkCourse = await this._courseService.getCourseById(id)
-            if (!checkCourse) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
-                return
-            }
-            await this._courseService.togglePublish(id, !checkCourse.isPublished)
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Course status change successfully", });
-        } catch (error) {
-            console.error("Get users error:", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, error: "Failed to Change Course Status", });
+    togglePublish = asyncHandler(async (req: Request, res: Response) => {
+        const { id } = req.params;
+        if (!id) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR })
+            return;
         }
-    };
+        const checkCourse = await this._courseService.getCourseById(id)
+        if (!checkCourse) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
+            return
+        }
+        await this._courseService.togglePublish(id, !checkCourse.isPublished)
+        res.status(STATUS_CODES.OK).json({ status: true, message: "Course status change successfully", });
+    });
 }
 
 export default CourseController;

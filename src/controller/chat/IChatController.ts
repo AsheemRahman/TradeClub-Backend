@@ -1,8 +1,10 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+
+type ControllerMethod = (req: Request, res: Response, next: NextFunction) => Promise<any>;
 
 interface IChatController{
-    getChats(req:Request,res:Response):Promise<void>
-    createChat(req:Request,res:Response):Promise<void>
+    getChats: ControllerMethod;
+    createChat: ControllerMethod;
 }
 
 export default IChatController
