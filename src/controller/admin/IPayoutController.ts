@@ -1,9 +1,12 @@
-import { Request, Response } from "express"
+import { Request, Response, NextFunction } from "express";
+
+type ControllerMethod = (req: Request, res: Response, next: NextFunction) => Promise<any>;
 
 interface IPayoutController {
-    getPendingPayouts(req: Request, res: Response): Promise<void>;
-    getLastPayoutDate(req: Request, res: Response): Promise<void>
-    runMonthlyPayouts(req: Request, res: Response): Promise<void>;
+    getPendingPayouts: ControllerMethod;
+    getLastPayoutDate: ControllerMethod;
+    runMonthlyPayouts: ControllerMethod;
 }
+
 
 export default IPayoutController;

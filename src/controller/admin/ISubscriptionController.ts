@@ -1,23 +1,26 @@
-import { Request, Response } from "express"
+import { NextFunction, Request, Response } from "express"
+
+type ControllerMethod = (req: Request, res: Response, next: NextFunction) => Promise<any>;
+
 
 interface ISubscriptionController {
 
     //-------------------- Subscription --------------------
 
-    fetchPlans(req: Request, res: Response): Promise<void>;
-    getPlanById(req: Request, res: Response): Promise<void>;
-    createPlan(req: Request, res: Response): Promise<void>;
-    updatePlan(req: Request, res: Response): Promise<void>;
-    deletePlan(req: Request, res: Response): Promise<void>;
-    planStatus(req: Request, res: Response): Promise<void>;
+    fetchPlans: ControllerMethod;
+    getPlanById: ControllerMethod;
+    createPlan: ControllerMethod;
+    updatePlan: ControllerMethod;
+    deletePlan: ControllerMethod;
+    planStatus: ControllerMethod;
 
     //----------------------- Coupon -----------------------
 
-    fetchCoupons(req: Request, res: Response): Promise<void>;
-    createCoupon(req: Request, res: Response): Promise<void>;
-    updateCoupon(req: Request, res: Response): Promise<void>;
-    deleteCoupon(req: Request, res: Response): Promise<void>;
-    couponStatus(req: Request, res: Response): Promise<void>;
+    fetchCoupons: ControllerMethod;
+    createCoupon: ControllerMethod;
+    updateCoupon: ControllerMethod;
+    deleteCoupon: ControllerMethod;
+    couponStatus: ControllerMethod;
 }
 
 export default ISubscriptionController;
