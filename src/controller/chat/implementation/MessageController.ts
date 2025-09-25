@@ -25,7 +25,6 @@ class MessageController implements IMessageController {
     });
 
     getMessages = asyncHandler(async (req: Request, res: Response) => {
-
         const { id: userToChat } = req.params;
         const senderId = req.userId as string;
         const response = await this._messageService.getMessage(userToChat, senderId);

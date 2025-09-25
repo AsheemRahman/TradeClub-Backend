@@ -30,7 +30,7 @@ class OrderController implements IOrderController {
             return;
         }
         if (course.purchasedUsers?.some((id: mongoose.Types.ObjectId) => id.toString() === userId)) {
-            res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "Already Purchased" });
+            res.status(STATUS_CODES.CONFLICT).json({ message: "Already Purchased" });
             return;
         }
         try {
