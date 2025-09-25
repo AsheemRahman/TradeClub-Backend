@@ -100,6 +100,10 @@ class OrderService implements IOrderService {
         return await this._orderRepository.createSession(data);
     }
 
+    async checkSessionAvailable(expertId: string, availabilityId: string): Promise<ISession | null> {
+        return await this._orderRepository.checkSessionAvailable(expertId, availabilityId);
+    }
+
     async getUserSessions(userId: string): Promise<ISession[] | null> {
         return await this._orderRepository.getSessionsByUser(userId);
     }
@@ -111,7 +115,7 @@ class OrderService implements IOrderService {
             const sessionObjectId = session._id as unknown as string;
             await this._earningRepository.createEarning({
                 expertId: session?.expertId,
-                sessionId:  new mongoose.Types.ObjectId(sessionObjectId),
+                sessionId: new mongoose.Types.ObjectId(sessionObjectId),
                 amount: 100,
                 status: "pending"
             });

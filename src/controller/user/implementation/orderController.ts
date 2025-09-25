@@ -304,6 +304,16 @@ class OrderController implements IOrderController {
                 res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "expertId and availabilityId are required", });
                 return;
             }
+            // Check if slot is already booked
+            const existingSession = await this._orderService.checkSessionAvailable(
+                expertId,
+                availabilityId
+            );
+
+            if (existingSession) {
+                res.status(STATUS_CODES.CONFLICT).json({ status: false, message: "This slot is already booked.", });
+                return;
+            }
             // Check user subscription
             const subscription = await this._orderService.getActiveSubscription(userId);
             if (!subscription) {

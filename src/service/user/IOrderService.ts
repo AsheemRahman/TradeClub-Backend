@@ -27,6 +27,7 @@ interface IOrderService {
     updateSubscription(userId: string, planId: string): Promise<IUserSubscription | null>;
 
     createSession(data: CreateSessionDTO): Promise<ISession | null>;
+    checkSessionAvailable(expertId: string, availabilityId: string): Promise<ISession | null>;
     getUserSessions(userId: string): Promise<ISession[] | null>;
     markSessionStatus(sessionId: string, status: 'completed' | 'missed'): Promise<ISession | null>;
 }

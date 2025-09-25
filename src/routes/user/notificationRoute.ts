@@ -24,7 +24,7 @@ router.patch('/:id/read', validate(ROLE.USER), (req, res) => notificationControl
 router.patch('/mark-all-read', validate(ROLE.USER), (req, res) => notificationController.markAllAsRead(req, res));
 
 router.post("/enrollment", validate(ROLE.USER), (req, res) => notificationController.notifyNewCourseEnrollment(req, res));
-router.post("/consultation", (req, res) => notificationController.notifyConsultationScheduled(req, res));
+router.post("/consultation", validate(ROLE.USER), (req, res) => notificationController.notifyConsultationScheduled(req, res));
 router.post("/subscription", (req, res) => notificationController.notifySubscriptionExpiring(req, res));
 router.post("/new-course", (req, res) => notificationController.notifyNewCourseAvailable(req, res));
 

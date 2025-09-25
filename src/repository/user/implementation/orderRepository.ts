@@ -68,6 +68,10 @@ class OrderRepository implements IOrderRepository {
         return await Session.create({ ...data, status: 'upcoming', bookedAt: new Date(), });
     }
 
+    async checkSessionAvailable(expertId: string, availabilityId: string): Promise<ISession | null> {
+        return await Session.findOne({ expertId, availabilityId });
+    }
+
     async getSessionsByUser(userId: string): Promise<ISession[] | null> {
         return await Session.find({ userId }).populate('expertId availabilityId');
     }
