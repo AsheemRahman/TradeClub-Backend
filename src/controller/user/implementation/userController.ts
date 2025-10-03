@@ -19,7 +19,7 @@ class UserController implements IUserController {
     private _userService: IUserService;
     private _orderService: IOrderService;
 
-    constructor(userService: IUserService,orderService:IOrderService) {
+    constructor(userService: IUserService, orderService: IOrderService) {
         this._userService = userService;
         this._orderService = orderService;
     }
@@ -124,8 +124,8 @@ class UserController implements IUserController {
             const payload = { userId: (currentUser._id as string).toString(), role: ROLE.USER };
             const accessToken = JwtUtility.generateAccessToken(payload);
             const refreshToken = JwtUtility.generateRefreshToken(payload);
-            res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
-            res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000, });
+            res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+            res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
             res.status(STATUS_CODES.OK).json({
                 status: true, message: "Login successful",
                 data: {
@@ -165,7 +165,7 @@ class UserController implements IUserController {
                 return
             }
             const newAccessToken = JwtUtility.generateAccessToken({ userId, role });
-            res.cookie("accessToken", newAccessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 60 * 1000 });
+            res.cookie("accessToken", newAccessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
             res.status(STATUS_CODES.OK).json({ status: true, accessToken: newAccessToken, message: "Access token refreshed successfully" });
         } catch (error) {
             console.error('Error refreshing token:', error);
@@ -195,8 +195,8 @@ class UserController implements IUserController {
             const payload = { userId: (currentUser._id as string).toString(), role: ROLE.USER };
             const accessToken = JwtUtility.generateAccessToken(payload);
             const refreshToken = JwtUtility.generateRefreshToken(payload);
-            res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
-            res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000, });
+            res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+            res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
             res.status(STATUS_CODES.OK).json({
                 status: true, message: "Login successful", accessToken,
                 data: {
@@ -462,7 +462,7 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND });
                 return;
             }
-            const session = await this._userService.getSessionById(sessionId );
+            const session = await this._userService.getSessionById(sessionId);
             res.status(STATUS_CODES.OK).json({ status: true, message: 'Sessions fetched successfully', session });
         } catch (error) {
             console.error('retrieve sessions error:', error);
@@ -478,7 +478,7 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND });
                 return;
             }
-            const session = await this._orderService.markSessionStatus(sessionId,status);
+            const session = await this._orderService.markSessionStatus(sessionId, status);
             res.status(STATUS_CODES.OK).json({ status: true, message: 'Sessions status change successfully', session });
         } catch (error) {
             console.error('Sessions status change error:', error);
