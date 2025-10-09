@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { ISubscriptionPlan, SubscriptionPlan } from "../../../model/admin/subscriptionSchema";
-import { ExpertAvailability } from "../../../model/expert/AvailabilitySchema";
+import { ExpertAvailability, IExpertAvailability } from "../../../model/expert/AvailabilitySchema";
 import { ISession, Session } from "../../../model/expert/sessionSchema";
 import { IOrder, Order } from "../../../model/user/orderSchema";
 import { IUserSubscription, UserSubscription } from "../../../model/user/userSubscriptionSchema";
@@ -84,6 +84,14 @@ class OrderRepository extends BaseRepository<IOrder> implements IOrderRepository
 
     async updateSessionStatus(sessionId: string, status: 'completed' | 'missed'): Promise<ISession | null> {
         return await Session.findByIdAndUpdate(sessionId, { status }, { new: true });
+    }
+
+    async cancelSession(sessionId: string): Promise<ISession | null> {
+        return await Session.findByIdAndUpdate(sessionId, { status: "canceled" }, { new: true });
+    }
+
+    async availabityStatus(availabilityId: mongoose.Types.ObjectId): Promise<IExpertAvailability | null> {
+        return await ExpertAvailability.findByIdAndUpdate(availabilityId, { isBooked: false }, { new: true });
     }
 }
 

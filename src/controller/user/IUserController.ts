@@ -19,6 +19,7 @@ interface IUserController {
     getSessions(req: Request, res: Response): Promise<void>;
     getSessionById(req: Request, res: Response): Promise<void>;
     updateSession(req: Request, res: Response): Promise<void>;
+    cancelSession(req: Request, res: Response): Promise<void>;
 
     getAllExpert(req: Request, res: Response): Promise<void>;
     getExpertById(req: Request, res: Response): Promise<void>;

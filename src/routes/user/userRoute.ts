@@ -108,13 +108,14 @@ router.get('/expert/:id/availability', validate(ROLE.USER), (req, res) => userCo
 router.post('/slot-booking', validate(ROLE.USER), (req, res) => orderController.slotBooking(req, res));
 router.get('/sessions', validate(ROLE.USER), (req, res) => userControllerInstance.getSessions(req, res));
 router.get('/session/:id', (req, res) => userControllerInstance.getSessionById(req, res));
-router.get('/update-session/:id', (req, res) => userControllerInstance.updateSession(req, res));
+router.put('/update-session/:id', (req, res) => userControllerInstance.updateSession(req, res));
+router.patch('/cancel-session/:id', validate(ROLE.USER), (req, res) => userControllerInstance.cancelSession(req, res));
 
 
 //------------------------------------ Review -------------------------------------
 
 router.get('/:courseId/reviews', (req, res) => reviewController.getCourseReviews(req, res));
-router.post('/:courseId/review', validate(ROLE.USER), (req, res) =>  reviewController.submitReview(req, res));
-router.post('/:courseId/update-review', validate(ROLE.USER), (req, res) =>  reviewController.updateReview(req, res));
+router.post('/:courseId/review', validate(ROLE.USER), (req, res) => reviewController.submitReview(req, res));
+router.post('/:courseId/update-review', validate(ROLE.USER), (req, res) => reviewController.updateReview(req, res));
 
 export default router;

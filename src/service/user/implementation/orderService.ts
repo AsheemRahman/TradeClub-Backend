@@ -1,5 +1,6 @@
 import { ICourse } from "../../../model/admin/courseSchema";
 import { ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
+import { IExpertAvailability } from "../../../model/expert/AvailabilitySchema";
 import { ISession } from "../../../model/expert/sessionSchema";
 import { IOrder } from "../../../model/user/orderSchema";
 import { ICourseProgress } from "../../../model/user/progressSchema";
@@ -120,6 +121,16 @@ class OrderService implements IOrderService {
                 status: "pending"
             });
         }
+        return session
+    }
+
+    async cancelStatus(sessionId: string): Promise<ISession | null> {
+        const session = await this._orderRepository.cancelSession(sessionId);
+        return session
+    }
+
+    async availabityStatus(availabilityId: mongoose.Types.ObjectId): Promise<IExpertAvailability | null> {
+        const session = await this._orderRepository.availabityStatus(availabilityId);
         return session
     }
 }

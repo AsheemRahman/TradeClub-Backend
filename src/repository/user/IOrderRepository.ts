@@ -1,4 +1,6 @@
+import mongoose from "mongoose";
 import { ISubscriptionPlan } from "../../model/admin/subscriptionSchema";
+import { IExpertAvailability } from "../../model/expert/AvailabilitySchema";
 import { ISession } from "../../model/expert/sessionSchema";
 import { IOrder } from "../../model/user/orderSchema";
 import { IUserSubscription } from "../../model/user/userSubscriptionSchema";
@@ -25,6 +27,8 @@ interface IOrderRepository {
     checkSessionAvailable(expertId: string, availabilityId: string): Promise<ISession | null>;
     getSessionsByUser(userId: string): Promise<ISession[] | null>;
     updateSessionStatus(sessionId: string, status: 'completed' | 'missed'): Promise<ISession | null>;
+    cancelSession(sessionId: string): Promise<ISession | null>;
+    availabityStatus(availabilityId: mongoose.Types.ObjectId): Promise<IExpertAvailability | null>;
 }
 
 

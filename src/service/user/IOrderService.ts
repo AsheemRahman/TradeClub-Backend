@@ -1,5 +1,7 @@
+import mongoose from "mongoose";
 import { ICourse } from "../../model/admin/courseSchema";
 import { ISubscriptionPlan } from "../../model/admin/subscriptionSchema";
+import { IExpertAvailability } from "../../model/expert/AvailabilitySchema";
 import { ISession } from "../../model/expert/sessionSchema";
 import { IOrder } from "../../model/user/orderSchema";
 import { ICourseProgress } from "../../model/user/progressSchema";
@@ -30,6 +32,8 @@ interface IOrderService {
     checkSessionAvailable(expertId: string, availabilityId: string): Promise<ISession | null>;
     getUserSessions(userId: string): Promise<ISession[] | null>;
     markSessionStatus(sessionId: string, status: 'completed' | 'missed'): Promise<ISession | null>;
+    cancelStatus(sessionId: string): Promise<ISession | null>;
+    availabityStatus(availabilityId: mongoose.Types.ObjectId ): Promise<IExpertAvailability | null>;
 }
 
 export default IOrderService;
