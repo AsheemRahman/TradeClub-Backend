@@ -6,9 +6,9 @@ import { ISession, Session } from "../../../model/expert/sessionSchema";
 import { IAnalyticsResult } from "../../../types/IExpert";
 
 
-class SessionRepository extends BaseRepository<IExpertAvailability> implements ISessionRepository {
+class SessionRepository extends BaseRepository<ISession> implements ISessionRepository {
     constructor() {
-        super(ExpertAvailability)
+        super(Session)
     }
 
     async getAllByExpertId(expertId: string): Promise<IExpertAvailability[]> {
@@ -31,27 +31,27 @@ class SessionRepository extends BaseRepository<IExpertAvailability> implements I
     //-------------------------------- Dashboard ---------------------------------
 
     async countSessionsByExpert(expertId: string): Promise<number> {
-        return Session.countDocuments({ expertId: new mongoose.Types.ObjectId(expertId) });
+        return this.model.countDocuments({ expertId: new mongoose.Types.ObjectId(expertId) });
     }
 
     async countCompletedSessions(expertId: string): Promise<number> {
-        return Session.countDocuments({ expertId: expertId, status: 'completed' });
+        return this.model.countDocuments({ expertId: expertId, status: 'completed' });
     }
 
     async getDistinctStudents(expertId: string): Promise<mongoose.Types.ObjectId[]> {
-        return Session.distinct('userId', { expertId });
+        return this.model.distinct('userId', { expertId });
     }
 
     async getRecentStudents(expertId: string, lastMonth: Date): Promise<mongoose.Types.ObjectId[]> {
-        return Session.distinct('userId', { expertId: expertId, date: { $gte: lastMonth } });
+        return this.model.distinct('userId', { expertId: expertId, date: { $gte: lastMonth } });
     }
 
     async getUpcomingSessions(expertId: string): Promise<number> {
-        return Session.countDocuments({ expertId: expertId, status: 'upcoming' });
+        return this.model.countDocuments({ expertId: expertId, status: 'upcoming' });
     }
 
     async getSessionAnalytics(expertId: string, startDate: Date): Promise<IAnalyticsResult[]> {
-        return Session.aggregate<IAnalyticsResult>([
+        return this.model.aggregate<IAnalyticsResult>([
             { $match: { expertId: new mongoose.Types.ObjectId(expertId), bookedAt: { $gte: startDate } } },
             {
                 $group: {
@@ -74,7 +74,7 @@ class SessionRepository extends BaseRepository<IExpertAvailability> implements I
     }
 
     async countSessions(query: FilterQuery<any>): Promise<number> {
-        return Session.countDocuments(query);
+        return this.model.countDocuments(query);
     }
 }
 

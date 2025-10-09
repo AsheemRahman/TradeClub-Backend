@@ -1,12 +1,16 @@
 import IEarningRepository from "../IEarningRepository";
 import ExpertEarning, { IExpertEarning } from "../../../model/expert/ExpertEarning";
+import { BaseRepository } from "../../base/implementation/BaseRepository";
 
 interface IPendingAggregate {
     _id: string;      // expertId
     total: number;
 }
 
-class EarningRepository implements IEarningRepository {
+class EarningRepository extends BaseRepository<IExpertEarning> implements IEarningRepository {
+    constructor() {
+        super(ExpertEarning)
+    }
 
     async createEarning(data: Partial<IExpertEarning>): Promise<IExpertEarning | null> {
         return ExpertEarning.create(data);
@@ -63,7 +67,6 @@ class EarningRepository implements IEarningRepository {
         const lastPaid = await ExpertEarning.findOne({ status: "paid" })
             .sort({ paidAt: -1 })
             .select("paidAt");
-
         return lastPaid?.paidAt || null;
     }
 }
