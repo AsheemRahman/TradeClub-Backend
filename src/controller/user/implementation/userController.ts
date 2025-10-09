@@ -243,8 +243,8 @@ class UserController implements IUserController {
             if (!storedOTP) {
                 const otp = await OtpUtility.otpGenerator();
                 await MailUtility.sendMail(email, otp, "Verification otp");
-                res.status(STATUS_CODES.OK).json({ status: true, message: "Otp sent to the given mail id", email, otp });
                 await this._userService.storeOtp(email, otp);
+                res.status(STATUS_CODES.OK).json({ status: true, message: "Otp sent to the given mail id", email, otp });
             } else {
                 await MailUtility.sendMail(email, Number(storedOTP), "Verification otp");
                 res.status(STATUS_CODES.OK).json({ status: true, message: "Otp sent to the given mail id", email, storedOTP, });

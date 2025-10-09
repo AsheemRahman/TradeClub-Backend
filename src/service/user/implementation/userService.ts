@@ -14,6 +14,8 @@ import { IUserSubscription } from "../../../model/user/userSubscriptionSchema";
 import { ISession } from "../../../model/expert/sessionSchema";
 import { UserMapper } from "../../../mapper/userMapper";
 import { UserResponseDTO } from "../../../dto/userDTO";
+import { OtpMapper } from "../../../mapper/otpMapper";
+import { OtpResponseDTO } from "../../../dto/otpDTO";
 
 
 class UserService implements IUserService {
@@ -51,22 +53,24 @@ class UserService implements IUserService {
         return user ? UserMapper.toResponseDTO(user) : null;
     };
 
-    async storeOtp(email: string, otp: number): Promise<OTPType | null> {
-        const storedOtp = await this._userRepository.storeOtp(email, otp);
-        return storedOtp
+    async storeOtp(email: string, otp: number): Promise<OtpResponseDTO | null> {
+        const otpEntity: Partial<OTPType> = OtpMapper.toEntity({ email, otp });
+        const storedOtp = await this._userRepository.storeOtp(email, +(otpEntity.otp!));
+        return storedOtp ? OtpMapper.toResponseDTO(storedOtp) : null;
     };
 
-    async findOtp(email: string): Promise<OTPType | null> {
+    async findOtp(email: string): Promise<OtpResponseDTO | null> {
         const otp = await this._userRepository.findOtp(email);
-        return otp;
+        return otp ? OtpMapper.toResponseDTO(otp) : null;
     };
 
-    async storeResendOtp(email: string, otp: number): Promise<OTPType | null> {
-        const resendOTP = await this._userRepository.storeResendOtp(email, otp);
-        return resendOTP;
+    async storeResendOtp(email: string, otp: number): Promise<OtpResponseDTO | null> {
+        const otpEntity: Partial<OTPType> = OtpMapper.toEntity({ email, otp });
+        const resendOtp = await this._userRepository.storeResendOtp(email, +(otpEntity.otp!));
+        return resendOtp ? OtpMapper.toResponseDTO(resendOtp) : null;
     };
 
-    async getUserById(userId: string): Promise<UserResponseDTO  | null> {
+    async getUserById(userId: string): Promise<UserResponseDTO | null> {
         const user = await this._userRepository.getUserById(userId);
         return user ? UserMapper.toResponseDTO(user) : null;
     };

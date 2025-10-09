@@ -1,3 +1,4 @@
+import { OtpResponseDTO } from '../../dto/otpDTO';
 import { UserResponseDTO } from '../../dto/userDTO';
 import { ISubscriptionPlan } from '../../model/admin/subscriptionSchema';
 import { IExpertAvailability } from '../../model/expert/AvailabilitySchema';
@@ -15,9 +16,9 @@ interface IUserService {
     registerUser(userData: IUserType): Promise<UserResponseDTO | null>;
     resetPassword(email: string, password: string): Promise<UserResponseDTO | null>;
 
-    storeOtp(email: string, otp: number): Promise<OTPType | null>;
-    findOtp(email: string): Promise<OTPType | null>;
-    storeResendOtp(email: string, otp: number): Promise<OTPType | null>;
+    storeOtp(email: string, otp: number): Promise<OtpResponseDTO | null>;
+    findOtp(email: string): Promise<OtpResponseDTO | null>;
+    storeResendOtp(email: string, otp: number): Promise<OtpResponseDTO | null>;
 
     getUserById(userId: string): Promise<UserResponseDTO | null>;
     updateUserById(userId: string, updateData: Partial<IUser>): Promise<UserResponseDTO | null>;
