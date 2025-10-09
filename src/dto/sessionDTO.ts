@@ -1,7 +1,9 @@
+import { Types } from "mongoose";
+
 export interface CreateSessionDTO {
-    userId: string;
-    expertId: string;
-    availabilityId: string;
+    userId: Types.ObjectId;
+    expertId: Types.ObjectId;
+    availabilityId: Types.ObjectId;
     meetingLink?: string;
     status?: 'upcoming' | 'completed' | 'missed';
     bookedAt?: Date;

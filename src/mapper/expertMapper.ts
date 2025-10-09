@@ -3,9 +3,9 @@ import { IExpert } from "../model/expert/expertSchema";
 import { ExpertResponseDTO, CreateExpertDTO, UpdateExpertDTO } from "../dto/expertDTO";
 
 
-export class EntityMapper {
+export class ExpertMapper {
 
-    static toExpertResponseDTO(expert: any): ExpertResponseDTO {
+    static toResponseDTO(expert: any): ExpertResponseDTO {
         return {
             id: expert._id.toString(),
             fullName: expert.fullName,
@@ -30,7 +30,7 @@ export class EntityMapper {
         };
     }
 
-    static toExpertEntity(dto: CreateExpertDTO | UpdateExpertDTO): Partial<IExpert> {
+    static toEntity(dto: CreateExpertDTO | UpdateExpertDTO): Partial<IExpert> {
         return {
             fullName: dto.fullName,
             email: dto.email,

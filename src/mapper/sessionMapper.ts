@@ -1,12 +1,13 @@
 import { ISession } from "../model/expert/sessionSchema";
 import { SessionResponseDTO, CreateSessionDTO, UpdateSessionDTO } from "../dto/sessionDTO";
+import { sessionType } from "../types/IShared";
 
 
-export class EntityMapper {
+export class SessionMapper {
 
-    static toSessionResponseDTO(session: ISession): SessionResponseDTO {
+    static toSessionResponseDTO(session: sessionType): SessionResponseDTO {
         return {
-            id: session._id.toString(),
+            id: session.id.toString(),
             userId: session.userId.toString(),
             expertId: session.expertId.toString(),
             availabilityId: session.availabilityId.toString(),
