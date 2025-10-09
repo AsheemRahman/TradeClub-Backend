@@ -1,30 +1,36 @@
+import mongoose from "mongoose";
 import { ISubscriptionPlan, SubscriptionPlan } from "../../../model/admin/subscriptionSchema";
 import { ExpertAvailability } from "../../../model/expert/AvailabilitySchema";
 import { ISession, Session } from "../../../model/expert/sessionSchema";
 import { IOrder, Order } from "../../../model/user/orderSchema";
 import { IUserSubscription, UserSubscription } from "../../../model/user/userSubscriptionSchema";
 import { CreateSessionDTO, IOrderInput } from "../../../types/IUser";
+import { BaseRepository } from "../../base/implementation/BaseRepository";
 import IOrderRepository from "../IOrderRepository";
 
 
-class OrderRepository implements IOrderRepository {
+class OrderRepository extends BaseRepository<IOrder> implements IOrderRepository {
+    constructor() {
+        super(Order);
+    }
+
     async createOrder(order: IOrderInput): Promise<IOrder | null> {
-        const newOrder = await Order.create(order);
-        return newOrder;
+        const formattedOrder = { ...order, userId: new mongoose.Types.ObjectId(order.userId), itemId: new mongoose.Types.ObjectId(order.itemId), } as Partial<IOrder>;
+        return await this.create(formattedOrder);
     };
 
-    async getOrderById(id: string): Promise<IOrder[] | null> {
-        const orders = await Order.find({ userId: id }).sort({ createdAt: -1 });;
+    async getOrderById(userId: string): Promise<IOrder[] | null> {
+        const orders = await this.model.find({ userId }).sort({ createdAt: -1 });
         return orders;
     };
 
     async checkOrderExisting(orderId: string): Promise<IOrder | null> {
-        const order = await Order.findOne({ stripeSessionId: orderId });
+        const order = await this.model.findOne({ stripeSessionId: orderId });
         return order;
     };
 
     async getPurchasedByUser(userId: string, courseId: string): Promise<IOrder | null> {
-        const order = await Order.findOne({ userId, itemId: courseId }).lean();
+        const order = await this.model.findOne({ userId, itemId: courseId }).lean();
         return order;
     };
 

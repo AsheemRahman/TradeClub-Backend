@@ -25,8 +25,7 @@ class userRepository extends BaseRepository<IUser> implements IUserRepository {
     }
 
     async registerUser(userData: IUserType): Promise<IUser | null> {
-        const newUser = await User.create(userData);
-        return newUser;
+        return this.create(userData);
     }
 
     async resetPassword(email: string, hashedPassword: string): Promise<IUser | null> {
