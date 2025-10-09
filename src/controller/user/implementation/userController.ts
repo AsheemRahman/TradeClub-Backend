@@ -19,7 +19,7 @@ class UserController implements IUserController {
     private _userService: IUserService;
     private _orderService: IOrderService;
 
-    constructor(userService: IUserService,orderService:IOrderService) {
+    constructor(userService: IUserService, orderService: IOrderService) {
         this._userService = userService;
         this._orderService = orderService;
     }
@@ -107,21 +107,17 @@ class UserController implements IUserController {
             return;
         }
         try {
-            const currentUser = await this._userService.findUser(email);
-            if (!currentUser || !currentUser.password) {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
+            const currentUser = await this._userService.validateUserCredentials(email, password);
+            if (!currentUser) {
+                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "Invalid email or password" });
                 return;
             }
+
             if (!currentUser.isActive) {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "User is Blocked by Admin." });
                 return;
             }
-            const isPasswordValid = await PasswordUtils.comparePassword(password, currentUser.password);
-            if (!isPasswordValid) {
-                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "Invalid email or password", data: null });
-                return;
-            }
-            const payload = { userId: (currentUser._id as string).toString(), role: ROLE.USER };
+            const payload = { userId: (currentUser.id as string).toString(), role: ROLE.USER };
             const accessToken = JwtUtility.generateAccessToken(payload);
             const refreshToken = JwtUtility.generateRefreshToken(payload);
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
@@ -131,7 +127,7 @@ class UserController implements IUserController {
                 data: {
                     accessToken,
                     user: {
-                        id: currentUser._id,
+                        id: currentUser.id,
                         email: currentUser.email,
                         name: currentUser.fullName,
                         role: ROLE.USER
@@ -192,7 +188,7 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'User is blocked by admin', });
                 return;
             }
-            const payload = { userId: (currentUser._id as string).toString(), role: ROLE.USER };
+            const payload = { userId: (currentUser.id as string).toString(), role: ROLE.USER };
             const accessToken = JwtUtility.generateAccessToken(payload);
             const refreshToken = JwtUtility.generateRefreshToken(payload);
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: 24 * 60 * 1000, });
@@ -202,7 +198,7 @@ class UserController implements IUserController {
                 data: {
                     accessToken,
                     user: {
-                        id: currentUser._id,
+                        id: currentUser.id,
                         email: currentUser.email,
                         name: currentUser.fullName,
                         role: ROLE.USER
@@ -462,7 +458,7 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND });
                 return;
             }
-            const session = await this._userService.getSessionById(sessionId );
+            const session = await this._userService.getSessionById(sessionId);
             res.status(STATUS_CODES.OK).json({ status: true, message: 'Sessions fetched successfully', session });
         } catch (error) {
             console.error('retrieve sessions error:', error);
@@ -478,7 +474,7 @@ class UserController implements IUserController {
                 res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND });
                 return;
             }
-            const session = await this._orderService.markSessionStatus(sessionId,status);
+            const session = await this._orderService.markSessionStatus(sessionId, status);
             res.status(STATUS_CODES.OK).json({ status: true, message: 'Sessions status change successfully', session });
         } catch (error) {
             console.error('Sessions status change error:', error);

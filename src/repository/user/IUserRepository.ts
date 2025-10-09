@@ -1,3 +1,4 @@
+import { UpdateUserDTO } from "../../dto/userDTO";
 import { ISubscriptionPlan } from "../../model/admin/subscriptionSchema";
 import { IExpertAvailability } from "../../model/expert/AvailabilitySchema";
 import { IExpert } from "../../model/expert/expertSchema";
@@ -11,7 +12,7 @@ import { IUserType } from "../../types/IUser";
 interface IUserRepository {
     findUser(email: string): Promise<IUser | null>;
     findManyUser(): Promise<IUser[] | []>;
-    registerUser(userData: IUserType): Promise<IUser | null>;
+    registerUser(userData: UpdateUserDTO): Promise<IUser | null>;
     resetPassword(email: string, hashedPassword: string): Promise<IUser | null>;
 
     storeOtp(email: string, otp: number): Promise<OTPType | null>;
