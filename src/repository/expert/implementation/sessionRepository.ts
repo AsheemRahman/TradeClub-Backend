@@ -1,6 +1,6 @@
 import ISessionRepository from "../ISessionRepository";
-import { BaseRepository } from "../../base/implementation/BaseRepository";
-import { ExpertAvailability, IExpertAvailability, } from "../../../model/expert/AvailabilitySchema";
+import { BaseRepository } from "../../base/implementation/baseRepository";
+import { ExpertAvailability, IExpertAvailability, } from "../../../model/expert/availabilitySchema";
 import mongoose, { FilterQuery } from "mongoose";
 import { ISession, Session } from "../../../model/expert/sessionSchema";
 import { IAnalyticsResult } from "../../../types/IExpert";

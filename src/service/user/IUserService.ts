@@ -1,5 +1,5 @@
 import { ISubscriptionPlan } from '../../model/admin/subscriptionSchema';
-import { IExpertAvailability } from '../../model/expert/AvailabilitySchema';
+import { IExpertAvailability } from '../../model/expert/availabilitySchema';
 import { IExpert } from '../../model/expert/expertSchema';
 import { ISession } from '../../model/expert/sessionSchema';
 import { OTPType } from '../../model/user/otp';

@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import IPayoutService from "../IPayoutService";
 import IExpertRepository from "../../../repository/expert/IExpertRepository";
 import IEarningRepository from "../../../repository/expert/IEarningRepository";
-import { IExpertEarning } from "../../../model/expert/ExpertEarning";
+import { IExpertEarning } from "../../../model/expert/expertEarning";
 
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-06-30.basil' });

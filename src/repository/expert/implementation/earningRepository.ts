@@ -1,6 +1,6 @@
 import IEarningRepository from "../IEarningRepository";
-import ExpertEarning, { IExpertEarning } from "../../../model/expert/ExpertEarning";
-import { BaseRepository } from "../../base/implementation/BaseRepository";
+import ExpertEarning, { IExpertEarning } from "../../../model/expert/expertEarning";
+import { BaseRepository } from "../../base/implementation/baseRepository";
 
 interface IPendingAggregate {
     _id: string;      // expertId

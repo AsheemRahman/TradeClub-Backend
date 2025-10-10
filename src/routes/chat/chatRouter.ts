@@ -1,10 +1,10 @@
 import Router from 'express'
 import ChatRepository from '../../repository/chat/implementation/ChatRepository';
 
-import ChatService from '../../service/chat/implementation/ChatService';
+import ChatService from '../../service/chat/implementation/chatService';
 import ChatController from '../../controller/chat/implementation/ChatController';
 import MessageRepository from '../../repository/chat/implementation/MessageRepository';
-import MessageService from '../../service/chat/implementation/MessageService';
+import MessageService from '../../service/chat/implementation/messageService';
 import MessageController from '../../controller/chat/implementation/MessageController';
 import IChatController from '../../controller/chat/IChatController';
 import IMessageController from '../../controller/chat/IMessageController';

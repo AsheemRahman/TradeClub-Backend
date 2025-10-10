@@ -1,5 +1,5 @@
 import mongoose, { FilterQuery } from "mongoose";
-import { IExpertAvailability } from "../../model/expert/AvailabilitySchema";
+import { IExpertAvailability } from "../../model/expert/availabilitySchema";
 import { ISession } from "../../model/expert/sessionSchema";
 import { IAnalyticsResult } from "../../types/IExpert";
 

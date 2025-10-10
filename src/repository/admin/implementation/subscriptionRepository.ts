@@ -1,6 +1,6 @@
 import { Coupon, ICoupon } from "../../../model/admin/couponSchema";
 import { SubscriptionPlan, ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
-import { BaseRepository } from "../../base/implementation/BaseRepository";
+import { BaseRepository } from "../../base/implementation/baseRepository";
 import ISubscriptionRepository from "../ISubscriptionRepository";
 
 

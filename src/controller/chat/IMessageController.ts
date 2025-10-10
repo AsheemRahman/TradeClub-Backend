@@ -7,7 +7,6 @@ interface IMessageController {
     getMessages: ControllerMethod;
     deleteMessages: ControllerMethod;
     markMessagesAsRead: ControllerMethod;
-
 }
 
 export default IMessageController

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { STATUS_CODES } from "../../../constants/statusCode";
-import { ERROR_MESSAGES } from "../../../constants/message"
+import { ERROR_MESSAGES } from "../../../constants/errorMessage"
 
 import IOrderController from "../IOrderController";
 import IOrderService from "../../../service/user/IOrderService";

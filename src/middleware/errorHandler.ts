@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { STATUS_CODES } from "../constants/statusCode";
-import { ERROR_MESSAGES } from "../constants/message";
+import { ERROR_MESSAGES } from "../constants/errorMessage";
 
 export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
     console.error("Error middleware caught:", err);

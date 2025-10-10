@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { STATUS_CODES } from "../../../constants/statusCode";
-import { ERROR_MESSAGES } from "../../../constants/message"
+import { ERROR_MESSAGES } from "../../../constants/errorMessage"
+import { SUCCESS_MESSAGES } from "../../../constants/successMessage"
 import { IUserType } from "../../../types/IUser";
 import { ExpertFormData } from "../../../types/IExpert";
 
@@ -39,7 +40,7 @@ class ExpertController implements IExpertController {
         const otp = await OtpUtility.otpGenerator();
         await MailUtility.sendMail(email, otp, "Verification OTP");
         await this._expertService.storeOtp(email, otp);
-        res.status(STATUS_CODES.OK).json({ message: "An otp has sent to your email", email, otp, });
+        res.status(STATUS_CODES.OK).json({ message: SUCCESS_MESSAGES.OTP_SENT, email, otp, });
     });
 
     //---------------------------- Expert verify OTP ----------------------------
@@ -61,7 +62,7 @@ class ExpertController implements IExpertController {
             res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.EXPERT_NOT_FOUND });
             return;
         }
-        res.status(STATUS_CODES.OK).json({ status: true, message: "OTP verified successfully" });
+        res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.OTP_VERIFIED });
     });
 
     //---------------------------- Expert Resend OTP ----------------------------
@@ -74,7 +75,7 @@ class ExpertController implements IExpertController {
         }
         const otp = await OtpUtility.otpGenerator();
         await MailUtility.sendMail(email, otp, "Verification otp");
-        res.status(STATUS_CODES.OK).json({ status: true, message: "Otp sent to the given mail id", email, otp, });
+        res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.OTP_SENT, email, otp, });
         await this._expertService.storeResendOtp(email, otp);
     });
 
@@ -101,7 +102,7 @@ class ExpertController implements IExpertController {
         }
         const isPasswordValid = await PasswordUtils.comparePassword(password, currentExpert.password);
         if (!isPasswordValid) {
-            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "Invalid email or password", data: null });
+            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: ERROR_MESSAGES.INVALID_CREDENTIALS, data: null });
             return;
         }
         const payload = {
@@ -113,7 +114,7 @@ class ExpertController implements IExpertController {
         res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
         res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
         res.status(STATUS_CODES.OK).json({
-            status: true, message: "Login successful",
+            status: true, message: SUCCESS_MESSAGES.LOGIN,
             data: {
                 accessToken,
                 expert: {
@@ -142,7 +143,7 @@ class ExpertController implements IExpertController {
                 return
             }
         } else if (!currentExpert?.isActive) {
-            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'User is blocked by admin', });
+            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED, });
             return;
         }
         const payload = { userId: (currentExpert._id as string).toString(), role: ROLE.EXPERT };
@@ -151,7 +152,7 @@ class ExpertController implements IExpertController {
         res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
         res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
         res.status(STATUS_CODES.OK).json({
-            status: true, message: "Login successful",
+            status: true, message: SUCCESS_MESSAGES.LOGIN,
             data: {
                 accessToken,
                 expert: {
@@ -175,7 +176,7 @@ class ExpertController implements IExpertController {
         }
         const currentExpert = await this._expertService.findExpertByEmail(email);
         if (!currentExpert) {
-            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
+            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.EMAIL_NOT_FOUND });
             return;
         }
         const response = await this._expertService.findOtp(email);
@@ -183,11 +184,11 @@ class ExpertController implements IExpertController {
         if (!storedOTP) {
             const otp = await OtpUtility.otpGenerator();
             await MailUtility.sendMail(email, otp, "Verification otp");
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Otp sent to the given mail id", email, otp });
+            res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.OTP_SENT, email, otp });
             await this._expertService.storeOtp(email, otp);
         } else {
             await MailUtility.sendMail(email, Number(storedOTP), "Verification otp");
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Otp sent to the given mail id", email, storedOTP, });
+            res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.OTP_SENT, email, storedOTP, });
             await this._expertService.storeResendOtp(email, Number(storedOTP));
         }
     });
@@ -202,7 +203,7 @@ class ExpertController implements IExpertController {
         }
         const currentUser = await this._expertService.findExpertByEmail(email);
         if (!currentUser) {
-            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
+            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.EMAIL_NOT_FOUND });
             return;
         }
         const updateExpert = await this._expertService.resetPassword(email, password);
@@ -223,7 +224,7 @@ class ExpertController implements IExpertController {
         }
         const isExpert = await this._expertService.findExpertByEmail(email);
         if (!isExpert) {
-            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: "Email is not registered." });
+            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.EMAIL_NOT_FOUND });
             return;
         }
         await this._expertService.updateDetails({ email, phoneNumber, profilePicture, DOB, state, country, experience_level, markets_Traded, trading_style, proof_of_experience, year_of_experience, Introduction_video, Government_Id, selfie_Id } as ExpertFormData);
@@ -234,7 +235,7 @@ class ExpertController implements IExpertController {
     logout = asyncHandler(async (req: Request, res: Response) => {
         res.clearCookie("accessToken", { httpOnly: true, secure: true, sameSite: "none", });
         res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: "none", });
-        res.status(STATUS_CODES.OK).json({ status: true, message: "Logout successful", });
+        res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.LOGOUT });
         return
     });
 
@@ -252,7 +253,7 @@ class ExpertController implements IExpertController {
         if (expertDetails.isActive) {
             res.status(STATUS_CODES.OK).json({ status: true, message: "Data retrieved successfully", expertDetails });
         } else {
-            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "User Is blocked by admin" });
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED });
         }
     });
 
@@ -268,7 +269,7 @@ class ExpertController implements IExpertController {
             return;
         }
         if (!Expert.isActive) {
-            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'User is blocked by admin', });
+            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED, });
             return;
         }
         let password = Expert.password;
@@ -281,7 +282,7 @@ class ExpertController implements IExpertController {
             password = password = await PasswordUtils.passwordHash(newPassword);
         }
         const expertDetails = await this._expertService.updateExpertById(id, { id, fullName, phoneNumber, password, profilePicture, markets_Traded, trading_style });
-        res.status(STATUS_CODES.OK).json({ status: true, message: 'Profile updated successfully', expertDetails });
+        res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.PROFILE_UPDATE, expertDetails });
     });
 
     getWallet = asyncHandler(async (req: Request, res: Response) => {
@@ -296,7 +297,7 @@ class ExpertController implements IExpertController {
             return
         }
         if (!expertDetails.isActive) {
-            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "User Is blocked by admin" });
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED });
         }
         const walletDetails = await this._expertService.getWalletById(id);
         res.status(STATUS_CODES.OK).json({ status: true, message: "Data retrieved successfully", walletDetails });

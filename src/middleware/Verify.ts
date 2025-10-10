@@ -3,6 +3,7 @@ import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import dotenv from "dotenv";
 
 import { STATUS_CODES } from "../constants/statusCode";
+import { ERROR_MESSAGES } from "../constants/errorMessage";
 
 
 dotenv.config();
@@ -30,7 +31,7 @@ export const validate = (requiredRole?: string) => {
             }
 
             if (!token) {
-                res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "Access token not found, please log in" });
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ message: ERROR_MESSAGES.TOKEN_NOT_FOUND });
                 return;
             }
 
@@ -59,7 +60,7 @@ export const validate = (requiredRole?: string) => {
                 });
             } else if (error instanceof JsonWebTokenError) {
                 res.status(STATUS_CODES.FORBIDDEN).json({
-                    message: "Invalid or expired token, please log in again."
+                    message: ERROR_MESSAGES.INVALID_TOKEN
                 });
             } else {
                 res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({

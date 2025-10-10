@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 import { ISubscriptionPlan, SubscriptionPlan } from "../../../model/admin/subscriptionSchema";
-import { ExpertAvailability, IExpertAvailability } from "../../../model/expert/AvailabilitySchema";
+import { ExpertAvailability, IExpertAvailability } from "../../../model/expert/availabilitySchema";
 import { ISession, Session } from "../../../model/expert/sessionSchema";
 import { IOrder, Order } from "../../../model/user/orderSchema";
 import { IUserSubscription, UserSubscription } from "../../../model/user/userSubscriptionSchema";
 import { CreateSessionDTO, IOrderInput } from "../../../types/IUser";
-import { BaseRepository } from "../../base/implementation/BaseRepository";
+import { BaseRepository } from "../../base/implementation/baseRepository";
 import IOrderRepository from "../IOrderRepository";
 
 

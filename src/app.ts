@@ -18,7 +18,7 @@ import notificationRoutes from "./routes/user/notificationRoute";
 import { createServer } from "http";
 import configureSocket from "./config/socketConfig";
 import { STATUS_CODES } from "./constants/statusCode";
-import { ERROR_MESSAGES } from "./constants/message";
+import { ERROR_MESSAGES } from "./constants/errorMessage";
 
 
 dotenv.config();

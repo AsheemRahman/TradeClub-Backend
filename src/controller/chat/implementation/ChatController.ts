@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import IChatService from "../../../service/chat/IChatService";
 import IChatController from "../IChatController";
 import { STATUS_CODES } from "../../../constants/statusCode";
-import { ERROR_MESSAGES } from "../../../constants/message";
 import { asyncHandler } from "../../../utils/asyncHandler";
 
 class ChatController implements IChatController {

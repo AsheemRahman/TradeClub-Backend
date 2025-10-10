@@ -3,7 +3,7 @@ import Category, { ICategory } from "../../../model/admin/categorySchema";
 import Course, { ICourse } from "../../../model/admin/courseSchema";
 import { CourseProgress, ICourseProgress, IVideoProgress } from "../../../model/user/progressSchema";
 import ICourseRepository from "../ICourseRepository";
-import { BaseRepository } from "../../base/implementation/BaseRepository";
+import { BaseRepository } from "../../base/implementation/baseRepository";
 
 
 class CourseRepository extends BaseRepository<ICourse> implements ICourseRepository {

@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import IMessageService from '../../../service/chat/IMessageService';
 import IMessageController from '../IMessageController';
 import { STATUS_CODES } from '../../../constants/statusCode';
-import { ERROR_MESSAGES } from '../../../constants/message';
 import { asyncHandler } from '../../../utils/asyncHandler';
 
 class MessageController implements IMessageController {

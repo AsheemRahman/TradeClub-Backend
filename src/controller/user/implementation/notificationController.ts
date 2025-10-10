@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import INotificationService from "../../../service/user/INotificationService";
 import INotificationController from "../INotificationController";
 import { STATUS_CODES } from "../../../constants/statusCode";
-import { ERROR_MESSAGES } from "../../../constants/message";
+import { ERROR_MESSAGES } from "../../../constants/errorMessage";
 
 
 class NotificationController implements INotificationController {

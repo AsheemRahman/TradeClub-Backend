@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { IReview, Review } from "../../../model/user/reviewSchema";
 import IReviewRepository from "../IReviewRepository";
-import { BaseRepository } from "../../base/implementation/BaseRepository";
+import { BaseRepository } from "../../base/implementation/baseRepository";
 
 class ReviewRepository extends BaseRepository<IReview> implements IReviewRepository {
     constructor() {

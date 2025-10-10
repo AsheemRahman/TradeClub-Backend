@@ -3,7 +3,6 @@ import { STATUS_CODES } from "../../../constants/statusCode";
 
 import IPayoutController from "../IPayoutController";
 import IPayoutService from "../../../service/admin/IPayoutService";
-import { ERROR_MESSAGES } from "../../../constants/message";
 import { asyncHandler } from "../../../utils/asyncHandler";
 
 

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ERROR_MESSAGES } from "../../../constants/message";
+import { ERROR_MESSAGES } from "../../../constants/errorMessage";
 import { STATUS_CODES } from "../../../constants/statusCode";
 
 import ISubscriptionController from "../ISubscriptionController";

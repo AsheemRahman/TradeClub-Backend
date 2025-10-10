@@ -1,11 +1,11 @@
 import IUserRepository from "../IUserRepository";
 import { User, IUser } from "../../../model/user/userSchema";
-import { BaseRepository } from "../../base/implementation/BaseRepository";
+import { BaseRepository } from "../../base/implementation/baseRepository";
 import { IUserType } from "../../../types/IUser";
 import { OTP, OTPType } from "../../../model/user/otp";
 import { SubscriptionPlan, ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
 import { Expert, IExpert } from "../../../model/expert/expertSchema";
-import { ExpertAvailability, IExpertAvailability } from "../../../model/expert/AvailabilitySchema";
+import { ExpertAvailability, IExpertAvailability } from "../../../model/expert/availabilitySchema";
 import { IUserSubscription, UserSubscription } from "../../../model/user/userSubscriptionSchema";
 import { ISession, Session } from "../../../model/expert/sessionSchema";
 

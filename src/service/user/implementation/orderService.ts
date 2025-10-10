@@ -1,6 +1,6 @@
 import { ICourse } from "../../../model/admin/courseSchema";
 import { ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
-import { IExpertAvailability } from "../../../model/expert/AvailabilitySchema";
+import { IExpertAvailability } from "../../../model/expert/availabilitySchema";
 import { ISession } from "../../../model/expert/sessionSchema";
 import { IOrder } from "../../../model/user/orderSchema";
 import { ICourseProgress } from "../../../model/user/progressSchema";

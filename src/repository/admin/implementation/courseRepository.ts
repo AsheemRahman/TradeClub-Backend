@@ -1,6 +1,6 @@
 import Category, { ICategory } from "../../../model/admin/categorySchema";
 import Course, { ICourse } from "../../../model/admin/courseSchema";
-import { BaseRepository } from "../../base/implementation/BaseRepository";
+import { BaseRepository } from "../../base/implementation/baseRepository";
 import ICourseRepository from "../ICourseRepository";
 
 

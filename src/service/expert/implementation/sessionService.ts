@@ -1,7 +1,7 @@
 
 import ISessionService from "../ISessionService";
 import ISessionRepository from "../../../repository/expert/ISessionRepository";
-import { IExpertAvailability } from "../../../model/expert/AvailabilitySchema";
+import { IExpertAvailability } from "../../../model/expert/availabilitySchema";
 import { IDashboardStats, IGetSessionsResponse, ISessionAnalytics, ISessionFilters } from "../../../types/IExpert";
 
 

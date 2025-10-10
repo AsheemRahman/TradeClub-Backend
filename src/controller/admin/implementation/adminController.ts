@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import dotenv from 'dotenv';
 
 import JwtUtility, { TokenPayload } from "../../../utils/JwtUtility"
-import { ERROR_MESSAGES } from "../../../constants/message";
+import { ERROR_MESSAGES } from "../../../constants/errorMessage";
 import { STATUS_CODES } from "../../../constants/statusCode";
 
 import IAdminController from "../IAdminController";
@@ -11,6 +11,7 @@ import MailUtility from "../../../utils/mailUtility";
 import { JwtPayload } from "jsonwebtoken";
 import { ROLE } from "../../../constants/role";
 import { asyncHandler } from "../../../utils/asyncHandler";
+import { SUCCESS_MESSAGES } from "../../../constants/successMessage";
 
 
 dotenv.config();
@@ -30,7 +31,7 @@ class AdminController implements IAdminController {
         }
         const isAdmin = process.env.ADMIN_USERNAME === email && process.env.ADMIN_PASSWORD === password;
         if (!isAdmin) {
-            res.status(STATUS_CODES.FORBIDDEN).json({ success: false, message: "Login failed. Please check your credentials." });
+            res.status(STATUS_CODES.FORBIDDEN).json({ success: false, message: ERROR_MESSAGES.INVALID_CREDENTIALS });
             return
         }
         const payload: TokenPayload = { userId: email, role: ROLE.ADMIN };
@@ -39,7 +40,7 @@ class AdminController implements IAdminController {
         res.cookie("admin-accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none",  maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
         res.cookie("admin-refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "none",  maxAge: parseInt(process.env.ADMIN_REFRESH_TOKEN_MAX_AGE || "86400000") });
         res.status(STATUS_CODES.OK).json({
-            success: true, message: "login successful",
+            success: true, message: SUCCESS_MESSAGES.LOGIN,
             data: {
                 accessToken,
                 user: { id: email, role: ROLE.ADMIN },
@@ -74,7 +75,7 @@ class AdminController implements IAdminController {
     logout = asyncHandler(async (req: Request, res: Response) => {
         res.clearCookie("admin-accessToken", { httpOnly: true, secure: true, sameSite: "none", });
         res.clearCookie("admin-refreshToken", { httpOnly: true, secure: true, sameSite: "none", });
-        res.status(STATUS_CODES.OK).json({ status: true, message: "Logout successful", });
+        res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.LOGOUT });
         return
     });
 

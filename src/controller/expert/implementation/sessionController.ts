@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { STATUS_CODES } from "../../../constants/statusCode";
-import { ERROR_MESSAGES } from "../../../constants/message"
+import { ERROR_MESSAGES } from "../../../constants/errorMessage"
 
 import ISessionService from "../../../service/expert/ISessionService";
 import ISessionController from "../ISessionController";
@@ -18,7 +18,7 @@ class SessionController implements ISessionController {
     getSlots = asyncHandler(async (req: Request, res: Response) => {
         const expertId = req.userId;
         if (!expertId) {
-            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Expert ID is missing in request.", });
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.EXPERT_ID_MISSING, });
             return;
         }
         const slots = await this._sessionService.getSlots(expertId);
@@ -47,7 +47,7 @@ class SessionController implements ISessionController {
     getDashboardStats = asyncHandler(async (req: Request, res: Response) => {
         const expertId = req.userId;
         if (!expertId) {
-            res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: "Expert ID is missing in request." });
+            res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: ERROR_MESSAGES.EXPERT_ID_MISSING });
             return
         }
         const stats = await this._sessionService.getDashboardStats(expertId);
@@ -57,7 +57,7 @@ class SessionController implements ISessionController {
     getSessionAnalytics = asyncHandler(async (req: Request, res: Response) => {
         const expertId = req.userId;
         if (!expertId) {
-            res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: "Expert ID is missing in request." });
+            res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: ERROR_MESSAGES.EXPERT_ID_MISSING });
             return
         }
         const { period = '30d' } = req.query;
@@ -71,7 +71,7 @@ class SessionController implements ISessionController {
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 10;
         if (!expertId) {
-            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: 'Expert ID is missing in request.', });
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.EXPERT_ID_MISSING });
             return;
         }
         const filters: ISessionFilters = {

@@ -1,5 +1,5 @@
 import IExpertRepository from "../IExpertRepository";
-import { BaseRepository } from "../../base/implementation/BaseRepository";
+import { BaseRepository } from "../../base/implementation/baseRepository";
 import { IUserType } from "../../../types/IUser";
 import { OTP, OTPType } from "../../../model/user/otp";
 import { Expert, IExpert } from "../../../model/expert/expertSchema";
