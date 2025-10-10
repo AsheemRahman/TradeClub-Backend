@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
+import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import dotenv from "dotenv";
 
 import { STATUS_CODES } from "../constants/statusCode";
 import { ERROR_MESSAGES } from "../constants/errorMessage";
+import JwtUtility from "../utils/JwtUtility";
 
 
 dotenv.config();
@@ -21,7 +22,6 @@ declare module "express-serve-static-core" {
 export const validate = (requiredRole?: string) => {
     return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const JWT_KEY = process.env.JWT_ACCESS_TOKEN_SECRET_KEY as string;
             let token: string | undefined;
             // Extract token
             if (req.headers.authorization?.startsWith("Bearer ")) {
@@ -36,7 +36,7 @@ export const validate = (requiredRole?: string) => {
             }
 
             // Verify token synchronously
-            const data = jwt.verify(token, JWT_KEY) as { userId: string; role: string };
+            const data = JwtUtility.verifyToken(token, false) as { userId: string; role: string };
 
             if (!data || !data.userId) {
                 res.status(STATUS_CODES.FORBIDDEN).json({ message: "Invalid token structure." });
