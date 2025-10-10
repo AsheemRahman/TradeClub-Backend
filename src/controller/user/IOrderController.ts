@@ -1,17 +1,22 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+
+
+type ControllerMethod = (req: Request, res: Response, next: NextFunction) => Promise<void>;
 
 
 interface IOrderController {
-    createCheckoutSession(req: Request, res: Response): Promise<void>;
-    createOrder(req: Request, res: Response): Promise<void>;
-    failedOrder(req: Request, res: Response): Promise<void>;
-    getPurchaseHistory(req: Request, res: Response): Promise<void>;
-    getPurchasedCourse(req: Request, res: Response): Promise<void>;
 
-    subscriptionCheckout(req: Request, res: Response): Promise<void>;
+    createCheckoutSession: ControllerMethod;
+    createOrder: ControllerMethod;
+    failedOrder: ControllerMethod;
+    getPurchaseHistory: ControllerMethod;
+    getPurchasedCourse: ControllerMethod;
 
-    slotBooking(req: Request, res: Response): Promise<void>;
-    getSessionsByUser(req: Request, res: Response): Promise<void>;
+    subscriptionCheckout: ControllerMethod;
+
+    slotBooking: ControllerMethod;
+    getSessionsByUser: ControllerMethod;
 }
+
 
 export default IOrderController;

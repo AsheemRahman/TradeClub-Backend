@@ -10,15 +10,15 @@ const router = Router();
 
 //------------------------------------ Notification ----------------------------------
 
-router.get('/', validate(ROLE.USER), (req, res) => notificationController.getNotifications(req, res));
-router.post('/', (req, res) => notificationController.createNotification(req, res));
-router.patch('/:id/read', validate(ROLE.USER), (req, res) => notificationController.markAsRead(req, res));
-router.patch('/mark-all-read', validate(ROLE.USER), (req, res) => notificationController.markAllAsRead(req, res));
+router.get('/', validate(ROLE.USER),  notificationController.getNotifications.bind(notificationController));
+router.post('/',  notificationController.createNotification.bind(notificationController));
+router.patch('/:id/read', validate(ROLE.USER),  notificationController.markAsRead.bind(notificationController));
+router.patch('/mark-all-read', validate(ROLE.USER),  notificationController.markAllAsRead.bind(notificationController));
 
-router.post("/enrollment", validate(ROLE.USER), (req, res) => notificationController.notifyNewCourseEnrollment(req, res));
-router.post("/consultation", validate(ROLE.USER), (req, res) => notificationController.notifyConsultationScheduled(req, res));
-router.post("/subscription", (req, res) => notificationController.notifySubscriptionExpiring(req, res));
-router.post("/new-course", (req, res) => notificationController.notifyNewCourseAvailable(req, res));
+router.post("/enrollment", validate(ROLE.USER),  notificationController.notifyNewCourseEnrollment.bind(notificationController));
+router.post("/consultation", validate(ROLE.USER),  notificationController.notifyConsultationScheduled.bind(notificationController));
+router.post("/subscription",  notificationController.notifySubscriptionExpiring.bind(notificationController));
+router.post("/new-course",  notificationController.notifyNewCourseAvailable.bind(notificationController));
 
 
 

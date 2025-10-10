@@ -14,6 +14,7 @@ import PasswordUtils from "../../../utils/passwordUtils";
 import { JwtPayload } from "jsonwebtoken";
 import IOrderService from "../../../service/user/IOrderService";
 import { ROLE } from "../../../constants/role";
+import { asyncHandler } from "../../../utils/asyncHandler";
 
 
 class UserController implements IUserController {
@@ -25,487 +26,377 @@ class UserController implements IUserController {
         this._orderService = orderService;
     }
 
-    async registerPost(req: Request, res: Response): Promise<void> {
-        try {
-            const { fullName, phoneNumber, email, password } = req.body;
-            if (!fullName || !email || !password) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT });
-                return;
-            }
-            // Check if email already exists
-            const isEmailUsed = await this._userService.findUser(email);
-            if (isEmailUsed) {
-                res.status(STATUS_CODES.CONFLICT).json({ message: ERROR_MESSAGES.EMAIL_ALREADY_EXIST });
-                return;
-            }
-            // Proceed with registration
-            await this._userService.registerUser({ fullName, phoneNumber, email, password, } as IUserType);
-            // Proceed with OTP
-            const otp = await OtpUtility.otpGenerator();
-            try {
-                await MailUtility.sendMail(email, otp, "Verification OTP");
-                await this._userService.storeOtp(email, otp);
-                res.status(STATUS_CODES.OK).json({ message: SUCCESS_MESSAGES.OTP_SENT, email, otp, });
-            } catch (error) {
-                console.error("Failed to send OTP:", error);
-                res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.ERROR_SENDING_OTP });
-            }
-        } catch (error) {
-            console.error("Error during signup:", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-                message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
-                error: error instanceof Error ? error.message : error
-            });
+    registerPost = asyncHandler(async (req: Request, res: Response) => {
+        const { fullName, phoneNumber, email, password } = req.body;
+        if (!fullName || !email || !password) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT });
+            return;
         }
-    }
+        // Check if email already exists
+        const isEmailUsed = await this._userService.findUser(email);
+        if (isEmailUsed) {
+            res.status(STATUS_CODES.CONFLICT).json({ message: ERROR_MESSAGES.EMAIL_ALREADY_EXIST });
+            return;
+        }
+        // Proceed with registration
+        await this._userService.registerUser({ fullName, phoneNumber, email, password, } as IUserType);
+        // Proceed with OTP
+        const otp = await OtpUtility.otpGenerator();
+        await MailUtility.sendMail(email, otp, "Verification OTP");
+        await this._userService.storeOtp(email, otp);
+        res.status(STATUS_CODES.OK).json({ message: SUCCESS_MESSAGES.OTP_SENT, email, otp, });
+    });
 
-    async verifyOtp(req: Request, res: Response): Promise<void> {
+    verifyOtp = asyncHandler(async (req: Request, res: Response) => {
         const { otp, email } = req.body;
         if (!otp || !email) {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INVALID_INPUT });
             return;
         }
-        try {
-            const response = await this._userService.findOtp(email);
-            const storedOTP = response?.otp;
-            if (storedOTP !== otp) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Incorrect OTP" });
-                return;
-            }
-            const currentUser = await this._userService.findUser(email);
-            if (!currentUser) {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND });
-                return;
-            }
-            res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.OTP_VERIFIED });
-        } catch (error) {
-            console.error("Failed to send otp", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.ERROR_SENDING_OTP });
+        const response = await this._userService.findOtp(email);
+        const storedOTP = response?.otp;
+        if (storedOTP !== otp) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Incorrect OTP" });
+            return;
         }
-    }
+        const currentUser = await this._userService.findUser(email);
+        if (!currentUser) {
+            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND });
+            return;
+        }
+        res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.OTP_VERIFIED });
+    });
 
-    async resendOtp(req: Request, res: Response): Promise<void> {
+    resendOtp = asyncHandler(async (req: Request, res: Response) => {
         const { email } = req.body;
         if (!email) {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Email is required" });
             return;
         }
         const otp = await OtpUtility.otpGenerator();
-        try {
-            await MailUtility.sendMail(email, otp, "Verification otp");
-            res.status(STATUS_CODES.OK).json({ message: SUCCESS_MESSAGES.OTP_SENT, email, otp, });
-            await this._userService.storeResendOtp(email, otp);
-        } catch (error) {
-            console.error("Failed to send otp", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.ERROR_SENDING_OTP });
-        }
-    }
+        await MailUtility.sendMail(email, otp, "Verification otp");
+        res.status(STATUS_CODES.OK).json({ message: SUCCESS_MESSAGES.OTP_SENT, email, otp, });
+        await this._userService.storeResendOtp(email, otp);
+    });
 
-    async loginPost(req: Request, res: Response): Promise<void> {
+    loginPost = asyncHandler(async (req: Request, res: Response) => {
         const { email, password } = req.body;
         if (!email || !password) {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INVALID_INPUT });
             return;
         }
-        try {
-            const currentUser = await this._userService.findUser(email);
-            if (!currentUser || !currentUser.password) {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.EMAIL_NOT_FOUND });
-                return;
-            }
-            if (!currentUser.isActive) {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED });
-                return;
-            }
-            const isPasswordValid = await PasswordUtils.comparePassword(password, currentUser.password);
-            if (!isPasswordValid) {
-                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: ERROR_MESSAGES.INVALID_CREDENTIALS, data: null });
-                return;
-            }
-            const payload = { userId: (currentUser._id as string).toString(), role: ROLE.USER };
-            const accessToken = JwtUtility.generateAccessToken(payload);
-            const refreshToken = JwtUtility.generateRefreshToken(payload);
-            res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-            res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
-            res.status(STATUS_CODES.OK).json({
-                status: true, message: SUCCESS_MESSAGES.LOGIN,
-                data: {
-                    accessToken,
-                    user: {
-                        id: currentUser._id,
-                        email: currentUser.email,
-                        name: currentUser.fullName,
-                        role: ROLE.USER
-                    }
+        const currentUser = await this._userService.findUser(email);
+        if (!currentUser || !currentUser.password) {
+            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.EMAIL_NOT_FOUND });
+            return;
+        }
+        if (!currentUser.isActive) {
+            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED });
+            return;
+        }
+        const isPasswordValid = await PasswordUtils.comparePassword(password, currentUser.password);
+        if (!isPasswordValid) {
+            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: ERROR_MESSAGES.INVALID_CREDENTIALS, data: null });
+            return;
+        }
+        const payload = { userId: (currentUser._id as string).toString(), role: ROLE.USER };
+        const accessToken = JwtUtility.generateAccessToken(payload);
+        const refreshToken = JwtUtility.generateRefreshToken(payload);
+        res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+        res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
+        res.status(STATUS_CODES.OK).json({
+            status: true, message: SUCCESS_MESSAGES.LOGIN,
+            data: {
+                accessToken,
+                user: {
+                    id: currentUser._id,
+                    email: currentUser.email,
+                    name: currentUser.fullName,
+                    role: ROLE.USER
                 }
-            });
-        } catch (error) {
-            console.error("Login Error:", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, });
-        }
-    }
+            }
+        });
+    });
 
-    async refreshToken(req: Request, res: Response): Promise<void> {
-        try {
-            const refreshToken = req.cookies['refreshToken'];
-            if (!refreshToken) {
-                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'Refresh token missing' });
-                return;
-            }
-            // Verify the refresh token using JwtUtility
-            let decoded: string | JwtPayload;
-            try {
-                decoded = JwtUtility.verifyToken(refreshToken, true);
-            } catch (err) {
-                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'Invalid refresh token' });
-                return
-            }
-            const { role, userId } = decoded as TokenPayload;
-            if (!userId || !role) {
-                res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: 'Invalid token payload' });
-                return
-            }
-            const newAccessToken = JwtUtility.generateAccessToken({ userId, role });
-            res.cookie("accessToken", newAccessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-            res.status(STATUS_CODES.OK).json({ status: true, accessToken: newAccessToken, message: "Access token refreshed successfully" });
-        } catch (error) {
-            console.error('Error refreshing token:', error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
+    refreshToken = asyncHandler(async (req: Request, res: Response) => {
+        const refreshToken = req.cookies['refreshToken'];
+        if (!refreshToken) {
+            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'Refresh token missing' });
+            return;
         }
-    };
-
-    async googleLogin(req: Request, res: Response): Promise<void> {
+        // Verify the refresh token using JwtUtility
+        let decoded: string | JwtPayload;
         try {
-            const { fullName, email, profilePicture } = req.body;
-            if (!fullName || !email || !profilePicture) {
-                console.warn("Missing Google credentials");
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "name, email, and image are required.", });
-                return
-            }
-            let currentUser = await this._userService.findUser(email);
+            decoded = JwtUtility.verifyToken(refreshToken, true);
+        } catch (err) {
+            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'Invalid refresh token' });
+            return
+        }
+        const { role, userId } = decoded as TokenPayload;
+        if (!userId || !role) {
+            res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: 'Invalid token payload' });
+            return
+        }
+        const newAccessToken = JwtUtility.generateAccessToken({ userId, role });
+        res.cookie("accessToken", newAccessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+        res.status(STATUS_CODES.OK).json({ status: true, accessToken: newAccessToken, message: "Access token refreshed successfully" });
+    });
+
+    googleLogin = asyncHandler(async (req: Request, res: Response) => {
+        const { fullName, email, profilePicture } = req.body;
+        if (!fullName || !email || !profilePicture) {
+            console.warn("Missing Google credentials");
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "name, email, and image are required.", });
+            return
+        }
+        let currentUser = await this._userService.findUser(email);
+        if (!currentUser) {
+            currentUser = await this._userService.registerUser({ fullName, email, profilePicture } as IUserType);
             if (!currentUser) {
-                currentUser = await this._userService.registerUser({ fullName, email, profilePicture } as IUserType);
-                if (!currentUser) {
-                    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create user.", });
-                    return
-                }
-            } else if (!currentUser?.isActive) {
-                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED, });
-                return;
+                res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create user.", });
+                return
             }
-            const payload = { userId: (currentUser._id as string).toString(), role: ROLE.USER };
-            const accessToken = JwtUtility.generateAccessToken(payload);
-            const refreshToken = JwtUtility.generateRefreshToken(payload);
-            res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-            res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
-            res.status(STATUS_CODES.OK).json({
-                status: true, message: SUCCESS_MESSAGES.LOGIN, accessToken,
-                data: {
-                    accessToken,
-                    user: {
-                        id: currentUser._id,
-                        email: currentUser.email,
-                        name: currentUser.fullName,
-                        role: ROLE.USER
-                    }
+        } else if (!currentUser?.isActive) {
+            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED, });
+            return;
+        }
+        const payload = { userId: (currentUser._id as string).toString(), role: ROLE.USER };
+        const accessToken = JwtUtility.generateAccessToken(payload);
+        const refreshToken = JwtUtility.generateRefreshToken(payload);
+        res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+        res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
+        res.status(STATUS_CODES.OK).json({
+            status: true, message: SUCCESS_MESSAGES.LOGIN, accessToken,
+            data: {
+                accessToken,
+                user: {
+                    id: currentUser._id,
+                    email: currentUser.email,
+                    name: currentUser.fullName,
+                    role: ROLE.USER
                 }
-            });
-        } catch (error) {
-            console.error("Error during Google auth:", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
-            return
-        }
-    }
+            }
+        });
+    });
 
+    logout = asyncHandler(async (req: Request, res: Response) => {
+        res.clearCookie("accessToken", { httpOnly: true, secure: true, sameSite: "none", });
+        res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: "none", });
+        res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.LOGOUT });
+        return
+    });
 
-    async logout(req: Request, res: Response): Promise<void> {
-        try {
-            res.clearCookie("accessToken", { httpOnly: true, secure: true, sameSite: "none", });
-            res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: "none", });
-            res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.LOGOUT });
-            return
-        } catch (error) {
-            console.error("Logout error:", error);
-            res.status(STATUS_CODES.BAD_REQUEST).json({ error: "logout failed" });
-            return
-        }
-    }
-
-    async forgotPassword(req: Request, res: Response): Promise<void> {
+    forgotPassword = asyncHandler(async (req: Request, res: Response) => {
         const { email } = req.body;
         if (!email) {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INVALID_INPUT });
             return;
         }
-        try {
-            const currentUser = await this._userService.findUser(email);
-            if (!currentUser) {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.EMAIL_NOT_FOUND });
-                return;
-            }
-            const response = await this._userService.findOtp(email);
-            const storedOTP = response?.otp;
-            if (!storedOTP) {
-                const otp = await OtpUtility.otpGenerator();
-                await MailUtility.sendMail(email, otp, "Verification otp");
-                res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.OTP_SENT, email, otp });
-                await this._userService.storeOtp(email, otp);
-            } else {
-                await MailUtility.sendMail(email, Number(storedOTP), "Verification otp");
-                res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.OTP_SENT, email, storedOTP, });
-                await this._userService.storeResendOtp(email, Number(storedOTP));
-            }
-        } catch (error) {
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, });
+        const currentUser = await this._userService.findUser(email);
+        if (!currentUser) {
+            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.EMAIL_NOT_FOUND });
+            return;
         }
-    }
+        const response = await this._userService.findOtp(email);
+        const storedOTP = response?.otp;
+        if (!storedOTP) {
+            const otp = await OtpUtility.otpGenerator();
+            await MailUtility.sendMail(email, otp, "Verification otp");
+            res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.OTP_SENT, email, otp });
+            await this._userService.storeOtp(email, otp);
+        } else {
+            await MailUtility.sendMail(email, Number(storedOTP), "Verification otp");
+            res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.OTP_SENT, email, storedOTP, });
+            await this._userService.storeResendOtp(email, Number(storedOTP));
+        }
+    });
 
-    async resetPassword(req: Request, res: Response): Promise<void> {
+    resetPassword = asyncHandler(async (req: Request, res: Response) => {
         const { email, password } = req.body;
         if (!email || !password) {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INVALID_INPUT });
             return;
         }
-        try {
-            const currentUser = await this._userService.findUser(email);
-            if (!currentUser) {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.EMAIL_NOT_FOUND });
-                return;
-            }
-            const updateUser = await this._userService.resetPassword(email, password);
-            if (updateUser) {
-                res.status(STATUS_CODES.OK).json({ status: true, message: "Password Change successfully" });
-            } else {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Password change failed" });
-            }
-        } catch (error) {
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR, });
+        const currentUser = await this._userService.findUser(email);
+        if (!currentUser) {
+            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.EMAIL_NOT_FOUND });
+            return;
         }
-    }
+        const updateUser = await this._userService.resetPassword(email, password);
+        if (updateUser) {
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Password Change successfully" });
+        } else {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: "Password change failed" });
+        }
+    });
 
-    async getProfile(req: Request, res: Response): Promise<void> {
-        try {
-            const id = req.userId
-            if (!id) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
-                return
-            }
-            const userDetails = await this._userService.getUserById(id)
-            if (!userDetails) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
-                return
-            }
-            if (userDetails.isActive) {
-                res.status(STATUS_CODES.OK).json({ status: true, message: "Data retrieved successfully", userDetails });
-            } else {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED });
-            }
-        } catch (error) {
-            console.error("Profile error:", error);
-            res.status(STATUS_CODES.BAD_REQUEST).json({ error: "get Profile failed" });
+    getProfile = asyncHandler(async (req: Request, res: Response) => {
+        const id = req.userId
+        if (!id) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
             return
         }
-    }
-
-    async updateProfile(req: Request, res: Response): Promise<void> {
-        try {
-            const { id, fullName, phoneNumber, newPassword, profilePicture } = req.body;
-            if (!id) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND || 'User ID is required', });
-                return;
-            }
-            const user = await this._userService.getUserById(id);
-            if (!user) {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND || 'User not found', });
-                return;
-            }
-            if (!user.isActive) {
-                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED, });
-                return;
-            }
-            const updateData: any = {};
-            if (fullName) updateData.fullName = fullName;
-            if (phoneNumber) updateData.phoneNumber = phoneNumber;
-            if (newPassword) updateData.password = newPassword;
-            if (profilePicture) updateData.profilePicture = profilePicture;
-            const updatedUser = await this._userService.updateUserById(id, updateData);
-            res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.PROFILE_UPDATE, userDetails: updatedUser, });
-        } catch (error) {
-            console.error('Update Profile Error:', error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Failed to update profile', });
+        const userDetails = await this._userService.getUserById(id)
+        if (!userDetails) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
+            return
         }
-    }
-
-    async fetchPlans(req: Request, res: Response): Promise<void> {
-        try {
-            const planData = await this._userService.fetchPlans();
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Subscription plan Fetched Successfully", planData })
-        } catch (error) {
-            console.error("Failed fetching Subscription plan", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch Subscription plan", error: error instanceof Error ? error.message : String(error), });
+        if (userDetails.isActive) {
+            res.status(STATUS_CODES.OK).json({ status: true, message: "Data retrieved successfully", userDetails });
+        } else {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED });
         }
-    };
+    });
 
-    async getAllExpert(req: Request, res: Response): Promise<void> {
-        try {
-            const response = await this._userService.getAllExpert();
-            const expert = response || [];
-            const formattedExperts = expert.map((expert) => ({
-                id: expert._id,
-                fullName: expert.fullName,
-                isActive: expert.isActive,
-                profilePicture: expert.profilePicture,
-                experience_level: expert.experience_level,
-                year_of_experience: expert.year_of_experience,
-                markets_Traded: expert.markets_Traded,
-                trading_style: expert.trading_style,
-                state: expert.state,
-                country: expert.country,
-                isVerified: expert.isVerified,
-                createdAt: expert.createdAt
-            }));
-            res.status(STATUS_CODES.OK).json({
-                status: true, message: "Experts fetched successfully",
-                data: {
-                    experts: formattedExperts,
-                    // expertCount: response.total
-                },
-            });
-        } catch (error) {
-            console.error("Get experts error:", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, error: "Failed to fetch experts", });
+    updateProfile = asyncHandler(async (req: Request, res: Response) => {
+        const { id, fullName, phoneNumber, newPassword, profilePicture } = req.body;
+        if (!id) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND || 'User ID is required', });
+            return;
         }
-    };
+        const user = await this._userService.getUserById(id);
+        if (!user) {
+            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND || 'User not found', });
+            return;
+        }
+        if (!user.isActive) {
+            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED, });
+            return;
+        }
+        const updateData: any = {};
+        if (fullName) updateData.fullName = fullName;
+        if (phoneNumber) updateData.phoneNumber = phoneNumber;
+        if (newPassword) updateData.password = newPassword;
+        if (profilePicture) updateData.profilePicture = profilePicture;
+        const updatedUser = await this._userService.updateUserById(id, updateData);
+        res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.PROFILE_UPDATE, userDetails: updatedUser, });
+    });
 
-    async getExpertById(req: Request, res: Response): Promise<void> {
-        try {
-            const { id } = req.params;
-            if (!id) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
-                return;
-            }
-            const expert = await this._userService.getExpertById(id)
-            if (!expert) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
-                return
-            }
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Expert details fetched successfully", expert });
-        } catch (error) {
-            console.error("Get expert Details error:", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, error: "Get expert Details error", });
-        }
-    };
+    fetchPlans = asyncHandler(async (req: Request, res: Response) => {
+        const planData = await this._userService.fetchPlans();
+        res.status(STATUS_CODES.OK).json({ status: true, message: "Subscription plan Fetched Successfully", planData })
+    });
 
-    async getExpertAvailability(req: Request, res: Response): Promise<void> {
-        try {
-            const { id } = req.params;
-            const startDate = req.query.startDate as string;
-            const endDate = req.query.endDate as string;
-            if (!id || !startDate || !endDate) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.MISSING_REQUIRED_FIELDS, });
-                return;
-            }
-            const Expert = await this._userService.getExpertById(id)
-            if (!Expert) {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
-                return
-            }
-            const availability = await this._userService.getAvailabilityByExpert(id, startDate, endDate);
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Expert availability fetched successfully", availability });
-        } catch (error) {
-            console.error("Get expert availability error:", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to fetch expert availability", });
-        }
-    };
+    getAllExpert = asyncHandler(async (req: Request, res: Response) => {
+        const response = await this._userService.getAllExpert();
+        const expert = response || [];
+        const formattedExperts = expert.map((expert) => ({
+            id: expert._id,
+            fullName: expert.fullName,
+            isActive: expert.isActive,
+            profilePicture: expert.profilePicture,
+            experience_level: expert.experience_level,
+            year_of_experience: expert.year_of_experience,
+            markets_Traded: expert.markets_Traded,
+            trading_style: expert.trading_style,
+            state: expert.state,
+            country: expert.country,
+            isVerified: expert.isVerified,
+            createdAt: expert.createdAt
+        }));
+        res.status(STATUS_CODES.OK).json({
+            status: true, message: "Experts fetched successfully",
+            data: {
+                experts: formattedExperts,
+                // expertCount: response.total
+            },
+        });
+    });
 
-    async checkSubscription(req: Request, res: Response): Promise<void> {
-        try {
-            const userId = req.userId;
-            if (!userId) {
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND, });
-                return;
-            }
-            const subscription = await this._userService.checkSubscription(userId)
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Subscription status retrieved successfully", subscription });
-        } catch (error) {
-            console.error("checkSubscription error:", error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to retrieve subscription status", });
+    getExpertById = asyncHandler(async (req: Request, res: Response) => {
+        const { id } = req.params;
+        if (!id) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
+            return;
         }
-    }
+        const expert = await this._userService.getExpertById(id)
+        if (!expert) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
+            return
+        }
+        res.status(STATUS_CODES.OK).json({ status: true, message: "Expert details fetched successfully", expert });
+    });
 
-    async getSessions(req: Request, res: Response): Promise<void> {
-        try {
-            const userId = req.userId;
-            if (!userId) {
-                res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND, });
-                return;
-            }
-            const page = parseInt(req.query.page as string) || 1;
-            const limit = parseInt(req.query.limit as string) || 10;
-            const status = req.query.status as string;
-            const result = await this._userService.getSessions(userId, page, limit, status);
-            res.status(STATUS_CODES.OK).json({ status: true, message: 'Sessions fetched successfully', ...result, });
-        } catch (error) {
-            console.error('retrieve sessions error:', error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Failed to retrieve sessions', });
+    getExpertAvailability = asyncHandler(async (req: Request, res: Response) => {
+        const { id } = req.params;
+        const startDate = req.query.startDate as string;
+        const endDate = req.query.endDate as string;
+        if (!id || !startDate || !endDate) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.MISSING_REQUIRED_FIELDS, });
+            return;
         }
-    }
+        const Expert = await this._userService.getExpertById(id)
+        if (!Expert) {
+            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND })
+            return
+        }
+        const availability = await this._userService.getAvailabilityByExpert(id, startDate, endDate);
+        res.status(STATUS_CODES.OK).json({ status: true, message: "Expert availability fetched successfully", availability });
+    });
 
-    async getSessionById(req: Request, res: Response): Promise<void> {
-        try {
-            const sessionId = req.params.id
-            // const userId = req.userId;
-            // if (!userId) {
-            //     res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND, });
-            //     return;
-            // }
-            if (!sessionId) {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND });
-                return;
-            }
-            const session = await this._userService.getSessionById(sessionId);
-            res.status(STATUS_CODES.OK).json({ status: true, message: 'Sessions fetched successfully', session });
-        } catch (error) {
-            console.error('retrieve sessions error:', error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Failed to retrieve sessions', });
+    checkSubscription = asyncHandler(async (req: Request, res: Response) => {
+        const userId = req.userId;
+        if (!userId) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND, });
+            return;
         }
-    }
+        const subscription = await this._userService.checkSubscription(userId)
+        res.status(STATUS_CODES.OK).json({ status: true, message: "Subscription status retrieved successfully", subscription });
+    });
 
-    async updateSession(req: Request, res: Response): Promise<void> {
-        try {
-            const sessionId = req.params.id
-            const status = req.body.status
-            if (!sessionId || !status) {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND });
-                return;
-            }
-            const session = await this._orderService.markSessionStatus(sessionId, status);
-            res.status(STATUS_CODES.OK).json({ status: true, message: 'Sessions status change successfully', session });
-        } catch (error) {
-            console.error('Sessions status change error:', error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Failed to change sessions status ', });
+    getSessions = asyncHandler(async (req: Request, res: Response) => {
+        const userId = req.userId;
+        if (!userId) {
+            res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND, });
+            return;
         }
-    }
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        const status = req.query.status as string;
+        const result = await this._userService.getSessions(userId, page, limit, status);
+        res.status(STATUS_CODES.OK).json({ status: true, message: 'Sessions fetched successfully', ...result, });
+    });
 
-    async cancelSession(req: Request, res: Response): Promise<void> {
-        try {
-            const sessionId = req.params.id
-            if (!sessionId) {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND });
-                return;
-            }
-            const session = await this._orderService.cancelStatus(sessionId);
-            if(session && session.status == 'canceled'){
-                await this._orderService.availabityStatus(session?.availabilityId)
-                res.status(STATUS_CODES.OK).json({ status: true, message: 'Cancel Session successfully', session });
-            }else{
-                res.status(STATUS_CODES.BAD_REQUEST).json({ status: true, message: 'Failed to cancel session', session });
-            }
-        } catch (error) {
-            console.error('Sessions status change error:', error);
-            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: false, message: 'Failed to change sessions status ', });
+    getSessionById = asyncHandler(async (req: Request, res: Response) => {
+        const sessionId = req.params.id
+        // const userId = req.userId;
+        // if (!userId) {
+        //     res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND, });
+        //     return;
+        // }
+        if (!sessionId) {
+            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND });
+            return;
         }
-    }
+        const session = await this._userService.getSessionById(sessionId);
+        res.status(STATUS_CODES.OK).json({ status: true, message: 'Sessions fetched successfully', session });
+    });
+
+    updateSession = asyncHandler(async (req: Request, res: Response) => {
+        const sessionId = req.params.id
+        const status = req.body.status
+        if (!sessionId || !status) {
+            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND });
+            return;
+        }
+        const session = await this._orderService.markSessionStatus(sessionId, status);
+        res.status(STATUS_CODES.OK).json({ status: true, message: 'Sessions status change successfully', session });
+    });
+
+    cancelSession = asyncHandler(async (req: Request, res: Response) => {
+        const sessionId = req.params.id
+        if (!sessionId) {
+            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND });
+            return;
+        }
+        const session = await this._orderService.cancelStatus(sessionId);
+        if (session && session.status == 'canceled') {
+            await this._orderService.availabityStatus(session?.availabilityId)
+            res.status(STATUS_CODES.OK).json({ status: true, message: 'Cancel Session successfully', session });
+        } else {
+            res.status(STATUS_CODES.BAD_REQUEST).json({ status: true, message: 'Failed to cancel session', session });
+        }
+    });
 };
 
 

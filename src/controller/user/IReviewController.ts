@@ -1,10 +1,14 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+
+
+type ControllerMethod = (req: Request, res: Response, next: NextFunction) => Promise<void>;
 
 
 interface IReviewController {
-    getCourseReviews(req: Request, res: Response): Promise<void>;
-    submitReview(req: Request, res: Response): Promise<void>;
-    updateReview(req: Request, res: Response): Promise<void>;
+    getCourseReviews: ControllerMethod;
+    submitReview: ControllerMethod;
+    updateReview: ControllerMethod;
 }
+
 
 export default IReviewController;
