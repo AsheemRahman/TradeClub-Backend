@@ -65,8 +65,14 @@ class OrderRepository extends BaseRepository<IOrder> implements IOrderRepository
     }
 
     async updateSubscription(userId: string, planId: string): Promise<IUserSubscription | null> {
-        const res = await UserSubscription.findOneAndUpdate({ user: userId, subscriptionPlan: planId, isActive: true, $expr: { $gt: ["$endDate", new Date()] } }, { $inc: { callsRemaining: -1 } }, { new: true });
-        return res
+        const res = await UserSubscription.findOneAndUpdate({
+            user: userId,
+            subscriptionPlan: planId,
+            isActive: true,
+            endDate: { $gt: new Date() },
+            callsRemaining: { $gt: 0 }
+        }, { $inc: { callsRemaining: -1 } }, { new: true });
+        return res;
     }
 
     async createSession(data: CreateSessionDTO): Promise<ISession | null> {
