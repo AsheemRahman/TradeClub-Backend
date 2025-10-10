@@ -37,8 +37,8 @@ class AdminController implements IAdminController {
         const payload: TokenPayload = { userId: email, role: ROLE.ADMIN };
         const accessToken = JwtUtility.generateAccessToken(payload);
         const refreshToken = JwtUtility.generateRefreshToken(payload);
-        res.cookie("admin-accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none",  maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-        res.cookie("admin-refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "none",  maxAge: parseInt(process.env.ADMIN_REFRESH_TOKEN_MAX_AGE || "86400000") });
+        res.cookie("admin-accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+        res.cookie("admin-refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "none", maxAge: parseInt(process.env.ADMIN_REFRESH_TOKEN_MAX_AGE || "86400000") });
         res.status(STATUS_CODES.OK).json({
             success: true, message: SUCCESS_MESSAGES.LOGIN,
             data: {
@@ -59,7 +59,7 @@ class AdminController implements IAdminController {
         try {
             decoded = JwtUtility.verifyToken(refreshToken, true);
         } catch (err) {
-            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'Invalid refresh token' });
+            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: ERROR_MESSAGES.INVALID_REFRESH_TOKEN });
             return
         }
         const { role, userId } = decoded as TokenPayload;
@@ -68,7 +68,7 @@ class AdminController implements IAdminController {
             return
         }
         const newAccessToken = JwtUtility.generateAccessToken({ userId, role });
-        res.cookie("admin-accessToken", newAccessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000")});
+        res.cookie("admin-accessToken", newAccessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
         res.status(STATUS_CODES.OK).json({ status: true, accessToken: newAccessToken, message: "Access token refreshed successfully" });
     });
 

@@ -134,7 +134,7 @@ class UserController implements IUserController {
         }
         const { role, userId } = decoded as TokenPayload;
         if (!userId || !role) {
-            res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: 'Invalid token payload' });
+            res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: ERROR_MESSAGES.INVALID_REFRESH_TOKEN });
             return
         }
         const newAccessToken = JwtUtility.generateAccessToken({ userId, role });

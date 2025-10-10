@@ -24,5 +24,6 @@ export const ERROR_MESSAGES = {
     TOKEN_NOT_FOUND: "Access token not found, please log in",
     
     REFRESH_TOKEN_MISSING: "Refresh token missing",
+    INVALID_REFRESH_TOKEN: "Invalid refresh token",
 
 } as const;
