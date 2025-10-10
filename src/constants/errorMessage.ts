@@ -22,4 +22,7 @@ export const ERROR_MESSAGES = {
 
     INVALID_TOKEN: "Invalid or expired token, please log in again.",
     TOKEN_NOT_FOUND: "Access token not found, please log in",
+    
+    REFRESH_TOKEN_MISSING: "Refresh token missing",
+
 } as const;

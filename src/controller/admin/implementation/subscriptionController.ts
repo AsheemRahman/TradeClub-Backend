@@ -7,6 +7,7 @@ import ISubscriptionService from "../../../service/admin/ISubscriptionService";
 import { ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
 import { ICoupon } from "../../../model/admin/couponSchema";
 import { asyncHandler } from "../../../utils/asyncHandler";
+import { SUCCESS_MESSAGES } from "../../../constants/successMessage";
 
 
 class SubscriptionController implements ISubscriptionController {
@@ -21,7 +22,7 @@ class SubscriptionController implements ISubscriptionController {
         const planData = await this._subscriptionService.fetchPlans();
         res.status(STATUS_CODES.OK).json({
             status: true,
-            message: "Subscription plan fetched successfully",
+            message: SUCCESS_MESSAGES.SUBSCRIPTION_FETCH,
             planData,
         });
     });
@@ -39,7 +40,7 @@ class SubscriptionController implements ISubscriptionController {
         }
         res.status(STATUS_CODES.OK).json({
             status: true,
-            message: "Subscription fetched successfully",
+            message: SUCCESS_MESSAGES.SUBSCRIPTION_FETCH,
             subscription,
         });
     });

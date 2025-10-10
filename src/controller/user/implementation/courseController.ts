@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { STATUS_CODES } from "../../../constants/statusCode";
 import { ERROR_MESSAGES } from "../../../constants/errorMessage"
+import { SUCCESS_MESSAGES } from "../../../constants/successMessage"
 
 import ICourseController from "../ICourseController";
 import ICourseService from "../../../service/user/ICourseService";
@@ -25,7 +26,7 @@ class CourseController implements ICourseController {
             page: Number(page),
             limit: Number(limit),
         });
-        res.status(STATUS_CODES.OK).json({ status: true, message: 'Courses Fetched Successfully', ...result });
+        res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.COURSE_FETCH, ...result });
     });
 
     getCoursebyId = asyncHandler(async (req: Request, res: Response) => {
@@ -39,7 +40,7 @@ class CourseController implements ICourseController {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
             return
         }
-        res.status(STATUS_CODES.OK).json({ status: true, message: "Course Fetched Successfully", course })
+        res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.COURSE_FETCH, course })
     });
 
     getCategory = asyncHandler(async (req: Request, res: Response) => {

@@ -121,7 +121,7 @@ class UserController implements IUserController {
     refreshToken = asyncHandler(async (req: Request, res: Response) => {
         const refreshToken = req.cookies['refreshToken'];
         if (!refreshToken) {
-            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'Refresh token missing' });
+            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: ERROR_MESSAGES.REFRESH_TOKEN_MISSING });
             return;
         }
         // Verify the refresh token using JwtUtility
@@ -129,7 +129,7 @@ class UserController implements IUserController {
         try {
             decoded = JwtUtility.verifyToken(refreshToken, true);
         } catch (err) {
-            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'Invalid refresh token' });
+            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: ERROR_MESSAGES.REFRESH_TOKEN_MISSING });
             return
         }
         const { role, userId } = decoded as TokenPayload;
@@ -242,7 +242,7 @@ class UserController implements IUserController {
             return
         }
         if (userDetails.isActive) {
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Data retrieved successfully", userDetails });
+            res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.DATA_RETRIEVED, userDetails });
         } else {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED });
         }
@@ -274,7 +274,7 @@ class UserController implements IUserController {
 
     fetchPlans = asyncHandler(async (req: Request, res: Response) => {
         const planData = await this._userService.fetchPlans();
-        res.status(STATUS_CODES.OK).json({ status: true, message: "Subscription plan Fetched Successfully", planData })
+        res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.SUBSCRIPTION_FETCH, planData })
     });
 
     getAllExpert = asyncHandler(async (req: Request, res: Response) => {

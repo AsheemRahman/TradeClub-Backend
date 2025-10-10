@@ -51,7 +51,7 @@ class AdminController implements IAdminController {
     refreshToken = asyncHandler(async (req: Request, res: Response) => {
         const refreshToken = req.cookies['admin-refreshToken'];
         if (!refreshToken) {
-            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: 'Refresh token missing' });
+            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: ERROR_MESSAGES.REFRESH_TOKEN_MISSING });
             return;
         }
         // Verify the refresh token using JwtUtility
@@ -124,7 +124,7 @@ class AdminController implements IAdminController {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
             return
         }
-        res.status(STATUS_CODES.OK).json({ status: true, message: "Course Fetched Successfully", user })
+        res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.COURSE_FETCH, user })
     });
 
     userStatus = asyncHandler(async (req: Request, res: Response) => {

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { ERROR_MESSAGES } from "../../../constants/errorMessage";
+import { SUCCESS_MESSAGES } from "../../../constants/successMessage";
 import { STATUS_CODES } from "../../../constants/statusCode";
 
 import ICourseController from "../ICourseController";
@@ -20,7 +21,7 @@ class CourseController implements ICourseController {
 
     getCategory = asyncHandler(async (req: Request, res: Response) => {
         const categories = await this._courseService.getCategory();
-        res.status(STATUS_CODES.OK).json({ status: true, message: "Category Fetched Successfully", categories })
+        res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.COURSE_FETCH, categories })
     });
 
     addCategory = asyncHandler(async (req: Request, res: Response) => {
@@ -30,7 +31,7 @@ class CourseController implements ICourseController {
             return;
         }
         const newCategory = await this._courseService.addCategory(categoryName);
-        res.status(STATUS_CODES.CREATED).json({ status: true, message: "Category Created Successfully", newCategory })
+        res.status(STATUS_CODES.CREATED).json({ status: true, message: SUCCESS_MESSAGES.CATEGORY_FETCH, newCategory })
     });
 
     deleteCategory = asyncHandler(async (req: Request, res: Response) => {
@@ -74,7 +75,7 @@ class CourseController implements ICourseController {
 
     getCourse = asyncHandler(async (req: Request, res: Response) => {
         const courses = await this._courseService.getCourse();
-        res.status(STATUS_CODES.OK).json({ status: true, message: "Courses Fetched Successfully", courses })
+        res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.COURSE_FETCH, courses })
     });
 
     getCourseById = asyncHandler(async (req: Request, res: Response) => {
@@ -88,7 +89,7 @@ class CourseController implements ICourseController {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND })
             return
         }
-        res.status(STATUS_CODES.OK).json({ status: true, message: "Course Fetched Successfully", course })
+        res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.COURSE_FETCH, course })
     });
 
     addCourse = asyncHandler(async (req: Request, res: Response) => {

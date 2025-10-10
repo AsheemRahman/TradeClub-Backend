@@ -251,7 +251,7 @@ class ExpertController implements IExpertController {
             return
         }
         if (expertDetails.isActive) {
-            res.status(STATUS_CODES.OK).json({ status: true, message: "Data retrieved successfully", expertDetails });
+            res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.DATA_RETRIEVED, expertDetails });
         } else {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED });
         }
@@ -300,7 +300,7 @@ class ExpertController implements IExpertController {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED });
         }
         const walletDetails = await this._expertService.getWalletById(id);
-        res.status(STATUS_CODES.OK).json({ status: true, message: "Data retrieved successfully", walletDetails });
+        res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.DATA_RETRIEVED, walletDetails });
     });
 }
 
