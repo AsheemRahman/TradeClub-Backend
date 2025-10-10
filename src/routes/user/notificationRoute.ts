@@ -1,19 +1,11 @@
 import { Router } from 'express';
-import { validate } from '../../middleware/Verify';
+import { validate } from '../../middleware/verify';
 
-import NotificationRepository from '../../repository/user/implementation/notificationRepository';
-import NotificationService from '../../service/user/implementation/notificationService';
-import userRepository from '../../repository/user/implementation/userRepository';
-import NotificationController from '../../controller/user/implementation/notificationController';
-import INotificationController from '../../controller/user/INotificationController';
 import { ROLE } from '../../constants/role';
+import { notificationController } from '../../di/notificationDI';
+
 
 const router = Router();
-
-const UserRepository = new userRepository()
-const notificationRepository = new NotificationRepository();
-const notificationService = new NotificationService(notificationRepository, UserRepository);
-const notificationController: INotificationController = new NotificationController(notificationService);
 
 
 //------------------------------------ Notification ----------------------------------
@@ -27,6 +19,7 @@ router.post("/enrollment", validate(ROLE.USER), (req, res) => notificationContro
 router.post("/consultation", validate(ROLE.USER), (req, res) => notificationController.notifyConsultationScheduled(req, res));
 router.post("/subscription", (req, res) => notificationController.notifySubscriptionExpiring(req, res));
 router.post("/new-course", (req, res) => notificationController.notifyNewCourseAvailable(req, res));
+
 
 
 export default router;

@@ -1,26 +1,12 @@
 import { Router } from 'express';
-import { validate } from '../../middleware/Verify';
+import { validate } from '../../middleware/verify';
 
-import IExpertController from '../../controller/expert/IExpertController';
-import ExpertRepository from '../../repository/expert/implementation/expertRepository';
-import ExpertController from '../../controller/expert/implementation/expertController';
-import ExpertService from '../../service/expert/implementation/expertService';
-
-import SessionRepository from '../../repository/expert/implementation/sessionRepository';
-import SessionService from '../../service/expert/implementation/sessionService';
-import SessionController from '../../controller/expert/implementation/sessionController';
-import ISessionController from '../../controller/expert/ISessionController';
 import { ROLE } from '../../constants/role';
+import { expertControllerInstance, sessionInstance } from '../../di/expertDI';
+
 
 const router = Router();
 
-const expertRepositoryInstance = new ExpertRepository();
-const expertServiceInstance = new ExpertService(expertRepositoryInstance);
-const expertControllerInstance: IExpertController = new ExpertController(expertServiceInstance);
-
-const sessionRepository = new SessionRepository();
-const sessionService = new SessionService(sessionRepository);
-const sessionInstance: ISessionController = new SessionController(sessionService);
 
 //------------------------------- register routes -------------------------------
 
@@ -34,6 +20,7 @@ router.post('/resend-otp', expertControllerInstance.resendOtp.bind(expertControl
 router.post('/login', expertControllerInstance.loginPost.bind(expertControllerInstance));
 router.get('/logout', expertControllerInstance.logout.bind(expertControllerInstance));
 router.post('/google-login', expertControllerInstance.googleLogin.bind(expertControllerInstance));
+
 
 //------------------------------- forgot-password -------------------------------
 
@@ -71,5 +58,7 @@ router.get('/wallet', validate(ROLE.EXPERT), expertControllerInstance.getWallet.
 //------------------------------------ sessions ----------------------------------
 
 router.get('/sessions', validate(ROLE.EXPERT), sessionInstance.getSessions.bind(sessionInstance));
+
+
 
 export default router;
