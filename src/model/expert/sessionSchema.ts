@@ -7,8 +7,8 @@ interface ISession extends Document {
     meetingLink?: string;
     status: 'upcoming' | 'completed' | 'missed' | 'canceled';
     bookedAt: Date;
-    startedAt?: Date;
-    endedAt?: Date;
+    startTime?: string;
+    endTime?: string;
 }
 
 const SessionSchema: Schema<ISession> = new Schema({
@@ -39,11 +39,11 @@ const SessionSchema: Schema<ISession> = new Schema({
         type: Date,
         default: Date.now
     },
-    startedAt: {
-        type: Date
+    startTime: {
+        type: String,
     },
-    endedAt: {
-        type: Date
+    endTime: {
+        type: String,
     },
 }, { timestamps: true });
 

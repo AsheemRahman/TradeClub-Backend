@@ -272,12 +272,13 @@ class OrderController implements IOrderController {
             return;
         }
         // Check if slot is already booked
-        const existingSession = await this._orderService.checkSessionAvailable(
-            expertId,
-            availabilityId
-        );
+        const existingSession = await this._orderService.checkSessionAvailable(expertId, availabilityId);
 
-        if (existingSession) {
+        if ((existingSession?.status === "completed" || existingSession?.status === "missed")) {
+            res.status(STATUS_CODES.CONFLICT).json({ status: false, message: "This slot is already completed or missed", });
+            return;
+        }
+        if (existingSession?.status == "upcoming") {
             res.status(STATUS_CODES.CONFLICT).json({ status: false, message: "This slot is already booked.", });
             return;
         }
@@ -296,7 +297,7 @@ class OrderController implements IOrderController {
         }
         const sessionData = { userId, expertId, availabilityId, meetingLink };
         const newSession = await this._orderService.createSession(sessionData);
-        await this._orderService.updateSubscription(userId, subscription.id)
+        await this._orderService.updateSubscription(userId, subscription.subscriptionPlan.toString())
         res.status(STATUS_CODES.CREATED).json({ status: true, message: "Session created successfully", session: newSession, remainingCalls: subscription.callsRemaining, });
     });
 

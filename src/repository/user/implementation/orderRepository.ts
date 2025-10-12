@@ -49,7 +49,7 @@ class OrderRepository extends BaseRepository<IOrder> implements IOrderRepository
     }
 
     async findActiveSubscription(userId: string): Promise<IUserSubscription | null> {
-        return await UserSubscription.findOne({ user: userId, isActive: true, });
+        return await UserSubscription.findOne({ user: userId, isActive: true, endDate: { $gt: new Date() }, });
     }
 
     async findByUserAndPlan(userId: string, planId: string): Promise<IUserSubscription | null> {
@@ -76,8 +76,11 @@ class OrderRepository extends BaseRepository<IOrder> implements IOrderRepository
     }
 
     async createSession(data: CreateSessionDTO): Promise<ISession | null> {
-        await ExpertAvailability.findByIdAndUpdate(data.availabilityId, { isBooked: true });
-        return await Session.create({ ...data, status: 'upcoming', bookedAt: new Date(), });
+        const availability = await ExpertAvailability.findOneAndUpdate({ _id: data.availabilityId, isBooked: false }, { isBooked: true }, { new: true });
+        if (!availability) {
+            throw new Error('Expert Availability not found');
+        }
+        return await Session.create({ ...data, status: 'upcoming', bookedAt: new Date(), startTime: availability.startTime, endTime: availability.endTime });
     }
 
     async checkSessionAvailable(expertId: string, availabilityId: string): Promise<ISession | null> {
