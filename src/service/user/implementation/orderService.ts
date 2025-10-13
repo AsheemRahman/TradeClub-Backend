@@ -130,8 +130,13 @@ class OrderService implements IOrderService {
     }
 
     async availabityStatus(availabilityId: mongoose.Types.ObjectId): Promise<IExpertAvailability | null> {
-        const session = await this._orderRepository.availabityStatus(availabilityId);
-        return session
+        const availavility = await this._orderRepository.availabityStatus(availabilityId);
+        return availavility
+    }
+
+    async callCountAdd(availabilityId: string): Promise<IUserSubscription | null> {
+        const subscription = await this._orderRepository.callCountAdd(availabilityId);
+        return subscription;
     }
 }
 

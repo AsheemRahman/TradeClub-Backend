@@ -29,6 +29,7 @@ interface IOrderRepository {
     updateSessionStatus(sessionId: string, status: 'completed' | 'missed'): Promise<ISession | null>;
     cancelSession(sessionId: string): Promise<ISession | null>;
     availabityStatus(availabilityId: mongoose.Types.ObjectId): Promise<IExpertAvailability | null>;
+    callCountAdd(availabilityId: string): Promise<IUserSubscription | null>;
 }
 
 

@@ -389,9 +389,16 @@ class UserController implements IUserController {
             res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.NOT_FOUND });
             return;
         }
+        const userId = req.userId;
+        if (!userId) {
+            res.status(STATUS_CODES.UNAUTHORIZED).json({ status: false, message: ERROR_MESSAGES.USER_NOT_FOUND, });
+            return;
+        }
         const session = await this._orderService.cancelStatus(sessionId);
         if (session && session.status == 'canceled') {
-            await this._orderService.availabityStatus(session?.availabilityId)
+            const userSubscription = await this._orderService.getActiveSubscription(userId)
+            await this._orderService.availabityStatus(session.availabilityId)
+            await this._orderService.callCountAdd(userSubscription?.id)
             res.status(STATUS_CODES.OK).json({ status: true, message: 'Cancel Session successfully', session });
         } else {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: true, message: 'Failed to cancel session', session });

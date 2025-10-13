@@ -34,6 +34,7 @@ interface IOrderService {
     markSessionStatus(sessionId: string, status: 'completed' | 'missed'): Promise<ISession | null>;
     cancelStatus(sessionId: string): Promise<ISession | null>;
     availabityStatus(availabilityId: mongoose.Types.ObjectId ): Promise<IExpertAvailability | null>;
+    callCountAdd(availabilityId: string ): Promise<IUserSubscription | null>;
 }
 
 export default IOrderService;

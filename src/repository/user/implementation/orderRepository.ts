@@ -102,6 +102,16 @@ class OrderRepository extends BaseRepository<IOrder> implements IOrderRepository
     async availabityStatus(availabilityId: mongoose.Types.ObjectId): Promise<IExpertAvailability | null> {
         return await ExpertAvailability.findByIdAndUpdate(availabilityId, { isBooked: false }, { new: true });
     }
+
+    async callCountAdd(userSubscriptionID: string): Promise<IUserSubscription | null> {
+        return await UserSubscription.findOneAndUpdate(
+            {
+                _id: userSubscriptionID,
+                isActive: true,
+                endDate: { $gt: new Date() },
+            }, { $inc: { callsRemaining: 1 } }, { new: true }
+        );
+    }
 }
 
 export default OrderRepository;
