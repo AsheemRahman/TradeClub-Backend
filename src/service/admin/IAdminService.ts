@@ -21,6 +21,8 @@ interface IAdminService {
         type: string; search: string; sortBy: string; sortOrder: string;
     }): Promise<{ orders: IOrder[]; total: number }>
     getPaidOrders(): Promise<IOrder[] | []>
+
+    getStats(): Promise<{ totalCustomers: number; totalExperts: number }>;
 }
 
 export default IAdminService;

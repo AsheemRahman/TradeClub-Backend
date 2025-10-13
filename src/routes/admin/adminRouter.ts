@@ -74,6 +74,7 @@ router.patch('/coupon-status/:id', validate(ROLE.ADMIN),subscriptionController.c
 
 router.get('/orders', validate(ROLE.ADMIN), adminController.getOrders.bind(adminController))
 router.get('/revenue', validate(ROLE.ADMIN), adminController.getRevenue.bind(adminController))
+router.get('/stats', validate(ROLE.ADMIN), adminController.getStats.bind(adminController))
 
 
 

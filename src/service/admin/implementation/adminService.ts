@@ -77,6 +77,14 @@ class AdminService implements IAdminService {
         const order = await this._adminRepository.getPaidOrders();
         return order;
     }
+
+    async getStats(): Promise<{ totalCustomers: number; totalExperts: number }> {
+        const [totalCustomers, totalExperts] = await Promise.all([
+            this._adminRepository.getUserCount(),
+            this._adminRepository.getExpertCount(),
+        ]);
+        return { totalCustomers, totalExperts };
+    }
 }
 
 export default AdminService;

@@ -294,6 +294,13 @@ class AdminController implements IAdminController {
         }));
         res.status(STATUS_CODES.OK).json({ status: true, message: "Revenue data fetched successfully", revenue: revenueData, });
     });
+
+    getStats = asyncHandler(async (req: Request, res: Response) => {
+        const stats = await this._adminService.getStats();
+        res.status(STATUS_CODES.OK).json({ status: true, message: "Dashboard data fetched successfully", totalCustomers : stats.totalCustomers, totalExperts : stats.totalExperts });
+    });
+
+
 }
 
 export default AdminController;

@@ -25,9 +25,14 @@ interface IAdminController {
     declineExpert: ControllerMethod;
 
     //----------------------- Order -----------------------
-
+    
     getOrders: ControllerMethod;
     getRevenue: ControllerMethod;
+
+
+    //---------------------- Dashboard ---------------------
+
+    getStats: ControllerMethod;
 }
 
 export default IAdminController;
