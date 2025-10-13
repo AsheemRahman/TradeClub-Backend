@@ -48,6 +48,15 @@ class OrderRepository extends BaseRepository<IOrder> implements IOrderRepository
         return await UserSubscription.create(data);
     }
 
+    async updateUserSubscription(subscriptionId: string, updateData: Partial<IUserSubscription>): Promise<IUserSubscription | null> {
+        const { callsRemaining, ...rest } = updateData;
+        const updateQuery: any = { $set: rest };
+        if (callsRemaining) {
+            updateQuery.$inc = { callsRemaining: callsRemaining };
+        }
+        return await UserSubscription.findByIdAndUpdate(subscriptionId, updateQuery, { new: true });
+    }
+
     async findActiveSubscription(userId: string): Promise<IUserSubscription | null> {
         return await UserSubscription.findOne({ user: userId, isActive: true, endDate: { $gt: new Date() }, });
     }

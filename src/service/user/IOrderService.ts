@@ -24,6 +24,7 @@ interface IOrderService {
     checkPlan(userId: string, planId: string): Promise<IUserSubscription[] | null>;
 
     createUserSubscription(userId: string, planId: string, paymentId: string, paymentStatus: 'paid' | 'pending' | 'failed', callsRemaining: number): Promise<IUserSubscription>;
+    updateUserSubscription(subscriptionId: string, updateData: Partial<IUserSubscription>): Promise<IUserSubscription | null>;
     getAllSubscriptionsByUser(userId: string): Promise<IUserSubscription[] | null>;
     getActiveSubscription(userId: string): Promise<IUserSubscription | null>;
     updateSubscription(userId: string, planId: string): Promise<IUserSubscription | null>;
@@ -33,8 +34,8 @@ interface IOrderService {
     getUserSessions(userId: string): Promise<ISession[] | null>;
     markSessionStatus(sessionId: string, status: 'completed' | 'missed'): Promise<ISession | null>;
     cancelStatus(sessionId: string): Promise<ISession | null>;
-    availabityStatus(availabilityId: mongoose.Types.ObjectId ): Promise<IExpertAvailability | null>;
-    callCountAdd(availabilityId: string ): Promise<IUserSubscription | null>;
+    availabityStatus(availabilityId: mongoose.Types.ObjectId): Promise<IExpertAvailability | null>;
+    callCountAdd(availabilityId: string): Promise<IUserSubscription | null>;
 }
 
 export default IOrderService;

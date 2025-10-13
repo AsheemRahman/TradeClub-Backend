@@ -104,19 +104,50 @@ class OrderController implements IOrderController {
         } else {
             const plan = await this._orderService.getPlanById(purchaseId);
             if (!plan) throw new Error('Subscription is not found');
-            const order = await this._orderService.createOrder({
-                userId,
-                itemId: purchaseId,
-                type: "SubscriptionPlan",
-                title: plan.name,
-                amount: plan.price,
-                currency: session.currency?.toUpperCase() || 'INR',
-                stripeSessionId: sessionId,
-                paymentIntentId: session.payment_intent?.toString() || '',
-                paymentStatus: session.payment_status,
-            })
-            await this._orderService.createUserSubscription(userId, purchaseId, session.payment_intent?.toString() || '', session.payment_status as 'paid' | 'pending' | 'failed', plan.accessLevel?.expertCallsPerMonth ?? 0);
-            res.status(STATUS_CODES.CREATED).json({ status: true, message: "Subscription purchased Successfully", order })
+            // Check if user already has an active subscription
+            const existingSubscription = await this._orderService.getActiveSubscription(userId);
+            if (existingSubscription) {
+                // Update the existing subscription
+                const order = await this._orderService.createOrder({
+                    userId,
+                    itemId: purchaseId,
+                    type: "SubscriptionPlan",
+                    title: plan.name,
+                    amount: plan.price,
+                    currency: session.currency?.toUpperCase() || 'INR',
+                    stripeSessionId: sessionId,
+                    paymentIntentId: session.payment_intent?.toString() || '',
+                    paymentStatus: session.payment_status,
+                });
+                const updatedSubscription = await this._orderService.updateUserSubscription(existingSubscription.id, {
+                    subscriptionPlan: purchaseId,
+                    paymentId: session.payment_intent?.toString() || '',
+                    paymentStatus: session.payment_status as 'paid' | 'pending' | 'failed',
+                    callsRemaining: plan.accessLevel?.expertCallsPerMonth ?? 0,
+                    endDate: new Date(new Date().setMonth(new Date().getMonth() + 1))
+                });
+                res.status(STATUS_CODES.CREATED).json({ status: true, message: "Subscription updated Successfully", order, updatedSubscription });
+            } else {
+                const order = await this._orderService.createOrder({
+                    userId,
+                    itemId: purchaseId,
+                    type: "SubscriptionPlan",
+                    title: plan.name,
+                    amount: plan.price,
+                    currency: session.currency?.toUpperCase() || 'INR',
+                    stripeSessionId: sessionId,
+                    paymentIntentId: session.payment_intent?.toString() || '',
+                    paymentStatus: session.payment_status,
+                });
+                await this._orderService.createUserSubscription(
+                    userId,
+                    purchaseId,
+                    session.payment_intent?.toString() || '',
+                    session.payment_status as 'paid' | 'pending' | 'failed',
+                    plan.accessLevel?.expertCallsPerMonth ?? 0
+                );
+                res.status(STATUS_CODES.CREATED).json({ status: true, message: "Subscription purchased Successfully", order });
+            }
         }
     });
 
@@ -225,15 +256,15 @@ class OrderController implements IOrderController {
             res.status(STATUS_CODES.BAD_REQUEST).json({ message: ERROR_MESSAGES.INVALID_INPUT || "Plan data is missing or incomplete." });
             return;
         }
-        const existingSubscriptions: IUserSubscription[] | null = await this._orderService.checkPlan(userId, planId);
-        const now = new Date();
-        const activeSubscription = existingSubscriptions?.find(sub => {
-            return sub.isActive && new Date(sub.endDate) > now;
-        });
-        if (activeSubscription) {
-            res.status(STATUS_CODES.BAD_REQUEST).json({ message: "You already have an active subscription to this plan." });
-            return;
-        }
+        // const existingSubscriptions: IUserSubscription[] | null = await this._orderService.checkPlan(userId, planId);
+        // const now = new Date();
+        // const activeSubscription = existingSubscriptions?.find(sub => {
+        //     return sub.isActive && new Date(sub.endDate) > now;
+        // });
+        // if (activeSubscription) {
+        //     res.status(STATUS_CODES.BAD_REQUEST).json({ message: "You already have an active subscription to this plan." });
+        //     return;
+        // }
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             mode: 'payment',

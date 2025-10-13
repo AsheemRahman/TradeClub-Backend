@@ -85,6 +85,10 @@ class OrderService implements IOrderService {
         });
     }
 
+    async updateUserSubscription(subscriptionId: string, updateData: Partial<IUserSubscription>): Promise<IUserSubscription | null> {
+        return await this._orderRepository.updateUserSubscription(subscriptionId, updateData);
+    }
+
     async getActiveSubscription(userId: string): Promise<IUserSubscription | null> {
         return await this._orderRepository.findActiveSubscription(userId);
     }
