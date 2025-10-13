@@ -80,7 +80,7 @@ class OrderRepository extends BaseRepository<IOrder> implements IOrderRepository
         if (!availability) {
             throw new Error('Expert Availability not found');
         }
-        return await Session.create({ ...data, status: 'upcoming', bookedAt: new Date(), startTime: availability.startTime, endTime: availability.endTime });
+        return await Session.create({ ...data, status: 'upcoming', bookedAt: availability.date, startTime: availability.startTime, endTime: availability.endTime });
     }
 
     async checkSessionAvailable(expertId: string, availabilityId: string): Promise<ISession | null> {
