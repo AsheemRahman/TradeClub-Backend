@@ -7,15 +7,15 @@ export interface CreateSessionDTO {
     meetingLink?: string;
     status?: 'upcoming' | 'completed' | 'missed';
     bookedAt?: Date;
-    startedAt?: Date;
-    endedAt?: Date;
+    startTime?: string;
+    endedTime?: string;
 }
 
 export interface UpdateSessionDTO {
     meetingLink?: string;
     status?: 'upcoming' | 'completed' | 'missed';
-    startedAt?: Date;
-    endedAt?: Date;
+    startTime?: string;
+    endedTime?: string;
 }
 
 export interface SessionResponseDTO {
@@ -26,7 +26,6 @@ export interface SessionResponseDTO {
     meetingLink?: string;
     status: 'upcoming' | 'completed' | 'missed';
     bookedAt: Date;
-    startedAt?: Date;
-    endedAt?: Date;
+    startTime?: string;
     createdAt: Date;
 }

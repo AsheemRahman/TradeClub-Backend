@@ -14,8 +14,7 @@ export class SessionMapper {
             meetingLink: session.meetingLink,
             status: session.status,
             bookedAt: session.bookedAt,
-            startedAt: session.startedAt,
-            endedAt: session.endedAt,
+            startTime: session.startTime,
             createdAt: session.createdAt!,
         };
     }
@@ -28,8 +27,7 @@ export class SessionMapper {
             meetingLink: dto.meetingLink,
             status: dto.status,
             bookedAt: (dto as CreateSessionDTO).bookedAt,
-            startedAt: dto.startedAt,
-            endedAt: dto.endedAt,
+            startTime: dto.startTime,
         };
     }
 

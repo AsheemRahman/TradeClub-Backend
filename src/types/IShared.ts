@@ -17,8 +17,8 @@ export interface sessionType {
     meetingLink?: string;
     status: 'upcoming' | 'completed' | 'missed';
     bookedAt: Date;
-    startedAt?: Date;
-    endedAt?: Date;
+    startTime?: string;
+    endTime?: string;
     createdAt?: Date;
     updatedAt?: Date;
 }
