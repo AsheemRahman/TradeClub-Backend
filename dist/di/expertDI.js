@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sessionInstance = exports.expertControllerInstance = void 0;
+const expertRepository_1 = __importDefault(require("../repository/expert/implementation/expertRepository"));
+const expertController_1 = __importDefault(require("../controller/expert/implementation/expertController"));
+const expertService_1 = __importDefault(require("../service/expert/implementation/expertService"));
+const sessionRepository_1 = __importDefault(require("../repository/expert/implementation/sessionRepository"));
+const sessionService_1 = __importDefault(require("../service/expert/implementation/sessionService"));
+const sessionController_1 = __importDefault(require("../controller/expert/implementation/sessionController"));
+const expertRepositoryInstance = new expertRepository_1.default();
+const expertServiceInstance = new expertService_1.default(expertRepositoryInstance);
+const expertControllerInstance = new expertController_1.default(expertServiceInstance);
+exports.expertControllerInstance = expertControllerInstance;
+const sessionRepository = new sessionRepository_1.default();
+const sessionService = new sessionService_1.default(sessionRepository);
+const sessionInstance = new sessionController_1.default(sessionService);
+exports.sessionInstance = sessionInstance;

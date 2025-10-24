@@ -28,9 +28,12 @@ const logger = (0, winston_1.createLogger)({
     format: logFormat,
     transports: [
         dailyRotateTransport,
-        new winston_1.transports.Console({
-            format: winston_1.format.combine(winston_1.format.colorize(), logFormat),
-        }),
+        // new transports.Console({
+        //     format: format.combine(
+        //         format.colorize(),
+        //         logFormat
+        //     ),
+        // }),
     ],
 });
 exports.default = logger;

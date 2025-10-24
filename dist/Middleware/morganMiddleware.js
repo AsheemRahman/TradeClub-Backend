@@ -28,7 +28,7 @@ const morganMiddleware = (0, morgan_1.default)(morganFormat, {
                 const colorizedStatus = colorizeStatus(parseInt(status));
                 const colorizedMessage = message.replace(status, colorizedStatus);
                 // Log the request details in color
-                // console.log(colorizedMessage.trim());
+                console.log(colorizedMessage.trim());
             }
         },
     },

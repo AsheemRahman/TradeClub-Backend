@@ -26,27 +26,31 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const userSchema = new mongoose_1.Schema({
-    username: {
+    fullName: {
         type: String,
         required: true,
-        message: 'User name required',
     },
     email: {
         type: String,
         required: true,
         unique: true,
-        message: "Email is required",
     },
     password: {
         type: String,
-        required: true,
-        message: "Password is required",
     },
-    googleID: {
-        type: String
+    phoneNumber: {
+        type: Number,
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     },
     profilePicture: {
         type: String,
+    },
+    lastSeen: {
+        type: Date,
+        default: null,
     },
 }, { timestamps: true });
 const User = mongoose_1.default.model("User", userSchema);
