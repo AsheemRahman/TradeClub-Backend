@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.messageController = exports.chatController = void 0;
+const chatController_1 = __importDefault(require("../controller/chat/implementation/chatController"));
+const chatService_1 = __importDefault(require("../service/chat/implementation/chatService"));
+const chatRepository_1 = __importDefault(require("../repository/chat/implementation/chatRepository"));
+const messageController_1 = __importDefault(require("../controller/chat/implementation/messageController"));
+const messageService_1 = __importDefault(require("../service/chat/implementation/messageService"));
+const messageRepository_1 = __importDefault(require("../repository/chat/implementation/messageRepository"));
+const chatRepository = new chatRepository_1.default();
+const chatService = new chatService_1.default(chatRepository);
+const chatController = new chatController_1.default(chatService);
+exports.chatController = chatController;
+const messageRepository = new messageRepository_1.default();
+const messageService = new messageService_1.default(messageRepository);
+const messageController = new messageController_1.default(messageService);
+exports.messageController = messageController;

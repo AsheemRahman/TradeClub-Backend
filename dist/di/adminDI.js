@@ -1,0 +1,27 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.subscriptionController = exports.courseController = exports.adminController = void 0;
+const adminController_1 = __importDefault(require("../controller/admin/implementation/adminController"));
+const adminService_1 = __importDefault(require("../service/admin/implementation/adminService"));
+const adminRepository_1 = __importDefault(require("../repository/admin/implementation/adminRepository"));
+const courseRepository_1 = __importDefault(require("../repository/admin/implementation/courseRepository"));
+const courseService_1 = __importDefault(require("../service/admin/implementation/courseService"));
+const courseController_1 = __importDefault(require("../controller/admin/implementation/courseController"));
+const subscriptionRepository_1 = __importDefault(require("../repository/admin/implementation/subscriptionRepository"));
+const subscriptionController_1 = __importDefault(require("../controller/admin/implementation/subscriptionController"));
+const subscriptionService_1 = __importDefault(require("../service/admin/implementation/subscriptionService"));
+const adminRepository = new adminRepository_1.default();
+const adminService = new adminService_1.default(adminRepository);
+const adminController = new adminController_1.default(adminService);
+exports.adminController = adminController;
+const courseRepository = new courseRepository_1.default();
+const courseService = new courseService_1.default(courseRepository);
+const courseController = new courseController_1.default(courseService);
+exports.courseController = courseController;
+const subscriptionRepository = new subscriptionRepository_1.default();
+const subscriptionService = new subscriptionService_1.default(subscriptionRepository);
+const subscriptionController = new subscriptionController_1.default(subscriptionService);
+exports.subscriptionController = subscriptionController;
