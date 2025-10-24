@@ -5,10 +5,10 @@ interface ISession extends Document {
     expertId: mongoose.Types.ObjectId;
     availabilityId: mongoose.Types.ObjectId;
     meetingLink?: string;
-    status: 'upcoming' | 'completed' | 'missed';
+    status: 'upcoming' | 'completed' | 'missed' | 'canceled';
     bookedAt: Date;
-    startedAt?: Date;
-    endedAt?: Date;
+    startTime?: string;
+    endTime?: string;
 }
 
 const SessionSchema: Schema<ISession> = new Schema({
@@ -32,18 +32,18 @@ const SessionSchema: Schema<ISession> = new Schema({
     },
     status: {
         type: String,
-        enum: ['upcoming', 'completed', 'missed'],
+        enum: ['upcoming', 'completed', 'missed', 'canceled'],
         default: 'upcoming'
     },
     bookedAt: {
         type: Date,
         default: Date.now
     },
-    startedAt: {
-        type: Date
+    startTime: {
+        type: String,
     },
-    endedAt: {
-        type: Date
+    endTime: {
+        type: String,
     },
 }, { timestamps: true });
 

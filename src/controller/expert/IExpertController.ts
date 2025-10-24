@@ -1,24 +1,25 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
+type ControllerMethod = (req: Request, res: Response, next: NextFunction) => Promise<void>;
 
 interface IExpertController {
-    
-    registerPost(req: Request, res: Response): Promise<void>;
-    verifyOtp(req: Request, res: Response): Promise<void>;
-    resendOtp(req: Request, res: Response): Promise<void>;
-    loginPost(req: Request, res: Response): Promise<void>;
-    logout(req: Request, res: Response): Promise<void>;
-    googleLogin(req: Request, res: Response): Promise<void>;
 
-    forgotPassword(req: Request, res: Response): Promise<void>;
-    resetPassword(req: Request, res: Response): Promise<void>;
+    registerPost: ControllerMethod;
+    verifyOtp: ControllerMethod;
+    resendOtp: ControllerMethod;
+    loginPost: ControllerMethod;
+    logout: ControllerMethod;
+    googleLogin: ControllerMethod;
 
-    expertVerification(req: Request, res: Response): Promise<void>;
+    forgotPassword: ControllerMethod;
+    resetPassword: ControllerMethod;
 
-    getExpertData(req: Request, res: Response): Promise<void>;
-    updateProfile(req: Request, res: Response): Promise<void>;
-    
-    getWallet(req: Request, res: Response): Promise<void>;
+    expertVerification: ControllerMethod;
+
+    getExpertData: ControllerMethod;
+    updateProfile: ControllerMethod;
+
+    getWallet: ControllerMethod;
 }
 
 export default IExpertController;

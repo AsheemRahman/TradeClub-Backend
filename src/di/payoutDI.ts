@@ -1,0 +1,18 @@
+
+import PayoutService from '../service/admin/implementation/payoutService';
+import PayoutController from '../controller/admin/implementation/payoutController';
+import IPayoutController from '../controller/admin/IPayoutController';
+import EarningRepository from '../repository/expert/implementation/earningRepository';
+import ExpertRepository from '../repository/expert/implementation/expertRepository';
+
+
+
+const expertRepository = new ExpertRepository();
+const earningRepository = new EarningRepository();
+const payoutService = new PayoutService(expertRepository, earningRepository);
+const payoutController: IPayoutController = new PayoutController(payoutService);
+
+
+export {
+    payoutController,
+};

@@ -3,9 +3,14 @@ import Category, { ICategory } from "../../../model/admin/categorySchema";
 import Course, { ICourse } from "../../../model/admin/courseSchema";
 import { CourseProgress, ICourseProgress, IVideoProgress } from "../../../model/user/progressSchema";
 import ICourseRepository from "../ICourseRepository";
+import { BaseRepository } from "../../base/implementation/baseRepository";
 
 
-class CourseRepository implements ICourseRepository {
+class CourseRepository extends BaseRepository<ICourse> implements ICourseRepository {
+    constructor() {
+        super(Course);
+    }
+
     async getCategory(): Promise<ICategory[] | null> {
         const category = await Category.find().sort({ createdAt: -1 });
         return category;
@@ -41,8 +46,7 @@ class CourseRepository implements ICourseRepository {
     }
 
     async getCourseById(courseId: string): Promise<ICourse | null> {
-        const courses = await Course.findById(courseId);
-        return courses;
+        return this.findById(courseId);
     };
 
     async updateCourse(courseId: string, purchasedUsers: string): Promise<ICourse | null> {

@@ -18,7 +18,8 @@ import notificationRoutes from "./routes/user/notificationRoute";
 import { createServer } from "http";
 import configureSocket from "./config/socketConfig";
 import { STATUS_CODES } from "./constants/statusCode";
-import { ERROR_MESSAGES } from "./constants/message";
+import { ERROR_MESSAGES } from "./constants/errorMessage";
+import { errorHandler } from "./middleware/errorHandler";
 
 
 dotenv.config();
@@ -69,11 +70,7 @@ const io = configureSocket(server)
 
 //------------------ Error Handling Middleware ------------------
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.log("Error handling middleware's error", err);
-    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
-    next()
-});
+app.use(errorHandler);
 
 
 //----------------------- Server listening -----------------------

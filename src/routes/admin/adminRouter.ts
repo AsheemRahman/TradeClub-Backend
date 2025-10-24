@@ -1,34 +1,8 @@
 import { Router } from 'express';
-import { validate } from '../../middleware/Verify';
+import { validate } from '../../middleware/verify';
 
-import AdminController from '../../controller/admin/implementation/adminController';
-import IAdminController from '../../controller/admin/IAdminController';
-import AdminService from '../../service/admin/implementation/adminService';
-import AdminRepository from '../../repository/admin/implementation/adminRepository';
-
-import CourseRepository from '../../repository/admin/implementation/courseRepository';
-import CourseService from '../../service/admin/implementation/courseService';
-import CourseController from '../../controller/admin/implementation/courseController';
-import ICourseController from '../../controller/admin/ICourseController';
-
-import SubscriptionRepository from '../../repository/admin/implementation/subscriptionRepository';
-import SubscriptionController from '../../controller/admin/implementation/subscriptionController';
-import ISubscriptionController from '../../controller/admin/ISubscriptionController';
-import SubscriptionService from '../../service/admin/implementation/subscriptionService';
 import { ROLE } from '../../constants/role';
-
-
-const adminRepository = new AdminRepository();
-const adminService = new AdminService(adminRepository);
-const adminController: IAdminController = new AdminController(adminService);
-
-const courseRepository = new CourseRepository();
-const courseService = new CourseService(courseRepository);
-const courseController: ICourseController = new CourseController(courseService);
-
-const subscriptionRepository = new SubscriptionRepository();
-const subscriptionService = new SubscriptionService(subscriptionRepository);
-const subscriptionController: ISubscriptionController = new SubscriptionController(subscriptionService);
+import { adminController, courseController, subscriptionController } from '../../di/adminDI';
 
 
 const router = Router();
@@ -38,7 +12,6 @@ const router = Router();
 
 router.post('/login', adminController.adminLogin.bind(adminController))
 router.get('/logout', adminController.logout.bind(adminController));
-
 
 router.post('/refresh-token', adminController.refreshToken.bind(adminController));
 
@@ -77,6 +50,7 @@ router.put('/edit-course/:id', validate(ROLE.ADMIN), courseController.editCourse
 router.delete('/delete-course/:id', validate(ROLE.ADMIN), courseController.deleteCourse.bind(courseController));
 router.patch('/course/:id/toggle-publish', validate(ROLE.ADMIN), courseController.togglePublish.bind(courseController));
 
+
 //------------------------------- Subscription ---------------------------------
 
 router.get('/fetch-plans', validate(ROLE.ADMIN), subscriptionController.fetchPlans.bind(subscriptionController) );
@@ -100,6 +74,8 @@ router.patch('/coupon-status/:id', validate(ROLE.ADMIN),subscriptionController.c
 
 router.get('/orders', validate(ROLE.ADMIN), adminController.getOrders.bind(adminController))
 router.get('/revenue', validate(ROLE.ADMIN), adminController.getRevenue.bind(adminController))
+router.get('/stats', validate(ROLE.ADMIN), adminController.getStats.bind(adminController))
+
 
 
 export default router;

@@ -1,12 +1,11 @@
 import { Model, Document } from "mongoose";
 import { IBaseRepository } from "../IBaseRepository";
 
-export abstract class BaseRepository<T extends Document>
-    implements IBaseRepository<T> {
-    private model: Model<T>;
+export abstract class BaseRepository<T extends Document> implements IBaseRepository<T> {
+    protected model: Model<T>;
 
-    constructor(private schema: Model<T>) {
-        this.model = schema;
+    constructor(model: Model<T>) {
+        this.model = model;
     }
 
     async create(data: Partial<T>): Promise<T> {
@@ -17,11 +16,11 @@ export abstract class BaseRepository<T extends Document>
         return this.model.findById(id).exec();
     }
 
-    async findAll(): Promise<T[] | null> {
+    async findAll(): Promise<T[]> {
         return this.model.find().exec();
     }
 
-    async update(id: string, data: Partial<T>): Promise<T | null> {
+    async findByIdAndUpdate(id: string, data: Partial<T>): Promise<T | null> {
         return this.model.findByIdAndUpdate(id, data, { new: true }).exec();
     }
 

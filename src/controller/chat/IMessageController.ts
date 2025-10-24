@@ -1,11 +1,12 @@
-import { Request, Response } from "express"
+import { NextFunction, Request, Response } from "express"
+
+type ControllerMethod = (req: Request, res: Response, next: NextFunction) => Promise<void>;
 
 interface IMessageController {
-    sendMessage(req: Request, res: Response): Promise<void>
-    getMessages(req: Request, res: Response): Promise<void>
-    deleteMessages(req: Request, res: Response): Promise<void>
-    markMessagesAsRead(req: Request, res: Response): Promise<void>
-
+    sendMessage: ControllerMethod;
+    getMessages: ControllerMethod;
+    deleteMessages: ControllerMethod;
+    markMessagesAsRead: ControllerMethod;
 }
 
 export default IMessageController

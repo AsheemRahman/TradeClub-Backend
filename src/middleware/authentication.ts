@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
+import { STATUS_CODES } from "../constants/statusCode";
+import { ERROR_MESSAGES } from '../constants/errorMessage';
+
+
 const authenticationMiddleware = () => {
     return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
@@ -8,18 +12,18 @@ const authenticationMiddleware = () => {
             const accessToken = req.headers.authorization?.split(" ")[1] || req.cookies?.accessToken;
 
             if (!accessToken) {
-                res.status(401).json({ message: "Access token not found, please log in" });
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ message: ERROR_MESSAGES.TOKEN_NOT_FOUND });
                 return;
             }
 
             jwt.verify(accessToken, JWT_KEY, async (err: unknown, data: JwtPayload | string | undefined) => {
                 if (err) {
                     console.error("Token error:", accessToken, err);
-                    return res.status(403).json({ message: "Invalid or expired token, please log in again." });
+                    return res.status(STATUS_CODES.FORBIDDEN).json({ message: ERROR_MESSAGES.INVALID_TOKEN });
                 }
 
                 if (!data) {
-                    return res.status(403).json({ message: "Invalid token structure." });
+                    return res.status(STATUS_CODES.FORBIDDEN).json({ message: "Invalid token structure." });
                 }
 
                 const { role, userId } = data as { role: string, userId: string }
@@ -34,7 +38,7 @@ const authenticationMiddleware = () => {
 
         } catch (error) {
             console.error("Middleware error:", error);
-            res.status(500).json({ message: "Internal server error" });
+            res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
         }
     };
 };

@@ -1,5 +1,6 @@
 import { ICourse } from "../../../model/admin/courseSchema";
 import { ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
+import { IExpertAvailability } from "../../../model/expert/availabilitySchema";
 import { ISession } from "../../../model/expert/sessionSchema";
 import { IOrder } from "../../../model/user/orderSchema";
 import { ICourseProgress } from "../../../model/user/progressSchema";
@@ -84,6 +85,10 @@ class OrderService implements IOrderService {
         });
     }
 
+    async updateUserSubscription(subscriptionId: string, updateData: Partial<IUserSubscription>): Promise<IUserSubscription | null> {
+        return await this._orderRepository.updateUserSubscription(subscriptionId, updateData);
+    }
+
     async getActiveSubscription(userId: string): Promise<IUserSubscription | null> {
         return await this._orderRepository.findActiveSubscription(userId);
     }
@@ -100,6 +105,10 @@ class OrderService implements IOrderService {
         return await this._orderRepository.createSession(data);
     }
 
+    async checkSessionAvailable(expertId: string, availabilityId: string): Promise<ISession | null> {
+        return await this._orderRepository.checkSessionAvailable(expertId, availabilityId);
+    }
+
     async getUserSessions(userId: string): Promise<ISession[] | null> {
         return await this._orderRepository.getSessionsByUser(userId);
     }
@@ -111,12 +120,27 @@ class OrderService implements IOrderService {
             const sessionObjectId = session._id as unknown as string;
             await this._earningRepository.createEarning({
                 expertId: session?.expertId,
-                sessionId:  new mongoose.Types.ObjectId(sessionObjectId),
+                sessionId: new mongoose.Types.ObjectId(sessionObjectId),
                 amount: 100,
                 status: "pending"
             });
         }
         return session
+    }
+
+    async cancelStatus(sessionId: string): Promise<ISession | null> {
+        const session = await this._orderRepository.cancelSession(sessionId);
+        return session
+    }
+
+    async availabityStatus(availabilityId: mongoose.Types.ObjectId): Promise<IExpertAvailability | null> {
+        const availavility = await this._orderRepository.availabityStatus(availabilityId);
+        return availavility
+    }
+
+    async callCountAdd(availabilityId: string): Promise<IUserSubscription | null> {
+        const subscription = await this._orderRepository.callCountAdd(availabilityId);
+        return subscription;
     }
 }
 

@@ -1,4 +1,6 @@
+import mongoose from "mongoose";
 import { ISubscriptionPlan } from "../../model/admin/subscriptionSchema";
+import { IExpertAvailability } from "../../model/expert/availabilitySchema";
 import { ISession } from "../../model/expert/sessionSchema";
 import { IOrder } from "../../model/user/orderSchema";
 import { IUserSubscription } from "../../model/user/userSubscriptionSchema";
@@ -15,6 +17,7 @@ interface IOrderRepository {
     checkPlan(userId: string, planId: string): Promise<IUserSubscription[] | null>;
 
     createSubscription(data: Partial<IUserSubscription>): Promise<IUserSubscription>;
+    updateUserSubscription(subscriptionId: string, updateData: Partial<IUserSubscription>): Promise<IUserSubscription | null>;
     findActiveSubscription(userId: string): Promise<IUserSubscription | null>;
     findByUserAndPlan(userId: string, planId: string): Promise<IUserSubscription | null>;
     deactivateSubscription(userId: string): Promise<void>;
@@ -22,8 +25,12 @@ interface IOrderRepository {
     updateSubscription(userId: string, planId: string): Promise<IUserSubscription | null>;
 
     createSession(data: CreateSessionDTO): Promise<ISession | null>;
+    checkSessionAvailable(expertId: string, availabilityId: string): Promise<ISession | null>;
     getSessionsByUser(userId: string): Promise<ISession[] | null>;
     updateSessionStatus(sessionId: string, status: 'completed' | 'missed'): Promise<ISession | null>;
+    cancelSession(sessionId: string): Promise<ISession | null>;
+    availabityStatus(availabilityId: mongoose.Types.ObjectId): Promise<IExpertAvailability | null>;
+    callCountAdd(availabilityId: string): Promise<IUserSubscription | null>;
 }
 
 

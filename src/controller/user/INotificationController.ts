@@ -1,16 +1,19 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+
+
+type ControllerMethod = (req: Request, res: Response, next: NextFunction) => Promise<void>;
 
 
 interface INotificationController {
-    getNotifications(req: Request, res: Response): Promise<void>;
-    createNotification(req: Request, res: Response): Promise<void>;
-    markAsRead(req: Request, res: Response): Promise<void>;
-    markAllAsRead(req: Request, res: Response): Promise<void>;
+    getNotifications: ControllerMethod;
+    createNotification: ControllerMethod;
+    markAsRead: ControllerMethod;
+    markAllAsRead: ControllerMethod;
 
-    notifyNewCourseEnrollment(req: Request, res: Response): Promise<void>
-    notifyConsultationScheduled(req: Request, res: Response): Promise<void>
-    notifySubscriptionExpiring(req: Request, res: Response): Promise<void>
-    notifyNewCourseAvailable(req: Request, res: Response): Promise<void>
+    notifyNewCourseEnrollment: ControllerMethod;
+    notifyConsultationScheduled: ControllerMethod;
+    notifySubscriptionExpiring: ControllerMethod;
+    notifyNewCourseAvailable: ControllerMethod;
 }
 
 export default INotificationController;

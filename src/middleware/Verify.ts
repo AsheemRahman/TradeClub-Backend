@@ -1,8 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
+import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import dotenv from "dotenv";
 
 import { STATUS_CODES } from "../constants/statusCode";
+import { ERROR_MESSAGES } from "../constants/errorMessage";
+import JwtUtility from "../utils/JwtUtility";
 
 
 dotenv.config();
@@ -20,7 +22,6 @@ declare module "express-serve-static-core" {
 export const validate = (requiredRole?: string) => {
     return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const JWT_KEY = process.env.JWT_ACCESS_TOKEN_SECRET_KEY as string;
             let token: string | undefined;
             // Extract token
             if (req.headers.authorization?.startsWith("Bearer ")) {
@@ -30,12 +31,12 @@ export const validate = (requiredRole?: string) => {
             }
 
             if (!token) {
-                res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "Access token not found, please log in" });
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ message: ERROR_MESSAGES.TOKEN_NOT_FOUND });
                 return;
             }
 
             // Verify token synchronously
-            const data = jwt.verify(token, JWT_KEY) as { userId: string; role: string };
+            const data = JwtUtility.verifyToken(token, false) as { userId: string; role: string };
 
             if (!data || !data.userId) {
                 res.status(STATUS_CODES.FORBIDDEN).json({ message: "Invalid token structure." });
@@ -59,7 +60,7 @@ export const validate = (requiredRole?: string) => {
                 });
             } else if (error instanceof JsonWebTokenError) {
                 res.status(STATUS_CODES.FORBIDDEN).json({
-                    message: "Invalid or expired token, please log in again."
+                    message: ERROR_MESSAGES.INVALID_TOKEN
                 });
             } else {
                 res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({

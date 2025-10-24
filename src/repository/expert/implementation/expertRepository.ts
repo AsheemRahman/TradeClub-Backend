@@ -1,5 +1,5 @@
 import IExpertRepository from "../IExpertRepository";
-import { BaseRepository } from "../../base/implementation/BaseRepository";
+import { BaseRepository } from "../../base/implementation/baseRepository";
 import { IUserType } from "../../../types/IUser";
 import { OTP, OTPType } from "../../../model/user/otp";
 import { Expert, IExpert } from "../../../model/expert/expertSchema";
@@ -7,59 +7,59 @@ import { ExpertFormData } from "../../../types/IExpert";
 import { ExpertWallet, IExpertWallet } from "../../../model/expert/walletSchema";
 
 class expertRepository extends BaseRepository<IExpert> implements IExpertRepository {
+    private otpModel = OTP;
+    private walletModel = ExpertWallet;
+
     constructor() {
         super(Expert)
     }
 
     async findExpertByEmail(email: string): Promise<IExpert | null> {
-        const getUser = await Expert.findOne({ email: email });
-        return getUser;
+        return this.model.findOne({ email });
     }
 
-    async registerExpert(userData: IUserType): Promise<IExpert | null> {
-        const newUser = await Expert.create(userData);
-        return newUser;
+    async registerExpert(expertData: IUserType): Promise<IExpert | null> {
+        return this.create(expertData);
     }
 
     async resetPassword(email: string, hashedPassword: string): Promise<IExpert | null> {
-        const currentUser = await Expert.findOneAndUpdate({ email }, { password: hashedPassword }, { new: true });
+        const currentUser = await this.model.findOneAndUpdate({ email }, { password: hashedPassword }, { new: true });
         return currentUser;
     }
 
     async storeOtp(email: string, otp: number): Promise<OTPType | null> {
-        const storedOTP = await OTP.create({ email, otp })
+        const storedOTP = await this.otpModel.create({ email, otp })
         return storedOTP;
     }
 
     async findOtp(email: string): Promise<OTPType | null> {
-        const otp = await OTP.findOne({ email: email });
+        const otp = await this.otpModel.findOne({ email: email });
         return otp;
     }
 
     async storeResendOtp(email: string, otp: number): Promise<OTPType | null> {
         await OTP.findOneAndDelete({ email });
-        const newOTP = await OTP.create({ email, otp });
+        const newOTP = await this.otpModel.create({ email, otp });
         return newOTP;
     }
 
     async updateDetails(expertDetails: ExpertFormData): Promise<IExpert | null> {
         const { email, ...updateData } = expertDetails;
-        const updatedExpert = await Expert.findOneAndUpdate({ email }, { $set: { ...updateData, isVerified: "Pending" } }, { new: true });
+        const updatedExpert = await this.model.findOneAndUpdate({ email }, { $set: { ...updateData, isVerified: "Pending" } }, { new: true });
         return updatedExpert;
     }
 
     async getExpertById(expertId: string): Promise<IExpert | null> {
-        const user = await Expert.findOne({ _id: expertId });
-        return user;
+        const expert = await this.model.findOne({ _id: expertId });
+        return expert;
     }
 
     async updateExpertById(expertId: string, updateData: Partial<IExpert>): Promise<IExpert | null> {
-        const user = await Expert.findByIdAndUpdate(expertId, updateData, { new: true });
-        return user;
+        return this.findByIdAndUpdate(expertId, updateData);
     }
 
     async getWalletById(expertId: string): Promise<IExpertWallet | null> {
-        const user = await ExpertWallet.findOne({ expertId: expertId });
+        const user = await this.walletModel.findOne({ expertId: expertId });
         return user;
     }
 }

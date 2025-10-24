@@ -9,7 +9,7 @@ import { OTPType } from "../../../model/user/otp";
 import { IUser } from "../../../model/user/userSchema";
 import { ISubscriptionPlan } from "../../../model/admin/subscriptionSchema";
 import { IExpert } from "../../../model/expert/expertSchema";
-import { IExpertAvailability } from "../../../model/expert/AvailabilitySchema";
+import { IExpertAvailability } from "../../../model/expert/availabilitySchema";
 import { IUserSubscription } from "../../../model/user/userSubscriptionSchema";
 import { ISession } from "../../../model/expert/sessionSchema";
 import { UserMapper } from "../../../mapper/userMapper";

@@ -1,4 +1,4 @@
-import { IExpertEarning } from "../../model/expert/ExpertEarning";
+import { IExpertEarning } from "../../model/expert/expertEarning";
 
 
 interface IPayoutService {

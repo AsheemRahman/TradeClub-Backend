@@ -1,24 +1,38 @@
-import { Request, Response } from "express"
+import { NextFunction, Request, Response } from "express"
+
+type ControllerMethod = (req: Request, res: Response, next: NextFunction) => Promise<void>;
 
 interface IAdminController {
 
-    adminLogin(req: Request, res: Response): Promise<void>;
-    logout(req: Request, res: Response): Promise<void>;
+    //----------------------- Auth -----------------------
 
-    refreshToken(req: Request, res: Response): Promise<void>;
+    adminLogin: ControllerMethod;
+    logout: ControllerMethod;
+    refreshToken: ControllerMethod;
 
-    getUsers(req: Request, res: Response): Promise<void>;
-    getUserById(req: Request, res: Response): Promise<void>;
-    userStatus(req: Request, res: Response): Promise<void>;
+    //----------------------- User -----------------------
 
-    getExperts(req: Request, res: Response): Promise<void>;
-    expertStatus(req: Request, res: Response): Promise<void>;
-    expertDetail(req: Request, res: Response): Promise<void>;
-    approveExpert(req: Request, res: Response): Promise<void>;
-    declineExpert(req: Request, res: Response): Promise<void>;
+    getUsers: ControllerMethod;
+    getUserById: ControllerMethod;
+    userStatus: ControllerMethod;
 
-    getOrders(req: Request, res: Response): Promise<void>;
-    getRevenue(req: Request, res: Response): Promise<void>;
+    //----------------------- Expert -----------------------
+
+    getExperts: ControllerMethod;
+    expertStatus: ControllerMethod;
+    expertDetail: ControllerMethod;
+    approveExpert: ControllerMethod;
+    declineExpert: ControllerMethod;
+
+    //----------------------- Order -----------------------
+    
+    getOrders: ControllerMethod;
+    getRevenue: ControllerMethod;
+
+
+    //---------------------- Dashboard ---------------------
+
+    getStats: ControllerMethod;
 }
 
 export default IAdminController;

@@ -1,29 +1,33 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+
+
+type ControllerMethod = (req: Request, res: Response, next: NextFunction) => Promise<void>;
 
 
 interface IUserController {
-    registerPost(req: Request, res: Response): Promise<void>;
-    verifyOtp(req: Request, res: Response): Promise<void>;
-    resendOtp(req: Request, res: Response): Promise<void>;
-    loginPost(req: Request, res: Response): Promise<void>;
-    logout(req: Request, res: Response): Promise<void>;
-    googleLogin(req: Request, res: Response): Promise<void>;
-    refreshToken(req: Request, res: Response): Promise<void>;
-    forgotPassword(req: Request, res: Response): Promise<void>;
-    resetPassword(req: Request, res: Response): Promise<void>;
+    registerPost: ControllerMethod;
+    verifyOtp: ControllerMethod;
+    resendOtp: ControllerMethod;
+    loginPost: ControllerMethod;
+    logout: ControllerMethod;
+    googleLogin: ControllerMethod;
+    refreshToken: ControllerMethod;
+    forgotPassword: ControllerMethod;
+    resetPassword: ControllerMethod;
 
-    getProfile(req: Request, res: Response): Promise<void>;
-    updateProfile(req: Request, res: Response): Promise<void>;
+    getProfile: ControllerMethod;
+    updateProfile: ControllerMethod;
 
-    fetchPlans(req: Request, res: Response): Promise<void>;
-    getSessions(req: Request, res: Response): Promise<void>;
-    getSessionById(req: Request, res: Response): Promise<void>;
-    updateSession(req: Request, res: Response): Promise<void>;
+    fetchPlans: ControllerMethod;
+    getSessions: ControllerMethod;
+    getSessionById: ControllerMethod;
+    updateSession: ControllerMethod;
+    cancelSession: ControllerMethod;
 
-    getAllExpert(req: Request, res: Response): Promise<void>;
-    getExpertById(req: Request, res: Response): Promise<void>;
-    getExpertAvailability(req: Request, res: Response): Promise<void>;
-    checkSubscription(req: Request, res: Response): Promise<void>;
+    getAllExpert: ControllerMethod;
+    getExpertById: ControllerMethod;
+    getExpertAvailability: ControllerMethod;
+    checkSubscription: ControllerMethod;
 }
 
 export default IUserController;
