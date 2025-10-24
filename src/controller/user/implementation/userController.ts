@@ -85,37 +85,33 @@ class UserController implements IUserController {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INVALID_INPUT });
             return;
         }
-        const currentUser = await this._userService.findUser(email);
-        if (!currentUser || !currentUser.password) {
-            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.EMAIL_NOT_FOUND });
-            return;
-        }
-        if (!currentUser.isActive) {
-            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED });
-            return;
-        }
-        const isPasswordValid = await PasswordUtils.comparePassword(password, currentUser.password);
-        if (!isPasswordValid) {
-            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: ERROR_MESSAGES.INVALID_CREDENTIALS, data: null });
-            return;
-        }
-        const payload = { userId: (currentUser._id as string).toString(), role: ROLE.USER };
-        const accessToken = JwtUtility.generateAccessToken(payload);
-        const refreshToken = JwtUtility.generateRefreshToken(payload);
+            const currentUser = await this._userService.validateUserCredentials(email, password);
+            if (!currentUser) {
+                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "Invalid email or password" });
+                return;
+            }
+
+            if (!currentUser.isActive) {
+                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED });
+                return;
+            }
+            const payload = { userId: (currentUser.id as string).toString(), role: ROLE.USER };
+            const accessToken = JwtUtility.generateAccessToken(payload);
+            const refreshToken = JwtUtility.generateRefreshToken(payload);
         res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
         res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
-        res.status(STATUS_CODES.OK).json({
-            status: true, message: SUCCESS_MESSAGES.LOGIN,
-            data: {
-                accessToken,
-                user: {
-                    id: currentUser._id,
-                    email: currentUser.email,
-                    name: currentUser.fullName,
-                    role: ROLE.USER
+            res.status(STATUS_CODES.OK).json({
+                status: true, message: SUCCESS_MESSAGES.LOGIN,
+                data: {
+                    accessToken,
+                    user: {
+                        id: currentUser.id,
+                        email: currentUser.email,
+                        name: currentUser.fullName,
+                        role: ROLE.USER
+                    }
                 }
-            }
-        });
+            });
     });
 
     refreshToken = asyncHandler(async (req: Request, res: Response) => {

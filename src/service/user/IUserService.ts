@@ -1,3 +1,5 @@
+import { OtpResponseDTO } from '../../dto/otpDTO';
+import { UserResponseDTO } from '../../dto/userDTO';
 import { ISubscriptionPlan } from '../../model/admin/subscriptionSchema';
 import { IExpertAvailability } from '../../model/expert/availabilitySchema';
 import { IExpert } from '../../model/expert/expertSchema';
@@ -9,16 +11,17 @@ import { ISessionsResponse, IUserType } from '../../types/IUser';
 
 
 interface IUserService {
-    findUser(email: string): Promise<IUser | null>;
-    registerUser(userData: IUserType): Promise<IUser | null>;
-    resetPassword(email: string, password: string): Promise<IUser | null>;
+    findUser(email: string): Promise<UserResponseDTO | null>;
+    validateUserCredentials(email: string, password: string): Promise<UserResponseDTO | null>;
+    registerUser(userData: IUserType): Promise<UserResponseDTO | null>;
+    resetPassword(email: string, password: string): Promise<UserResponseDTO | null>;
 
-    storeOtp(email: string, otp: number): Promise<OTPType | null>;
-    findOtp(email: string): Promise<OTPType | null>;
-    storeResendOtp(email: string, otp: number): Promise<OTPType | null>;
+    storeOtp(email: string, otp: number): Promise<OtpResponseDTO | null>;
+    findOtp(email: string): Promise<OtpResponseDTO | null>;
+    storeResendOtp(email: string, otp: number): Promise<OtpResponseDTO | null>;
 
-    getUserById(userId: string): Promise<IUser | null>;
-    updateUserById(userId: string, updateData: Partial<IUser>): Promise<IUser | null>;
+    getUserById(userId: string): Promise<UserResponseDTO | null>;
+    updateUserById(userId: string, updateData: Partial<IUser>): Promise<UserResponseDTO | null>;
 
     fetchPlans(): Promise<ISubscriptionPlan[] | null>;
     getAllExpert(): Promise<IExpert[] | null>;

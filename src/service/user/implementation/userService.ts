@@ -12,7 +12,10 @@ import { IExpert } from "../../../model/expert/expertSchema";
 import { IExpertAvailability } from "../../../model/expert/availabilitySchema";
 import { IUserSubscription } from "../../../model/user/userSubscriptionSchema";
 import { ISession } from "../../../model/expert/sessionSchema";
-
+import { UserMapper } from "../../../mapper/userMapper";
+import { UserResponseDTO } from "../../../dto/userDTO";
+import { OtpMapper } from "../../../mapper/otpMapper";
+import { OtpResponseDTO } from "../../../dto/otpDTO";
 
 
 class UserService implements IUserService {
@@ -22,51 +25,63 @@ class UserService implements IUserService {
         this._userRepository = userRepository;
     };
 
-    async findUser(email: string): Promise<IUser | null> {
+    async findUser(email: string): Promise<UserResponseDTO | null> {
         const user = await this._userRepository.findUser(email);
-        return user;
+        return user ? UserMapper.toResponseDTO(user) : null;
     };
 
-    async registerUser(userData: IUserType): Promise<IUser | null> {
-        if (userData.password) {
-            const hashedPassword = await PasswordUtils.passwordHash(userData.password);
-            userData.password = hashedPassword;
+    async validateUserCredentials(email: string, password: string): Promise<UserResponseDTO | null> {
+        const user = await this._userRepository.findUser(email);
+        if (!user || !user.password) return null;
+        const isPasswordValid = await PasswordUtils.comparePassword(password, user.password);
+        if (!isPasswordValid) return null;
+        return user ? UserMapper.toResponseDTO(user) : null;
+    };
+
+    async registerUser(userData: IUserType): Promise<UserResponseDTO | null> {
+        const userEntity = UserMapper.toEntity(userData);
+        if (userEntity.password) {
+            userEntity.password = await PasswordUtils.passwordHash(userEntity.password);
         }
-        return await this._userRepository.registerUser(userData);
+        const newUser = await this._userRepository.registerUser(userEntity);
+        return newUser ? UserMapper.toResponseDTO(newUser) : null;
     };
 
-    async resetPassword(email: string, password: string): Promise<IUser | null> {
+    async resetPassword(email: string, password: string): Promise<UserResponseDTO | null> {
         const hashedPassword = await PasswordUtils.passwordHash(password);
-        return await this._userRepository.resetPassword(email, hashedPassword);
+        const user = await this._userRepository.resetPassword(email, hashedPassword);
+        return user ? UserMapper.toResponseDTO(user) : null;
     };
 
-    async storeOtp(email: string, otp: number): Promise<OTPType | null> {
-        const storedOtp = await this._userRepository.storeOtp(email, otp);
-        return storedOtp
+    async storeOtp(email: string, otp: number): Promise<OtpResponseDTO | null> {
+        const otpEntity: Partial<OTPType> = OtpMapper.toEntity({ email, otp });
+        const storedOtp = await this._userRepository.storeOtp(email, +(otpEntity.otp!));
+        return storedOtp ? OtpMapper.toResponseDTO(storedOtp) : null;
     };
 
-    async findOtp(email: string): Promise<OTPType | null> {
+    async findOtp(email: string): Promise<OtpResponseDTO | null> {
         const otp = await this._userRepository.findOtp(email);
-        return otp;
+        return otp ? OtpMapper.toResponseDTO(otp) : null;
     };
 
-    async storeResendOtp(email: string, otp: number): Promise<OTPType | null> {
-        const resendOTP = await this._userRepository.storeResendOtp(email, otp);
-        return resendOTP;
+    async storeResendOtp(email: string, otp: number): Promise<OtpResponseDTO | null> {
+        const otpEntity: Partial<OTPType> = OtpMapper.toEntity({ email, otp });
+        const resendOtp = await this._userRepository.storeResendOtp(email, +(otpEntity.otp!));
+        return resendOtp ? OtpMapper.toResponseDTO(resendOtp) : null;
     };
 
-    async getUserById(userId: string): Promise<IUser | null> {
+    async getUserById(userId: string): Promise<UserResponseDTO | null> {
         const user = await this._userRepository.getUserById(userId);
-        return user;
+        return user ? UserMapper.toResponseDTO(user) : null;
     };
 
-    async updateUserById(userId: string, updateData: Partial<IUser>): Promise<IUser | null> {
-        if (updateData.password) {
-            const hashedPassword = await PasswordUtils.passwordHash(updateData.password);
-            updateData.password = hashedPassword;
+    async updateUserById(userId: string, updateData: Partial<IUser>): Promise<UserResponseDTO | null> {
+        const userEntity = UserMapper.updateEntity(updateData);
+        if (userEntity.password) {
+            userEntity.password = await PasswordUtils.passwordHash(userEntity.password);
         }
-        const updatedUser = await this._userRepository.updateUserById(userId, updateData);
-        return updatedUser;
+        const updatedUser = await this._userRepository.updateUserById(userId, userEntity);
+        return updatedUser ? UserMapper.toResponseDTO(updatedUser) : null;
     };
 
     async fetchPlans(): Promise<ISubscriptionPlan[] | null> {
