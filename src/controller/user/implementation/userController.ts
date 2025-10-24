@@ -5,12 +5,10 @@ import { SUCCESS_MESSAGES } from "../../../constants/successMessage"
 import { IUserType } from "../../../types/IUser";
 import JwtUtility, { TokenPayload } from "../../../utils/JwtUtility";
 
-
 import IUserController from "../IUserController";
 import IUserService from "../../../service/user/IUserService";
 import OtpUtility from "../../../utils/otpUtility";
 import MailUtility from "../../../utils/mailUtility";
-import PasswordUtils from "../../../utils/passwordUtils";
 import { JwtPayload } from "jsonwebtoken";
 import IOrderService from "../../../service/user/IOrderService";
 import { ROLE } from "../../../constants/role";
@@ -156,7 +154,7 @@ class UserController implements IUserController {
             res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED, });
             return;
         }
-        const payload = { userId: (currentUser._id as string).toString(), role: ROLE.USER };
+        const payload = { userId: (currentUser.id as string).toString(), role: ROLE.USER };
         const accessToken = JwtUtility.generateAccessToken(payload);
         const refreshToken = JwtUtility.generateRefreshToken(payload);
         res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
@@ -166,7 +164,7 @@ class UserController implements IUserController {
             data: {
                 accessToken,
                 user: {
-                    id: currentUser._id,
+                    id: currentUser.id,
                     email: currentUser.email,
                     name: currentUser.fullName,
                     role: ROLE.USER

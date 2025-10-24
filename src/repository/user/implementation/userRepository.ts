@@ -10,7 +10,6 @@ import { Expert, IExpert } from "../../../model/expert/expertSchema";
 import { ExpertAvailability, IExpertAvailability } from "../../../model/expert/availabilitySchema";
 import { IUserSubscription, UserSubscription } from "../../../model/user/userSubscriptionSchema";
 import { ISession, Session } from "../../../model/expert/sessionSchema";
-import { UpdateUserDTO } from "../../../dto/userDTO";
 
 class userRepository extends BaseRepository<IUser> implements IUserRepository {
     constructor() {
