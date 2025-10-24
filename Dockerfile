@@ -16,7 +16,7 @@ RUN npm install
 COPY . .
 
 # Build TypeScript to JavaScript (creates the 'dist' folder)
-# RUN npm run build
+RUN npm run build
 
 # Expose port
 EXPOSE 8080
