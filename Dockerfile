@@ -1,6 +1,9 @@
 # Base image
 FROM node:alpine
 
+# Install ffmpeg (includes ffprobe)
+RUN apk update && apk add --no-cache ffmpeg
+
 # Set working directory
 WORKDIR /app
 
