@@ -1,9 +1,6 @@
 # Base image
 FROM node:alpine
 
-# Install ffmpeg (includes ffprobe)
-RUN apk update && apk add --no-cache ffmpeg
-
 # Set working directory
 WORKDIR /app
 
@@ -14,6 +11,8 @@ RUN npm install
 
 # Copy source code
 COPY . .
+
+RUN npm run build
 
 # Expose port
 EXPOSE 8080
