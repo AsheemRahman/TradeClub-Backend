@@ -37,6 +37,7 @@ export const validate = (requiredRole?: string) => {
             }
 
             if (!token) {
+                console.log("Token missing. Headers:", req.headers, "Cookies:", req.cookies);
                 res.status(STATUS_CODES.UNAUTHORIZED).json({ message: ERROR_MESSAGES.TOKEN_NOT_FOUND });
                 return;
             }
