@@ -21,13 +21,13 @@ declare module "express-serve-static-core" {
 
 export const validate = (requiredRole?: string) => {
     return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        console.log("Headers:", req.headers);
-        console.log("Cookies:", req.cookies);
         try {
             let token: string | undefined;
             // Extract token
             if (req.headers.authorization?.startsWith("Bearer ")) {
                 token = req.headers.authorization.split(" ")[1];
+            } else if (req.cookies?.["accessToken"]) {
+                token = req.cookies["accessToken"];
             } else if (req.cookies?.["admin-accessToken"]) {
                 token = req.cookies["admin-accessToken"];
             }
