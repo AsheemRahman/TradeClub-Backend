@@ -26,6 +26,7 @@ class AdminController implements IAdminController {
 
     adminLogin = asyncHandler(async (req: Request, res: Response) => {
         const { email, password } = req.body;
+        console.log("data from frontend", req.body)
         if (!email || !password) {
             res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: ERROR_MESSAGES.BAD_REQUEST, data: null })
         }
