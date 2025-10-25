@@ -26,10 +26,14 @@ export const validate = (requiredRole?: string) => {
             // Extract token
             if (req.headers.authorization?.startsWith("Bearer ")) {
                 token = req.headers.authorization.split(" ")[1];
-            } else if (req.cookies?.["accessToken"]) {
-                token = req.cookies["accessToken"];
-            } else if (req.cookies?.["admin-accessToken"]) {
-                token = req.cookies["admin-accessToken"];
+            }
+
+            if (!token) {
+                if (req.cookies?.["accessToken"]) {
+                    token = req.cookies["accessToken"];
+                } else if (req.cookies?.["admin-accessToken"]) {
+                    token = req.cookies["admin-accessToken"];
+                }
             }
 
             if (!token) {
