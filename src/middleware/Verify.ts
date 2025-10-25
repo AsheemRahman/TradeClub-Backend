@@ -21,6 +21,8 @@ declare module "express-serve-static-core" {
 
 export const validate = (requiredRole?: string) => {
     return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        console.log("Headers:", req.headers);
+        console.log("Cookies:", req.cookies);
         try {
             let token: string | undefined;
             // Extract token
