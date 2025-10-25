@@ -37,8 +37,8 @@ class AdminController implements IAdminController {
         const payload: TokenPayload = { userId: email, role: ROLE.ADMIN };
         const accessToken = JwtUtility.generateAccessToken(payload);
         const refreshToken = JwtUtility.generateRefreshToken(payload);
-        res.cookie("admin-accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-        res.cookie("admin-refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "none", maxAge: parseInt(process.env.ADMIN_REFRESH_TOKEN_MAX_AGE || "86400000") });
+        res.cookie("admin-accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", domain: ".tradeclub.lol", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+        res.cookie("admin-refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "none", domain: ".tradeclub.lol", maxAge: parseInt(process.env.ADMIN_REFRESH_TOKEN_MAX_AGE || "86400000") });
         res.status(STATUS_CODES.OK).json({
             success: true, message: SUCCESS_MESSAGES.LOGIN,
             data: {
@@ -297,7 +297,7 @@ class AdminController implements IAdminController {
 
     getStats = asyncHandler(async (req: Request, res: Response) => {
         const stats = await this._adminService.getStats();
-        res.status(STATUS_CODES.OK).json({ status: true, message: "Dashboard data fetched successfully", totalCustomers : stats.totalCustomers, totalExperts : stats.totalExperts });
+        res.status(STATUS_CODES.OK).json({ status: true, message: "Dashboard data fetched successfully", totalCustomers: stats.totalCustomers, totalExperts: stats.totalExperts });
     });
 
 
