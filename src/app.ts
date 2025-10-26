@@ -51,6 +51,10 @@ app.use(morganMiddleware);
 
 mongoDB();
 
+//----------------------- Cron Jobs -----------------------------
+
+import './utils/sessionCron';
+
 
 //---------------------------- routes --------------------------
 
