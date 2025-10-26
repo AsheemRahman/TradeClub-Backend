@@ -126,7 +126,7 @@ class UserController {
                 return;
             }
             const newAccessToken = JwtUtility_1.default.generateAccessToken({ userId, role });
-            res.cookie("accessToken", newAccessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+            res.cookie("accessToken", newAccessToken, { httpOnly: false, domain: '.tradeclub.lol', secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
             res.status(statusCode_1.STATUS_CODES.OK).json({ status: true, accessToken: newAccessToken, message: "Access token refreshed successfully" });
         }));
         this.googleLogin = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -151,8 +151,8 @@ class UserController {
             const payload = { userId: currentUser.id.toString(), role: role_1.ROLE.USER };
             const accessToken = JwtUtility_1.default.generateAccessToken(payload);
             const refreshToken = JwtUtility_1.default.generateRefreshToken(payload);
-            res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-            res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
+            res.cookie("accessToken", accessToken, { httpOnly: false, domain: '.tradeclub.lol', secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+            res.cookie("refreshToken", refreshToken, { httpOnly: true, domain: '.tradeclub.lol', secure: process.env.NODE_ENV === "production", sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
             res.status(statusCode_1.STATUS_CODES.OK).json({
                 status: true, message: successMessage_1.SUCCESS_MESSAGES.LOGIN, accessToken,
                 data: {

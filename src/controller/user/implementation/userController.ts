@@ -83,33 +83,33 @@ class UserController implements IUserController {
             res.status(STATUS_CODES.BAD_REQUEST).json({ status: false, message: ERROR_MESSAGES.INVALID_INPUT });
             return;
         }
-            const currentUser = await this._userService.validateUserCredentials(email, password);
-            if (!currentUser) {
-                res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "Invalid email or password" });
-                return;
-            }
+        const currentUser = await this._userService.validateUserCredentials(email, password);
+        if (!currentUser) {
+            res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: "Invalid email or password" });
+            return;
+        }
 
-            if (!currentUser.isActive) {
-                res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED });
-                return;
-            }
-            const payload = { userId: (currentUser.id as string).toString(), role: ROLE.USER };
-            const accessToken = JwtUtility.generateAccessToken(payload);
-            const refreshToken = JwtUtility.generateRefreshToken(payload);
-        res.cookie("accessToken", accessToken, { httpOnly: false,domain: '.tradeclub.lol', secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-        res.cookie("refreshToken", refreshToken, { httpOnly: true,domain: '.tradeclub.lol', secure: process.env.NODE_ENV === "production", sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
-            res.status(STATUS_CODES.OK).json({
-                status: true, message: SUCCESS_MESSAGES.LOGIN,
-                data: {
-                    accessToken,
-                    user: {
-                        id: currentUser.id,
-                        email: currentUser.email,
-                        name: currentUser.fullName,
-                        role: ROLE.USER
-                    }
+        if (!currentUser.isActive) {
+            res.status(STATUS_CODES.NOT_FOUND).json({ status: false, message: ERROR_MESSAGES.USER_BLOCKED });
+            return;
+        }
+        const payload = { userId: (currentUser.id as string).toString(), role: ROLE.USER };
+        const accessToken = JwtUtility.generateAccessToken(payload);
+        const refreshToken = JwtUtility.generateRefreshToken(payload);
+        res.cookie("accessToken", accessToken, { httpOnly: false, domain: '.tradeclub.lol', secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+        res.cookie("refreshToken", refreshToken, { httpOnly: true, domain: '.tradeclub.lol', secure: process.env.NODE_ENV === "production", sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
+        res.status(STATUS_CODES.OK).json({
+            status: true, message: SUCCESS_MESSAGES.LOGIN,
+            data: {
+                accessToken,
+                user: {
+                    id: currentUser.id,
+                    email: currentUser.email,
+                    name: currentUser.fullName,
+                    role: ROLE.USER
                 }
-            });
+            }
+        });
     });
 
     refreshToken = asyncHandler(async (req: Request, res: Response) => {
@@ -132,7 +132,7 @@ class UserController implements IUserController {
             return
         }
         const newAccessToken = JwtUtility.generateAccessToken({ userId, role });
-        res.cookie("accessToken", newAccessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+        res.cookie("accessToken", newAccessToken, { httpOnly: false, domain: '.tradeclub.lol', secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
         res.status(STATUS_CODES.OK).json({ status: true, accessToken: newAccessToken, message: "Access token refreshed successfully" });
     });
 
@@ -157,8 +157,8 @@ class UserController implements IUserController {
         const payload = { userId: (currentUser.id as string).toString(), role: ROLE.USER };
         const accessToken = JwtUtility.generateAccessToken(payload);
         const refreshToken = JwtUtility.generateRefreshToken(payload);
-        res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-        res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
+        res.cookie("accessToken", accessToken, { httpOnly: false, domain: '.tradeclub.lol', secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+        res.cookie("refreshToken", refreshToken, { httpOnly: true, domain: '.tradeclub.lol', secure: process.env.NODE_ENV === "production", sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
         res.status(STATUS_CODES.OK).json({
             status: true, message: SUCCESS_MESSAGES.LOGIN, accessToken,
             data: {
