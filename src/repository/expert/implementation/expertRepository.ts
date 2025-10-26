@@ -15,7 +15,7 @@ class expertRepository extends BaseRepository<IExpert> implements IExpertReposit
     }
 
     async findExpertByEmail(email: string): Promise<IExpert | null> {
-        return this.model.findOne({ email });
+        return Expert.findOne({ email });
     }
 
     async registerExpert(expertData: IUserType): Promise<IExpert | null> {
