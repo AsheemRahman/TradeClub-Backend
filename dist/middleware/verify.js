@@ -21,17 +21,23 @@ const JwtUtility_1 = __importDefault(require("../utils/JwtUtility"));
 dotenv_1.default.config();
 const validate = (requiredRole) => {
     return (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-        var _a, _b;
+        var _a, _b, _c;
         try {
             let token;
             // Extract token
             if ((_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.startsWith("Bearer ")) {
                 token = req.headers.authorization.split(" ")[1];
             }
-            else if ((_b = req.cookies) === null || _b === void 0 ? void 0 : _b["admin-accessToken"]) {
-                token = req.cookies["admin-accessToken"];
+            if (!token) {
+                if ((_b = req.cookies) === null || _b === void 0 ? void 0 : _b["accessToken"]) {
+                    token = req.cookies["accessToken"];
+                }
+                else if ((_c = req.cookies) === null || _c === void 0 ? void 0 : _c["admin-accessToken"]) {
+                    token = req.cookies["admin-accessToken"];
+                }
             }
             if (!token) {
+                console.log("Token missing. Headers:", req.headers, "Cookies:", req.cookies);
                 res.status(statusCode_1.STATUS_CODES.UNAUTHORIZED).json({ message: errorMessage_1.ERROR_MESSAGES.TOKEN_NOT_FOUND });
                 return;
             }

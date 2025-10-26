@@ -105,7 +105,7 @@ class ExpertController {
             const accessToken = JwtUtility_1.default.generateAccessToken(payload);
             const refreshToken = JwtUtility_1.default.generateRefreshToken(payload);
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-            res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
+            res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
             res.status(statusCode_1.STATUS_CODES.OK).json({
                 status: true, message: successMessage_1.SUCCESS_MESSAGES.LOGIN,
                 data: {
@@ -143,7 +143,7 @@ class ExpertController {
             const accessToken = JwtUtility_1.default.generateAccessToken(payload);
             const refreshToken = JwtUtility_1.default.generateRefreshToken(payload);
             res.cookie("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-            res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
+            res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
             res.status(statusCode_1.STATUS_CODES.OK).json({
                 status: true, message: successMessage_1.SUCCESS_MESSAGES.LOGIN,
                 data: {
