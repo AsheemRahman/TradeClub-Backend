@@ -73,10 +73,15 @@ class AdminController implements IAdminController {
     });
 
     logout = asyncHandler(async (req: Request, res: Response) => {
-        res.clearCookie("admin-accessToken", { httpOnly: true, secure: true, sameSite: "none", });
-        res.clearCookie("admin-refreshToken", { httpOnly: true, secure: true, sameSite: "none", });
+        const cookieOptions = {
+            domain: '.tradeclub.lol',
+            secure: true,
+            sameSite: "none" as const,
+            httpOnly: false,
+        };
+        res.clearCookie("admin-accessToken", cookieOptions);
+        res.clearCookie("admin-refreshToken", { ...cookieOptions, httpOnly: true });
         res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.LOGOUT });
-        return
     });
 
 
