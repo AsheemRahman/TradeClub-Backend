@@ -112,7 +112,7 @@ class ExpertController implements IExpertController {
         const accessToken = JwtUtility.generateAccessToken(payload);
         const refreshToken = JwtUtility.generateRefreshToken(payload);
         res.cookie("accessToken", accessToken, { httpOnly: false, domain: '.tradeclub.lol', secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-        res.cookie("refreshToken", refreshToken, { httpOnly: true, domain: '.tradeclub.lol', secure: process.env.NODE_ENV === "production", sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
+        res.cookie("refreshToken", refreshToken, { httpOnly: true, domain: '.tradeclub.lol', secure: true, sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
         res.status(STATUS_CODES.OK).json({
             status: true, message: SUCCESS_MESSAGES.LOGIN,
             data: {
@@ -150,7 +150,7 @@ class ExpertController implements IExpertController {
         const accessToken = JwtUtility.generateAccessToken(payload);
         const refreshToken = JwtUtility.generateRefreshToken(payload);
         res.cookie("accessToken", accessToken, { httpOnly: false, domain: '.tradeclub.lol', secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-        res.cookie("refreshToken", refreshToken, { httpOnly: true, domain: '.tradeclub.lol', secure: process.env.NODE_ENV === "production", sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
+        res.cookie("refreshToken", refreshToken, { httpOnly: true, domain: '.tradeclub.lol', secure: true, sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
         res.status(STATUS_CODES.OK).json({
             status: true, message: SUCCESS_MESSAGES.LOGIN,
             data: {
@@ -233,8 +233,14 @@ class ExpertController implements IExpertController {
 
 
     logout = asyncHandler(async (req: Request, res: Response) => {
-        res.clearCookie("accessToken", { httpOnly: true, secure: true, sameSite: "none", });
-        res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: "none", });
+        const baseOptions = {
+            domain: '.tradeclub.lol',
+            path: '/',
+            secure: true,
+            sameSite: 'none' as const,
+        };
+        res.clearCookie('accessToken', { ...baseOptions, httpOnly: false });
+        res.clearCookie('refreshToken', { ...baseOptions, httpOnly: true });
         res.status(STATUS_CODES.OK).json({ status: true, message: SUCCESS_MESSAGES.LOGOUT });
         return
     });
