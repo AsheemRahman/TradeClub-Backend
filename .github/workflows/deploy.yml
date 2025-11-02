@@ -1,0 +1,50 @@
+name: Deploy Backend to AWS EC2
+
+on:
+  push:
+    branches:
+      - main # Trigger deployment only on main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build || echo "No build script found"
+
+      - name: Deploy to AWS EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Move to app directory (adjust path if different)
+            cd /home/ubuntu/TradeClub-Backend || exit
+
+            echo "Pulling latest changes..."
+            git pull origin main
+
+            echo "Installing dependencies..."
+            npm install
+
+            echo "Building project..."
+            npm run build || echo "No build script found"
+
+            echo "Restarting app with PM2..."
+            pm2 stop TradeClub-Backend || true
+            pm2 start dist/app.js --name TradeClub-Backend
+
+            echo "✅ Deployment complete!"
