@@ -103,10 +103,20 @@ class NotificationService {
     }
 
     async notifyConsultationScheduled(userId: string | mongoose.Types.ObjectId, consultationDate: string, consultationId: string | mongoose.Types.ObjectId): Promise<INotification> {
+        const formattedDate = new Date(consultationDate).toLocaleString('en-IN', {
+            timeZone: 'Asia/Kolkata',
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
         return await this.createNotification(
             userId,
             'Consultation Scheduled',
-            `Your consultation has been scheduled for ${consultationDate}. Please be on time.`,
+            `Your consultation has been scheduled for ${formattedDate}. Please be on time.`,
             {
                 type: 'consultation',
                 actionUrl: `/consultation/${consultationId}`,
