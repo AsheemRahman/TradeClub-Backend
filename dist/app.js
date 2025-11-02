@@ -35,6 +35,8 @@ app.use(express_1.default.urlencoded({ extended: true }));
 app.use(morganMiddleware_1.default);
 //----------------------- Confiq Mongodb -----------------------
 (0, dbConfig_1.default)();
+//----------------------- Cron Jobs -----------------------------
+require("./utils/sessionCron");
 //---------------------------- routes --------------------------
 app.use("/api/user", userRoute_1.default);
 app.use("/api/expert", expertRoute_1.default);

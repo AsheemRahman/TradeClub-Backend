@@ -71,10 +71,15 @@ class AdminController {
             res.status(statusCode_1.STATUS_CODES.OK).json({ status: true, accessToken: newAccessToken, message: "Access token refreshed successfully" });
         }));
         this.logout = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(this, void 0, void 0, function* () {
-            res.clearCookie("admin-accessToken", { httpOnly: true, secure: true, sameSite: "none", });
-            res.clearCookie("admin-refreshToken", { httpOnly: true, secure: true, sameSite: "none", });
+            const baseOptions = {
+                domain: '.tradeclub.lol',
+                path: '/',
+                secure: true,
+                sameSite: 'none',
+            };
+            res.clearCookie('admin-accessToken', Object.assign(Object.assign({}, baseOptions), { httpOnly: false }));
+            res.clearCookie('admin-refreshToken', Object.assign(Object.assign({}, baseOptions), { httpOnly: true }));
             res.status(statusCode_1.STATUS_CODES.OK).json({ status: true, message: successMessage_1.SUCCESS_MESSAGES.LOGOUT });
-            return;
         }));
         this.getUsers = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(this, void 0, void 0, function* () {
             const { search = "", status, sort = "createdAt", page = "1", limit = "10" } = req.query;

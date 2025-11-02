@@ -18,6 +18,8 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const statusCode_1 = require("../constants/statusCode");
 const errorMessage_1 = require("../constants/errorMessage");
 const JwtUtility_1 = __importDefault(require("../utils/JwtUtility"));
+const userSchema_1 = require("../model/user/userSchema");
+const expertSchema_1 = require("../model/expert/expertSchema");
 dotenv_1.default.config();
 const validate = (requiredRole) => {
     return (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -29,15 +31,9 @@ const validate = (requiredRole) => {
                 token = req.headers.authorization.split(" ")[1];
             }
             if (!token) {
-                if ((_b = req.cookies) === null || _b === void 0 ? void 0 : _b["accessToken"]) {
-                    token = req.cookies["accessToken"];
-                }
-                else if ((_c = req.cookies) === null || _c === void 0 ? void 0 : _c["admin-accessToken"]) {
-                    token = req.cookies["admin-accessToken"];
-                }
+                token = ((_b = req.cookies) === null || _b === void 0 ? void 0 : _b["accessToken"]) || ((_c = req.cookies) === null || _c === void 0 ? void 0 : _c["admin-accessToken"]);
             }
             if (!token) {
-                console.log("Token missing. Headers:", req.headers, "Cookies:", req.cookies);
                 res.status(statusCode_1.STATUS_CODES.UNAUTHORIZED).json({ message: errorMessage_1.ERROR_MESSAGES.TOKEN_NOT_FOUND });
                 return;
             }
@@ -52,8 +48,34 @@ const validate = (requiredRole) => {
                 res.status(statusCode_1.STATUS_CODES.FORBIDDEN).json({ message: "Access denied: Insufficient permissions." });
                 return;
             }
-            req.userId = data.userId;
-            req.role = data.role;
+            const { role, userId } = data;
+            let account = null;
+            // Fetch from DB only for user/expert
+            if (role === "user") {
+                account = yield userSchema_1.User.findById(userId);
+            }
+            else if (role === "expert") {
+                account = yield expertSchema_1.Expert.findById(userId);
+            }
+            else if (role === "admin") {
+                req.role = "admin";
+                req.userId = "admin";
+                return next();
+            }
+            else {
+                res.status(statusCode_1.STATUS_CODES.FORBIDDEN).json({ message: "Invalid role in token." });
+                return;
+            }
+            if (!account) {
+                res.status(statusCode_1.STATUS_CODES.UNAUTHORIZED).json({ message: "Account not found." });
+                return;
+            }
+            if (account.isActive === false) {
+                res.status(statusCode_1.STATUS_CODES.FORBIDDEN).json({ message: "Your account is blocked or inactive. Please contact support.", });
+                return;
+            }
+            req.userId = userId;
+            req.role = role;
             next();
         }
         catch (error) {

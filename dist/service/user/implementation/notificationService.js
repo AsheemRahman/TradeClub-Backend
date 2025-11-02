@@ -79,7 +79,17 @@ class NotificationService {
     }
     notifyConsultationScheduled(userId, consultationDate, consultationId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.createNotification(userId, 'Consultation Scheduled', `Your consultation has been scheduled for ${consultationDate}. Please be on time.`, {
+            const formattedDate = new Date(consultationDate).toLocaleString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+            return yield this.createNotification(userId, 'Consultation Scheduled', `Your consultation has been scheduled for ${formattedDate}. Please be on time.`, {
                 type: 'consultation',
                 actionUrl: `/consultation/${consultationId}`,
                 priority: 'high',
