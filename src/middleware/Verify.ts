@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import { STATUS_CODES } from "../constants/statusCode";
 import { ERROR_MESSAGES } from "../constants/errorMessage";
 import JwtUtility from "../utils/JwtUtility";
+import { User } from "../model/user/userSchema";
+import { Expert } from "../model/expert/expertSchema";
 
 
 dotenv.config();
@@ -29,15 +31,10 @@ export const validate = (requiredRole?: string) => {
             }
 
             if (!token) {
-                if (req.cookies?.["accessToken"]) {
-                    token = req.cookies["accessToken"];
-                } else if (req.cookies?.["admin-accessToken"]) {
-                    token = req.cookies["admin-accessToken"];
-                }
+                token = req.cookies?.["accessToken"] || req.cookies?.["admin-accessToken"];
             }
 
             if (!token) {
-                console.log("Token missing. Headers:", req.headers, "Cookies:", req.cookies);
                 res.status(STATUS_CODES.UNAUTHORIZED).json({ message: ERROR_MESSAGES.TOKEN_NOT_FOUND });
                 return;
             }
@@ -56,10 +53,36 @@ export const validate = (requiredRole?: string) => {
                 return;
             }
 
-            req.userId = data.userId;
-            req.role = data.role;
+            const { role, userId } = data;
+            let account: any = null;
 
+            // Fetch from DB only for user/expert
+            if (role === "user") {
+                account = await User.findById(userId);
+            } else if (role === "expert") {
+                account = await Expert.findById(userId);
+            } else if (role === "admin") {
+                req.role = "admin";
+                req.userId = "admin";
+                return next();
+            } else {
+                res.status(STATUS_CODES.FORBIDDEN).json({ message: "Invalid role in token." });
+                return
+            }
+
+            if (!account) {
+                res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "Account not found." });
+                return
+            }
+            if (account.isActive === false) {
+                res.status(STATUS_CODES.FORBIDDEN).json({ message: "Your account is blocked or inactive. Please contact support.", });
+                return
+            }
+
+            req.userId = userId;
+            req.role = role;
             next();
+
         } catch (error) {
             if (error instanceof TokenExpiredError) {
                 res.status(STATUS_CODES.UNAUTHORIZED).json({
