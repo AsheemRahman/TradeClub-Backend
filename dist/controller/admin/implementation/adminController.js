@@ -36,8 +36,8 @@ class AdminController {
             const payload = { userId: email, role: role_1.ROLE.ADMIN };
             const accessToken = JwtUtility_1.default.generateAccessToken(payload);
             const refreshToken = JwtUtility_1.default.generateRefreshToken(payload);
-            res.cookie("admin-accessToken", accessToken, { httpOnly: false, domain: '.tradeclub.lol', secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-            res.cookie("admin-refreshToken", refreshToken, { httpOnly: true, domain: '.tradeclub.lol', secure: true, sameSite: "none", maxAge: parseInt(process.env.ADMIN_REFRESH_TOKEN_MAX_AGE || "86400000") });
+            res.cookie("admin-accessToken", accessToken, { httpOnly: false, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+            res.cookie("admin-refreshToken", refreshToken, { httpOnly: true, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.ADMIN_REFRESH_TOKEN_MAX_AGE || "86400000") });
             res.status(statusCode_1.STATUS_CODES.OK).json({
                 success: true, message: successMessage_1.SUCCESS_MESSAGES.LOGIN,
                 data: {
@@ -67,12 +67,12 @@ class AdminController {
                 return;
             }
             const newAccessToken = JwtUtility_1.default.generateAccessToken({ userId, role });
-            res.cookie("admin-accessToken", newAccessToken, { httpOnly: false, domain: '.tradeclub.lol', secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+            res.cookie("admin-accessToken", newAccessToken, { httpOnly: false, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
             res.status(statusCode_1.STATUS_CODES.OK).json({ status: true, accessToken: newAccessToken, message: "Access token refreshed successfully" });
         }));
         this.logout = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(this, void 0, void 0, function* () {
             const baseOptions = {
-                domain: '.tradeclub.lol',
+                domain: process.env.COOKIE_DOMAIN,
                 path: '/',
                 secure: true,
                 sameSite: 'none',

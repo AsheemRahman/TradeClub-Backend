@@ -104,8 +104,8 @@ class ExpertController {
             };
             const accessToken = JwtUtility_1.default.generateAccessToken(payload);
             const refreshToken = JwtUtility_1.default.generateRefreshToken(payload);
-            res.cookie("accessToken", accessToken, { httpOnly: false, domain: '.tradeclub.lol', secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-            res.cookie("refreshToken", refreshToken, { httpOnly: true, domain: '.tradeclub.lol', secure: true, sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
+            res.cookie("accessToken", accessToken, { httpOnly: false, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+            res.cookie("refreshToken", refreshToken, { httpOnly: true, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
             res.status(statusCode_1.STATUS_CODES.OK).json({
                 status: true, message: successMessage_1.SUCCESS_MESSAGES.LOGIN,
                 data: {
@@ -142,8 +142,8 @@ class ExpertController {
             const payload = { userId: currentExpert._id.toString(), role: role_1.ROLE.EXPERT };
             const accessToken = JwtUtility_1.default.generateAccessToken(payload);
             const refreshToken = JwtUtility_1.default.generateRefreshToken(payload);
-            res.cookie("accessToken", accessToken, { httpOnly: false, domain: '.tradeclub.lol', secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-            res.cookie("refreshToken", refreshToken, { httpOnly: true, domain: '.tradeclub.lol', secure: true, sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
+            res.cookie("accessToken", accessToken, { httpOnly: false, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+            res.cookie("refreshToken", refreshToken, { httpOnly: true, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
             res.status(statusCode_1.STATUS_CODES.OK).json({
                 status: true, message: successMessage_1.SUCCESS_MESSAGES.LOGIN,
                 data: {
@@ -221,7 +221,7 @@ class ExpertController {
         }));
         this.logout = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(this, void 0, void 0, function* () {
             const baseOptions = {
-                domain: '.tradeclub.lol',
+                domain: process.env.COOKIE_DOMAIN,
                 path: '/',
                 secure: true,
                 sameSite: 'none',
