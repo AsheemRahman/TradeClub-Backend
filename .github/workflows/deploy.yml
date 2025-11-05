@@ -40,8 +40,8 @@ jobs:
             echo "Installing dependencies..."
             npm install
 
-            echo "Building project..."
-            npm run build || echo "No build script found"
+            # echo "Building project..."
+            # npm run build || echo "No build script found"
 
             echo "Restarting app with PM2..."
             pm2 stop tradeclub || true
