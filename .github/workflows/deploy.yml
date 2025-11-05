@@ -32,7 +32,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             # Move to app directory (adjust path if different)
-            cd /home/ubuntu/TradeClub-Backend || exit
+            cd TradeClub-Backend || exit
 
             echo "Pulling latest changes..."
             git pull origin main
@@ -44,7 +44,7 @@ jobs:
             npm run build || echo "No build script found"
 
             echo "Restarting app with PM2..."
-            pm2 stop TradeClub-Backend || true
-            pm2 start dist/app.js --name TradeClub-Backend
+            pm2 stop tradeclub || true
+            pm2 start dist/app.js --name tradeclub
 
             echo "✅ Deployment complete!"
