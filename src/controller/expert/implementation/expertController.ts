@@ -105,14 +105,18 @@ class ExpertController implements IExpertController {
             res.status(STATUS_CODES.FORBIDDEN).json({ status: false, message: ERROR_MESSAGES.INVALID_CREDENTIALS, data: null });
             return;
         }
-        const payload = {
-            userId: (currentExpert._id as string).toString(),
-            role: ROLE.EXPERT
-        };
+        const payload = { userId: (currentExpert._id as string).toString(), role: ROLE.EXPERT };
         const accessToken = JwtUtility.generateAccessToken(payload);
         const refreshToken = JwtUtility.generateRefreshToken(payload);
-        res.cookie("accessToken", accessToken, { httpOnly: false, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-        res.cookie("refreshToken", refreshToken, { httpOnly: true, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
+        const isProduction = process.env.NODE_ENV === "production";
+        const cookieOptions = {
+            secure: isProduction,
+            sameSite: isProduction ? "none" as const : "lax" as const,
+            path: "/",
+            ...(isProduction && process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {}),
+        };
+        res.cookie("accessToken", accessToken, { ...cookieOptions, httpOnly: false, maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000", 10), });
+        res.cookie("refreshToken", refreshToken, { ...cookieOptions, httpOnly: true, maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000", 10), });
         res.status(STATUS_CODES.OK).json({
             status: true, message: SUCCESS_MESSAGES.LOGIN,
             data: {
@@ -149,8 +153,15 @@ class ExpertController implements IExpertController {
         const payload = { userId: (currentExpert._id as string).toString(), role: ROLE.EXPERT };
         const accessToken = JwtUtility.generateAccessToken(payload);
         const refreshToken = JwtUtility.generateRefreshToken(payload);
-        res.cookie("accessToken", accessToken, { httpOnly: false, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-        res.cookie("refreshToken", refreshToken, { httpOnly: true, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
+        const isProduction = process.env.NODE_ENV === "production";
+        const cookieOptions = {
+            secure: isProduction,
+            sameSite: isProduction ? "none" as const : "lax" as const,
+            path: "/",
+            ...(isProduction && process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {}),
+        };
+        res.cookie("accessToken", accessToken, { ...cookieOptions, httpOnly: false, maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000", 10), });
+        res.cookie("refreshToken", refreshToken, { ...cookieOptions, httpOnly: true, maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000", 10), });
         res.status(STATUS_CODES.OK).json({
             status: true, message: SUCCESS_MESSAGES.LOGIN,
             data: {
@@ -233,11 +244,12 @@ class ExpertController implements IExpertController {
 
 
     logout = asyncHandler(async (req: Request, res: Response) => {
+        const isProduction = process.env.NODE_ENV === "production";
         const baseOptions = {
-            domain: process.env.COOKIE_DOMAIN,
-            path: '/',
-            secure: true,
-            sameSite: 'none' as const,
+            path: "/",
+            secure: isProduction,
+            sameSite: isProduction ? "none" as const : "lax" as const,
+            ...(isProduction && process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {}),
         };
         res.clearCookie('accessToken', { ...baseOptions, httpOnly: false });
         res.clearCookie('refreshToken', { ...baseOptions, httpOnly: true });
