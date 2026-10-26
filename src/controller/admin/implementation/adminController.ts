@@ -37,8 +37,23 @@ class AdminController implements IAdminController {
         const payload: TokenPayload = { userId: email, role: ROLE.ADMIN };
         const accessToken = JwtUtility.generateAccessToken(payload);
         const refreshToken = JwtUtility.generateRefreshToken(payload);
-        res.cookie("admin-accessToken", accessToken, { httpOnly: false, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-        res.cookie("admin-refreshToken", refreshToken, { httpOnly: true, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.ADMIN_REFRESH_TOKEN_MAX_AGE || "86400000") });
+        const isProduction = process.env.NODE_ENV === "production";
+        res.cookie("admin-accessToken", accessToken, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
+            ...(isProduction && process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {}),
+            path: "/",
+            maxAge: Number(process.env.ACCESS_TOKEN_MAX_AGE || 1440000),
+        });
+        res.cookie("admin-refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
+            ...(isProduction && process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {}),
+            path: "/",
+            maxAge: Number(process.env.ADMIN_REFRESH_TOKEN_MAX_AGE || 86400000),
+        });
         res.status(STATUS_CODES.OK).json({
             success: true, message: SUCCESS_MESSAGES.LOGIN,
             data: {
@@ -68,16 +83,25 @@ class AdminController implements IAdminController {
             return
         }
         const newAccessToken = JwtUtility.generateAccessToken({ userId, role });
-        res.cookie("admin-accessToken", newAccessToken, { httpOnly: false, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+        const isProduction = process.env.NODE_ENV === "production";
+        res.cookie("admin-accessToken", newAccessToken, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
+            ...(isProduction && process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {}),
+            path: "/",
+            maxAge: Number(process.env.ACCESS_TOKEN_MAX_AGE || 1440000),
+        });
         res.status(STATUS_CODES.OK).json({ status: true, accessToken: newAccessToken, message: "Access token refreshed successfully" });
     });
 
     logout = asyncHandler(async (req: Request, res: Response) => {
+        const isProduction = process.env.NODE_ENV === "production";
         const baseOptions = {
-            domain: process.env.COOKIE_DOMAIN,
-            path: '/',
-            secure: true,
-            sameSite: 'none' as const,
+            path: "/",
+            ...(isProduction && process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {}),
+            secure: isProduction,
+            sameSite: isProduction ? "none" as const : "lax" as const,
         };
         res.clearCookie('admin-accessToken', { ...baseOptions, httpOnly: false });
         res.clearCookie('admin-refreshToken', { ...baseOptions, httpOnly: true });
