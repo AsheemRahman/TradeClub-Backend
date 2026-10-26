@@ -96,8 +96,16 @@ class UserController implements IUserController {
         const payload = { userId: (currentUser.id as string).toString(), role: ROLE.USER };
         const accessToken = JwtUtility.generateAccessToken(payload);
         const refreshToken = JwtUtility.generateRefreshToken(payload);
-        res.cookie("accessToken", accessToken, { httpOnly: false, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-        res.cookie("refreshToken", refreshToken, { httpOnly: true, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "86400000") });
+        const isProduction = process.env.NODE_ENV === "production";
+        const cookieOptions = {
+            httpOnly: false,
+            secure: isProduction,
+            sameSite: isProduction ? "none" as const : "lax" as const,
+            path: "/",
+            ...(isProduction && process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {}),
+        };
+        res.cookie("accessToken", accessToken, { ...cookieOptions, maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000", 10), });
+        res.cookie("refreshToken", refreshToken, { ...cookieOptions, httpOnly: true, maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "86400000", 10), });
         res.status(STATUS_CODES.OK).json({
             status: true, message: SUCCESS_MESSAGES.LOGIN,
             data: {
@@ -132,7 +140,15 @@ class UserController implements IUserController {
             return
         }
         const newAccessToken = JwtUtility.generateAccessToken({ userId, role });
-        res.cookie("accessToken", newAccessToken, { httpOnly: false, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
+        const isProduction = process.env.NODE_ENV === "production";
+        res.cookie("accessToken", newAccessToken, {
+            httpOnly: false,
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
+            path: "/",
+            ...(isProduction && process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {}),
+            maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000", 10),
+        });
         res.status(STATUS_CODES.OK).json({ status: true, accessToken: newAccessToken, message: "Access token refreshed successfully" });
     });
 
@@ -157,8 +173,15 @@ class UserController implements IUserController {
         const payload = { userId: (currentUser.id as string).toString(), role: ROLE.USER };
         const accessToken = JwtUtility.generateAccessToken(payload);
         const refreshToken = JwtUtility.generateRefreshToken(payload);
-        res.cookie("accessToken", accessToken, { httpOnly: false, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000") });
-        res.cookie("refreshToken", refreshToken, { httpOnly: true, domain: process.env.COOKIE_DOMAIN, secure: true, sameSite: "none", maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000") });
+        const isProduction = process.env.NODE_ENV === "production";
+        const cookieOptions = {
+            secure: isProduction,
+            sameSite: isProduction ? "none" as const : "lax" as const,
+            path: "/",
+            ...(isProduction && process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {}),
+        };
+        res.cookie("accessToken", accessToken, { ...cookieOptions, httpOnly: false, maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || "1440000", 10), });
+        res.cookie("refreshToken", refreshToken, { ...cookieOptions, httpOnly: true, maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || "604800000", 10), });
         res.status(STATUS_CODES.OK).json({
             status: true, message: SUCCESS_MESSAGES.LOGIN, accessToken,
             data: {
@@ -174,11 +197,12 @@ class UserController implements IUserController {
     });
 
     logout = asyncHandler(async (req: Request, res: Response) => {
+        const isProduction = process.env.NODE_ENV === "production";
         const baseOptions = {
-            domain: process.env.COOKIE_DOMAIN,
-            path: '/',
-            secure: true,
-            sameSite: 'none' as const,
+            path: "/",
+            secure: isProduction,
+            sameSite: isProduction ? "none" as const : "lax" as const,
+            ...(isProduction && process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {}),
         };
         res.clearCookie('accessToken', { ...baseOptions, httpOnly: false });
         res.clearCookie('refreshToken', { ...baseOptions, httpOnly: true });
