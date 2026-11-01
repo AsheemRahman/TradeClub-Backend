@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -21,10 +12,10 @@ const getSessionEndDateTime = (bookedAt, endTime) => {
     sessionDate.setHours(hours, minutes, 0, 0);
     return sessionDate;
 };
-const markMissedSessions = () => __awaiter(void 0, void 0, void 0, function* () {
+const markMissedSessions = async () => {
     const now = new Date();
     try {
-        const sessions = yield sessionSchema_1.Session.find({
+        const sessions = await sessionSchema_1.Session.find({
             status: 'upcoming',
             endTime: { $exists: true, $ne: '' }
         });
@@ -32,7 +23,7 @@ const markMissedSessions = () => __awaiter(void 0, void 0, void 0, function* () 
             const endDateTime = getSessionEndDateTime(session.bookedAt, session.endTime);
             // If the end time is before the current time, mark as missed
             if (endDateTime < now) {
-                yield sessionSchema_1.Session.updateOne({ _id: session._id }, { $set: { status: 'missed' } });
+                await sessionSchema_1.Session.updateOne({ _id: session._id }, { $set: { status: 'missed' } });
                 console.log(`🔸 Marked session ${session._id} as missed`);
             }
         }
@@ -41,6 +32,7 @@ const markMissedSessions = () => __awaiter(void 0, void 0, void 0, function* () 
     catch (error) {
         console.error('❌ Error updating missed sessions:', error);
     }
-});
+};
 //  Runs once per day at midnight India time
 node_cron_1.default.schedule('0 0 * * *', markMissedSessions, { timezone: 'Asia/Kolkata' });
+//# sourceMappingURL=sessionCron.js.map

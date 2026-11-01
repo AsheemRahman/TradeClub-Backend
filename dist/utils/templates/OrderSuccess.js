@@ -348,3 +348,4 @@ function getOrderSuccessEmailTemplate(order, customerName) {
     </html> `;
 }
 ;
+//# sourceMappingURL=OrderSuccess.js.map

@@ -28,3 +28,4 @@ class SessionMapper {
     }
 }
 exports.SessionMapper = SessionMapper;
+//# sourceMappingURL=sessionMapper.js.map

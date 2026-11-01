@@ -67,3 +67,4 @@ const getOtpHtmlTemplate = (otp, subject) => {
   `;
 };
 exports.getOtpHtmlTemplate = getOtpHtmlTemplate;
+//# sourceMappingURL=otpTemplate.js.map

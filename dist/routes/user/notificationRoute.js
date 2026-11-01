@@ -15,3 +15,4 @@ router.post("/consultation", (0, verify_1.validate)(role_1.ROLE.USER), notificat
 router.post("/subscription", notificationDI_1.notificationController.notifySubscriptionExpiring.bind(notificationDI_1.notificationController));
 router.post("/new-course", notificationDI_1.notificationController.notifyNewCourseAvailable.bind(notificationDI_1.notificationController));
 exports.default = router;
+//# sourceMappingURL=notificationRoute.js.map

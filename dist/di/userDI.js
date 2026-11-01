@@ -34,3 +34,4 @@ const reviewRepository = new reviewRepository_1.default();
 const reviewService = new reviewService_1.default(reviewRepository);
 const reviewController = new reviewController_1.default(reviewService);
 exports.reviewController = reviewController;
+//# sourceMappingURL=userDI.js.map

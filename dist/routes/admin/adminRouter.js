@@ -50,3 +50,4 @@ router.get('/orders', (0, verify_1.validate)(role_1.ROLE.ADMIN), adminDI_1.admin
 router.get('/revenue', (0, verify_1.validate)(role_1.ROLE.ADMIN), adminDI_1.adminController.getRevenue.bind(adminDI_1.adminController));
 router.get('/stats', (0, verify_1.validate)(role_1.ROLE.ADMIN), adminDI_1.adminController.getStats.bind(adminDI_1.adminController));
 exports.default = router;
+//# sourceMappingURL=adminRouter.js.map

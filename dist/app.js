@@ -1,13 +1,14 @@
 "use strict";
-//------------------ required modules -------------------------
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+//------------------ required modules -------------------------
+require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const dotenv_1 = __importDefault(require("dotenv"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const http_1 = require("http");
 const morganMiddleware_1 = __importDefault(require("./middleware/morganMiddleware"));
 const dbConfig_1 = __importDefault(require("./config/dbConfig"));
 const userRoute_1 = __importDefault(require("./routes/user/userRoute"));
@@ -16,16 +17,14 @@ const adminRouter_1 = __importDefault(require("./routes/admin/adminRouter"));
 const chatRouter_1 = __importDefault(require("./routes/chat/chatRouter"));
 const payoutRoutes_1 = __importDefault(require("./routes/admin/payoutRoutes"));
 const notificationRoute_1 = __importDefault(require("./routes/user/notificationRoute"));
-const http_1 = require("http");
 const socketConfig_1 = __importDefault(require("./config/socketConfig"));
 const errorHandler_1 = require("./middleware/errorHandler");
-dotenv_1.default.config();
 const port = process.env.PORT || 5000;
 const app = (0, express_1.default)();
 //-------------------------- Cors -------------------------------
 app.use((0, cors_1.default)({
     origin: process.env.CLIENT_URL,
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     credentials: true,
 }));
 //--------------------------- middlewares -----------------------
@@ -53,3 +52,4 @@ app.use(errorHandler_1.errorHandler);
 server.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
+//# sourceMappingURL=app.js.map

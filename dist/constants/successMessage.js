@@ -12,3 +12,4 @@ exports.SUCCESS_MESSAGES = {
     DATA_RETRIEVED: "Data retrieved successfully",
     SUBSCRIPTION_FETCH: "Subscription plan Fetched Successfully",
 };
+//# sourceMappingURL=successMessage.js.map

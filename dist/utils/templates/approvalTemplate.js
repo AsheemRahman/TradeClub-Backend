@@ -325,3 +325,4 @@ function getApprovalEmailTemplate(expertName) {
     </html>
     `;
 }
+//# sourceMappingURL=approvalTemplate.js.map

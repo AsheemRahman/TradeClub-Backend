@@ -7,3 +7,4 @@ var ROLE;
     ROLE["USER"] = "user";
     ROLE["EXPERT"] = "expert";
 })(ROLE || (exports.ROLE = ROLE = {}));
+//# sourceMappingURL=role.js.map

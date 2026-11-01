@@ -50,3 +50,4 @@ const CouponSchema = new mongoose_1.Schema({
 }, { timestamps: true });
 const Coupon = (0, mongoose_1.model)('Coupon', CouponSchema);
 exports.Coupon = Coupon;
+//# sourceMappingURL=couponSchema.js.map

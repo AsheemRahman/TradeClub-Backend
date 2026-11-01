@@ -29,3 +29,4 @@ const reviewSchema = new mongoose_1.Schema({
     }
 });
 exports.Review = (0, mongoose_1.model)('Review', reviewSchema);
+//# sourceMappingURL=reviewSchema.js.map

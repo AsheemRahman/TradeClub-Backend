@@ -23,3 +23,4 @@ const otpSchema = new mongoose_1.default.Schema({
 });
 const OTP = mongoose_1.default.model("OTP", otpSchema);
 exports.OTP = OTP;
+//# sourceMappingURL=otp.js.map

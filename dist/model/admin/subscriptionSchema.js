@@ -41,3 +41,4 @@ const subscriptionPlanSchema = new mongoose_1.Schema({
 }, { timestamps: true });
 const SubscriptionPlan = (0, mongoose_1.model)("SubscriptionPlan", subscriptionPlanSchema);
 exports.SubscriptionPlan = SubscriptionPlan;
+//# sourceMappingURL=subscriptionSchema.js.map

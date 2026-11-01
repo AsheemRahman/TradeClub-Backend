@@ -10,3 +10,4 @@ router.post('/pending', (0, verify_1.validate)(role_1.ROLE.ADMIN), payoutDI_1.pa
 router.post('/last-payout-date', (0, verify_1.validate)(role_1.ROLE.ADMIN), payoutDI_1.payoutController.getLastPayoutDate.bind(payoutDI_1.payoutController));
 router.post('/run-payouts', (0, verify_1.validate)(role_1.ROLE.ADMIN), payoutDI_1.payoutController.runMonthlyPayouts.bind(payoutDI_1.payoutController));
 exports.default = router;
+//# sourceMappingURL=payoutRoutes.js.map

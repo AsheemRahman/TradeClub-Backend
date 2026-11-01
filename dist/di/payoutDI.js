@@ -13,3 +13,4 @@ const earningRepository = new earningRepository_1.default();
 const payoutService = new payoutService_1.default(expertRepository, earningRepository);
 const payoutController = new payoutController_1.default(payoutService);
 exports.payoutController = payoutController;
+//# sourceMappingURL=payoutDI.js.map

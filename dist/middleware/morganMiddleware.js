@@ -34,3 +34,4 @@ const morganMiddleware = (0, morgan_1.default)(morganFormat, {
     },
 });
 exports.default = morganMiddleware;
+//# sourceMappingURL=morganMiddleware.js.map

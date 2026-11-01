@@ -25,3 +25,4 @@ const subscriptionRepository = new subscriptionRepository_1.default();
 const subscriptionService = new subscriptionService_1.default(subscriptionRepository);
 const subscriptionController = new subscriptionController_1.default(subscriptionService);
 exports.subscriptionController = subscriptionController;
+//# sourceMappingURL=adminDI.js.map

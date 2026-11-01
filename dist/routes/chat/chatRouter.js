@@ -14,3 +14,4 @@ router.get('/get-messages/:id', (0, authentication_1.default)(), chatDI_1.messag
 router.delete('/delete-message/:id', (0, authentication_1.default)(), chatDI_1.messageController.deleteMessages.bind(chatDI_1.messageController));
 router.post('/mark-read/:id', (0, authentication_1.default)(), chatDI_1.messageController.markMessagesAsRead.bind(chatDI_1.messageController));
 exports.default = router;
+//# sourceMappingURL=chatRouter.js.map

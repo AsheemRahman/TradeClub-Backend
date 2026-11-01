@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntityMapper = void 0;
 class EntityMapper {
     static toSubscriptionPlanResponseDTO(plan) {
-        var _a, _b, _c, _d;
         return {
             id: plan._id.toString(),
             name: plan.name,
@@ -11,11 +10,11 @@ class EntityMapper {
             duration: plan.duration,
             features: plan.features || [],
             accessLevel: {
-                expertCallsPerMonth: ((_a = plan.accessLevel) === null || _a === void 0 ? void 0 : _a.expertCallsPerMonth) || 0,
-                videoAccess: ((_b = plan.accessLevel) === null || _b === void 0 ? void 0 : _b.videoAccess) || false,
-                chatSupport: ((_c = plan.accessLevel) === null || _c === void 0 ? void 0 : _c.chatSupport) || false,
+                expertCallsPerMonth: plan.accessLevel?.expertCallsPerMonth || 0,
+                videoAccess: plan.accessLevel?.videoAccess || false,
+                chatSupport: plan.accessLevel?.chatSupport || false,
             },
-            isActive: (_d = plan.isActive) !== null && _d !== void 0 ? _d : true,
+            isActive: plan.isActive ?? true,
             createdAt: plan.createdAt,
             updatedAt: plan.updatedAt,
         };
@@ -32,3 +31,4 @@ class EntityMapper {
     }
 }
 exports.EntityMapper = EntityMapper;
+//# sourceMappingURL=subscriptionMapper.js.map

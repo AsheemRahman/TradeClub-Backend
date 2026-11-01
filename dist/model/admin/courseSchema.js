@@ -50,3 +50,4 @@ const courseSchema = new mongoose_1.Schema({
 }, { timestamps: true });
 const Course = (0, mongoose_1.model)('Course', courseSchema);
 exports.default = Course;
+//# sourceMappingURL=courseSchema.js.map

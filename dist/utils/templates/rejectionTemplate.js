@@ -210,3 +210,4 @@ function getRejectionEmailTemplate(expertName, rejectionReason) {
     </html>
     `;
 }
+//# sourceMappingURL=rejectionTemplate.js.map

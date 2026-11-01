@@ -3,15 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserMapper = void 0;
 class UserMapper {
     static toResponseDTO(user) {
-        var _a, _b, _c;
         return {
             id: user._id.toString(),
             fullName: user.fullName,
             email: user.email,
-            phoneNumber: (_a = user.phoneNumber) === null || _a === void 0 ? void 0 : _a.toString(),
+            phoneNumber: user.phoneNumber?.toString(),
             profilePicture: user.profilePicture,
-            isActive: (_b = user.isActive) !== null && _b !== void 0 ? _b : true,
-            lastSeen: (_c = user.lastSeen) !== null && _c !== void 0 ? _c : null,
+            isActive: user.isActive ?? true,
+            lastSeen: user.lastSeen ?? null,
             createdAt: user.createdAt,
         };
     }
@@ -36,3 +35,4 @@ class UserMapper {
     }
 }
 exports.UserMapper = UserMapper;
+//# sourceMappingURL=userMapper.js.map

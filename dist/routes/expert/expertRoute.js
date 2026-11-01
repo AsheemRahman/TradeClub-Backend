@@ -33,3 +33,4 @@ router.get('/wallet', (0, verify_1.validate)(role_1.ROLE.EXPERT), expertDI_1.exp
 //------------------------------------ sessions ----------------------------------
 router.get('/sessions', (0, verify_1.validate)(role_1.ROLE.EXPERT), expertDI_1.sessionInstance.getSessions.bind(expertDI_1.sessionInstance));
 exports.default = router;
+//# sourceMappingURL=expertRoute.js.map

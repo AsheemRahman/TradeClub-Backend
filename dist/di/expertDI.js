@@ -18,3 +18,4 @@ const sessionRepository = new sessionRepository_1.default();
 const sessionService = new sessionService_1.default(sessionRepository);
 const sessionInstance = new sessionController_1.default(sessionService);
 exports.sessionInstance = sessionInstance;
+//# sourceMappingURL=expertDI.js.map

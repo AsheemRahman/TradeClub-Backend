@@ -18,3 +18,4 @@ const messageRepository = new messageRepository_1.default();
 const messageService = new messageService_1.default(messageRepository);
 const messageController = new messageController_1.default(messageService);
 exports.messageController = messageController;
+//# sourceMappingURL=chatDI.js.map

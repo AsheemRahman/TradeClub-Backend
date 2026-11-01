@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getIO = exports.getReceiverSocketId = void 0;
 const socket_io_1 = require("socket.io");
@@ -30,7 +21,7 @@ const configureSocket = (server) => {
             : socket.handshake.query.userId;
         if (userId) {
             userSocketMap[userId] = socket.id;
-            io === null || io === void 0 ? void 0 : io.emit("getOnlineUser", Object.keys(userSocketMap));
+            io?.emit("getOnlineUser", Object.keys(userSocketMap));
         }
         console.log("online users", userSocketMap);
         // Join a session room
@@ -61,29 +52,30 @@ const configureSocket = (server) => {
         socket.on("typing", ({ from, to }) => {
             const receiverSocketId = userSocketMap[to];
             if (receiverSocketId) {
-                io === null || io === void 0 ? void 0 : io.to(receiverSocketId).emit("typing", { from });
+                io?.to(receiverSocketId).emit("typing", { from });
             }
         });
         socket.on("stop_typing", ({ from, to }) => {
             const receiverSocketId = userSocketMap[to];
             if (receiverSocketId) {
-                io === null || io === void 0 ? void 0 : io.to(receiverSocketId).emit("stop_typing", { from });
+                io?.to(receiverSocketId).emit("stop_typing", { from });
             }
         });
-        socket.on("disconnect", () => __awaiter(void 0, void 0, void 0, function* () {
+        socket.on("disconnect", async () => {
             console.log("User disconnected", socket.id);
             if (userId) {
                 delete userSocketMap[userId];
-                io === null || io === void 0 ? void 0 : io.emit("getOnlineUser", Object.keys(userSocketMap));
+                io?.emit("getOnlineUser", Object.keys(userSocketMap));
                 try {
-                    yield userSchema_1.User.findByIdAndUpdate(userId, { lastSeen: new Date(), });
-                    io === null || io === void 0 ? void 0 : io.emit("userLastSeen", { userId, lastSeen: new Date() });
+                    await userSchema_1.User.findByIdAndUpdate(userId, { lastSeen: new Date(), });
+                    io?.emit("userLastSeen", { userId, lastSeen: new Date() });
                 }
                 catch (err) {
                     console.error("Error updating lastSeen:", err);
                 }
             }
-        }));
+        });
     });
 };
 exports.default = configureSocket;
+//# sourceMappingURL=socketConfig.js.map

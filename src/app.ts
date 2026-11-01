@@ -1,9 +1,10 @@
 //------------------ required modules -------------------------
+import "dotenv/config";
 
-import express, { NextFunction, Request, Response } from "express";
+import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import { createServer } from "http";
 
 import morganMiddleware from "./middleware/morganMiddleware";
 import mongoDB from "./config/dbConfig";
@@ -15,14 +16,10 @@ import chatRouter from "./routes/chat/chatRouter";
 import payoutRouter from "./routes/admin/payoutRoutes";
 import notificationRoutes from "./routes/user/notificationRoute";
 
-import { createServer } from "http";
 import configureSocket from "./config/socketConfig";
+import { errorHandler } from "./middleware/errorHandler";
 import { STATUS_CODES } from "./constants/statusCode";
 import { ERROR_MESSAGES } from "./constants/errorMessage";
-import { errorHandler } from "./middleware/errorHandler";
-
-
-dotenv.config();
 
 
 const port = process.env.PORT || 5000;
@@ -33,7 +30,7 @@ const app = express();
 app.use(
     cors({
         origin: process.env.CLIENT_URL,
-        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
         credentials: true,
     })
 );

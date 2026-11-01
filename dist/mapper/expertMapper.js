@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpertMapper = void 0;
 class ExpertMapper {
     static toResponseDTO(expert) {
-        var _a, _b;
         return {
             id: expert._id.toString(),
             fullName: expert.fullName,
@@ -22,8 +21,8 @@ class ExpertMapper {
             Government_Id: expert.Government_Id,
             selfie_Id: expert.selfie_Id,
             stripeAccountId: expert.stripeAccountId,
-            isActive: (_a = expert.isActive) !== null && _a !== void 0 ? _a : true,
-            isVerified: (_b = expert.isVerified) !== null && _b !== void 0 ? _b : "Pending",
+            isActive: expert.isActive ?? true,
+            isVerified: expert.isVerified ?? "Pending",
             createdAt: expert.createdAt,
         };
     }
@@ -52,3 +51,4 @@ class ExpertMapper {
     }
 }
 exports.ExpertMapper = ExpertMapper;
+//# sourceMappingURL=expertMapper.js.map

@@ -44,3 +44,4 @@ const courseProgressSchema = new mongoose_1.Schema({
 }, { timestamps: true });
 const CourseProgress = (0, mongoose_1.model)('CourseProgress', courseProgressSchema);
 exports.CourseProgress = CourseProgress;
+//# sourceMappingURL=progressSchema.js.map

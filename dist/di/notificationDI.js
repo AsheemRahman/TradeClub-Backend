@@ -13,3 +13,4 @@ const notificationRepository = new notificationRepository_1.default();
 const notificationService = new notificationService_1.default(notificationRepository, UserRepository);
 const notificationController = new notificationController_1.default(notificationService);
 exports.notificationController = notificationController;
+//# sourceMappingURL=notificationDI.js.map

@@ -52,3 +52,4 @@ router.get('/:courseId/reviews', userDI_1.reviewController.getCourseReviews.bind
 router.post('/:courseId/review', (0, verify_1.validate)(role_1.ROLE.USER), userDI_1.reviewController.submitReview.bind(userDI_1.reviewController));
 router.post('/:courseId/update-review', (0, verify_1.validate)(role_1.ROLE.USER), userDI_1.reviewController.updateReview.bind(userDI_1.reviewController));
 exports.default = router;
+//# sourceMappingURL=userRoute.js.map
