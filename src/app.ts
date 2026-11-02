@@ -74,6 +74,17 @@ const io = configureSocket(server)
 app.use(errorHandler);
 
 
+//------------------------ Health Check -------------------------
+
+app.get("/health", (_req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "TradeClub Backend is healthy",
+        status: "OK",
+        timestamp: new Date().toISOString(),
+    });
+});
+
 //----------------------- Server listening -----------------------
 
 server.listen(port, () => {
