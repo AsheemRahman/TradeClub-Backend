@@ -80,7 +80,7 @@ app.get("/health", (_req, res) => {
     res.status(200).json({
         success: true,
         message: "TradeClub Backend is healthy",
-        status: "OK",
+        status: STATUS_CODES.OK,
         timestamp: new Date().toISOString(),
     });
 });
