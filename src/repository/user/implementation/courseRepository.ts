@@ -6,10 +6,7 @@ import ICourseRepository from "../ICourseRepository";
 import { BaseRepository } from "../../base/implementation/baseRepository";
 
 
-class CourseRepository extends BaseRepository<ICourse> implements ICourseRepository {
-    constructor() {
-        super(Course);
-    }
+class CourseRepository implements ICourseRepository {
 
     async getCategory(): Promise<ICategory[] | null> {
         const category = await Category.find().sort({ createdAt: -1 });
@@ -46,7 +43,7 @@ class CourseRepository extends BaseRepository<ICourse> implements ICourseReposit
     }
 
     async getCourseById(courseId: string): Promise<ICourse | null> {
-        return this.findById(courseId);
+        return Course.findById(courseId);
     };
 
     async updateCourse(courseId: string, purchasedUsers: string): Promise<ICourse | null> {

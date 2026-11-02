@@ -6,11 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const categorySchema_1 = __importDefault(require("../../../model/admin/categorySchema"));
 const courseSchema_1 = __importDefault(require("../../../model/admin/courseSchema"));
 const progressSchema_1 = require("../../../model/user/progressSchema");
-const baseRepository_1 = require("../../base/implementation/baseRepository");
-class CourseRepository extends baseRepository_1.BaseRepository {
-    constructor() {
-        super(courseSchema_1.default);
-    }
+class CourseRepository {
     async getCategory() {
         const category = await categorySchema_1.default.find().sort({ createdAt: -1 });
         return category;
@@ -47,7 +43,7 @@ class CourseRepository extends baseRepository_1.BaseRepository {
         return { courses, totalPages, totalCourses };
     }
     async getCourseById(courseId) {
-        return this.findById(courseId);
+        return courseSchema_1.default.findById(courseId);
     }
     ;
     async updateCourse(courseId, purchasedUsers) {
