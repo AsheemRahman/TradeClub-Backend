@@ -87,52 +87,38 @@ jobs:
       id-token: write
 
     steps:
-
-      # ------------------------------------------
-      # STEP 1: DEBUG GITHUB OIDC CLAIMS
-      # ------------------------------------------
-
-      - name: Debug GitHub OIDC Claims
+      
+      - name: Inspect GitHub OIDC SSL Certificate
         shell: bash
         run: |
-
           set -euo pipefail
 
-          TOKEN=$(curl -fsS \
-            -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com" \
-            | jq -er '.value')
+          CERT_DIR=$(mktemp -d)
 
-          export OIDC_TOKEN="$TOKEN"
+          openssl s_client \
+            -servername token.actions.githubusercontent.com \
+            -connect token.actions.githubusercontent.com:443 \
+            -showcerts </dev/null 2>/dev/null |
+          awk -v dir="$CERT_DIR" '
+            /BEGIN CERTIFICATE/ {
+              n++
+              file=sprintf("%s/cert-%02d.pem",dir,n)
+            }
+            file {
+              print > file
+            }
+            /END CERTIFICATE/ {
+              close(file)
+              file=""
+            }
+          '
 
-          python3 - <<'PY'
-          import os
-          import json
-          import base64
+          for cert in "$CERT_DIR"/*.pem; do
+            echo "========== CERTIFICATE =========="
+            openssl x509 -in "$cert" \
+              -noout -subject -issuer -fingerprint -sha1
+          done
 
-          token = os.environ["OIDC_TOKEN"]
-
-          payload = token.split(".")[1]
-          payload += "=" * (-len(payload) % 4)
-
-          claims = json.loads(
-              base64.urlsafe_b64decode(payload)
-          )
-
-          print("========== GITHUB OIDC CLAIMS ==========")
-
-          for key in [
-              "iss",
-              "aud",
-              "sub",
-              "repository",
-              "ref",
-              "exp"
-          ]:
-              print(f"{key}: {claims.get(key)}")
-
-          print("========================================")
-          PY
 
       # ------------------------------------------
       # STEP 2: CONFIGURE AWS CREDENTIALS
